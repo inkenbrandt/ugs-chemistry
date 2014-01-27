@@ -1,0 +1,74 @@
+@import '../../dijit/themes/claro/claro.css';
+@import '../../esri/css/esri.css';
+@import '../../agrc/resources/map/BaseMap.css';
+@import '../../ijit/themes/standard/layout/SideBarToggler.css';
+@import '../../ijit/themes/standard/layout/PaneStack.css';
+@import '../../agrc/resources/map/BaseMapSelector.css';
+@import '../../agrc/resources/locate/FindAddress.css';
+@import '../../agrc/resources/locate/MagicZoom.css';
+/*@import '../../bootstrap/css/bootstrap.css';*/
+@import '../../bootstrap/css/bootstrap-theme.css';
+@import '../../dgrid/css/dgrid.css';
+
+body, html, .app {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: #444;
+}
+.app .main-container {
+    width: 100%;
+    height: 100%;
+}
+
+/* TITLE PANE */
+.app .title-pane {
+    border: none;
+    overflow: hidden;
+}
+.app h1 {
+    margin: 5px 0 0 0;
+    font-size: 40px;
+    letter-spacing: -2px;
+    font-weight: normal;
+}
+.app .version {
+    font-size: 16px;
+    text-decoration: none;
+    color: gray;
+    letter-spacing: 0;
+}
+.app .version:hover {
+    text-decoration: underline !important;
+}
+.app .title-pane>img {
+    position: absolute;
+    top: -3px;
+    right: 0;
+}
+.app .map-div .magic-zoom {
+    right: 70px;
+}
+
+/* CENTER (MAP) */
+.app .center-container {
+    padding: 0;
+}
+.app .map-div {
+    width: 100%;
+    height: 100% !important;
+}
+
+/* GRID */
+.app [data-dojo-attach-point='gridDiv'] {
+    height: 200px;
+}
+
+/* GENERAL STUFF */
+/* remove orange outline in chrome */
+*:focus {
+    outline: none;
+}
