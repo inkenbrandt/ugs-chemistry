@@ -1,0 +1,17 @@
+# Packages
+*.egg
+*.egg-info
+
+# esri gdb locks
+*.lock
+
+# python code coverage
+.coverage
+
+# test data
+temp_tests
+
+# install data
+build
+dist
+*.dmp

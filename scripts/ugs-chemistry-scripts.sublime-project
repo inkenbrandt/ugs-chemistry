@@ -1,0 +1,43 @@
+{
+  "folders": [
+    {
+      "follow_symlinks": true,
+      "file_exclude_patterns": [
+        "*.sublime-workspace",
+        "*.sublime-project",
+        "*.coverage"
+      ],
+      "folder_exclude_patterns": [
+        "*.egg",
+        "*.egg-info",
+        "__pycache__"
+      ],
+      "path": "/"
+    }
+  ],
+  "build_systems": [
+    {
+      "name": "Python Tests",
+      "selector": "source.python",
+      "cmd": [
+        "python",
+        "setup.py",
+        "test"
+      ],
+      "working_dir": "${project_path}"
+    },
+    {
+      "name": "Python Tests With Coverage",
+      "selector": "source.python",
+      "cmd": [
+        "coverage",
+        "run",
+        "--source",
+        "dbseeder",
+        "setup.py",
+        "test"
+      ],
+      "working_dir": "${project_path}"
+    }
+  ]
+}
