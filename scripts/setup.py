@@ -1,7 +1,5 @@
 from __future__ import print_function
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
-import sys
 import dbseeder
 
 
@@ -12,7 +10,7 @@ setup(
     license='MIT',
     author='Steve Gourley',
     tests_require=['nose>=1.0', 'mock>=1.0'],
-    install_requires=['requests>=2.3.0'],
+    install_requires=['requests>=2.3.0', 'pyproj>=1.9.0'],
     # setup_requires=['nose>=1.0'],
     author_email='sgourley@utah.gov',
     description='build and seed a file geodatabase',

@@ -6,7 +6,8 @@ import csv
 import glob
 import os
 from models import TableInfo, Results, Stations
-from services import WebQuery
+from pyproj import Proj, transform
+from services import WebQuery, ConsolePrompt
 
 
 class Seeder(object):
@@ -23,28 +24,27 @@ class Seeder(object):
         self.location = os.path.join(self.parent_folder, self.gdb_name)
 
     def _create_gdb(self):
-        if os.path.exists(self.location):
-            raise Exception('gdb location is not empty')
-
         arcpy.CreateFileGDB_management(self.parent_folder,
                                        self.gdb_name,
                                        'CURRENT')
 
-    def _create_feature_classes(self):
+    def _create_feature_classes(self, types):
         results_table = TableInfo(self.template_location, 'Results')
         station_points = TableInfo(self.template_location, 'Stations')
 
-        arcpy.CreateTable_management(self.location, 
-                                        results_table.name, 
-                                        results_table.template)
+        if 'Results' in types:
+            arcpy.CreateTable_management(self.location, 
+                                            results_table.name, 
+                                            results_table.template)
 
-        arcpy.CreateFeatureclass_management(self.location,
-                                                station_points.name,
-                                                "POINT",
-                                                station_points.template,
-                                                "DISABLED",
-                                                "DISABLED",
-                                                station_points.template)
+        if 'Stations' in types:
+            arcpy.CreateFeatureclass_management(self.location,
+                                                    station_points.name,
+                                                    "POINT",
+                                                    station_points.template,
+                                                    "DISABLED",
+                                                    "DISABLED",
+                                                    station_points.template)
 
     def _query(self, url):
         data = WebQuery().results(url)
@@ -59,7 +59,7 @@ class Seeder(object):
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
 
-        print 'inserting into {}'.format(location)
+        print 'inserting into {} type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
             Type = Results
@@ -67,10 +67,27 @@ class Seeder(object):
             Type = Stations
 
         fields = Type.schema_map.keys()
+        if feature_class == 'Stations':
+            fields.append('SHAPE@XY')
+
+        input_system = Proj(init='epsg:4326')
+        ouput_system = Proj(init='epsg:26912')
 
         with arcpy.da.InsertCursor(location, fields) as curser:
             for row in data:
-                insert_row = Type(row).row
+                etl = Type(row)
+                insert_row = etl.row
+                
+                if feature_class == 'Stations':
+                    lon = row[etl.schema_map['Lon_X']] 
+                    lat = row[etl.schema_map['Lat_Y']]
+
+                    try:
+                        x, y = transform(input_system, ouput_system, lon, lat)
+                        insert_row.append((x, y))
+                    except:
+                        insert_row.append(None)
+
                 curser.insertRow(insert_row)
 
     def _csvs_on_disk(self, parent_folder, type):
@@ -168,23 +185,31 @@ class Seeder(object):
 
         return maps
 
-    def seed(self, folder):
+    def seed(self, folder, types):
         """
             method to seed the database from files on disk
             expects a parent folder with two child folders
             named stations and chemistry.
             within those folders are the csv's to be imported
         """
-        print 'creating gdb'
-        self._create_gdb()
-        print 'creating gdb: done'
+        gdb_exists = os.path.exists(self.location)
+        
+        if not gdb_exists:
+            print 'creating gdb'
+            self._create_gdb()
+            print 'creating gdb: done'
 
-        print 'creating feature classes'
-        self._create_feature_classes()
-        print 'creating feature classes: done'
-
-        types = ['Stations', 'Results']
-
+            print 'creating feature classes'
+            self._create_feature_classes(types)
+            print 'creating feature classes: done'
+        else:
+            if not ConsolePrompt().query_yes_no('gdb already exists. Seeed missing feature classes?'):
+                raise SystemExit('stopping')
+            else:
+                print 'creating feature classes'
+                self._create_feature_classes(types)
+                print 'creating feature classes: done'
+        
         for type in types:
             for csv_file in self._csvs_on_disk(folder, type):
                 with open(csv_file, 'r') as f:
@@ -201,26 +226,37 @@ class Seeder(object):
 
         self._insert_rows(csv, 'Results')
 
+    def create_relationship(self):
+        origin = location = os.path.join(self.location, 'Stations')
+        desitination = location = os.path.join(self.location, 'Results')
+        key = 'StationId'
+
+        arcpy.CreateRelationshipClass_management(origin,
+                                         desitination,
+                                         'Stations_Have_Results',
+                                         'COMPOSITE',
+                                         'Results',
+                                         'Stations',
+                                         'FORWARD',
+                                         'ONE_TO_MANY',
+                                         'NONE',
+                                         key,
+                                         key)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='seed a geodatabse.')
 
     parser.add_argument('--update', action='store_true', help='update the gdb from a web service call')
-    parser.add_argument('--seed', action='store_true', help='seed the gdb from csv\'s on disk')
+    parser.add_argument('--seed', nargs='*', help='seed the gdb from csv\'s on disk')
     parser.add_argument('--length', action='store_true', help='get the max field sizes form files on disk')
+    parser.add_argument('--relate', action='store_true', help='creates the releationship class between stations and results')
 
     args = parser.parse_args()
 
     try:
-        if args.seed:
-            seeder = Seeder('C:\\temp', 'test.gdb')
-            seeder.seed(
-                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data')
 
-            print 'finished'
-
-        elif args.update:
+        if args.update:
             pass
-
         elif args.length:
             seeder = Seeder('C:\\temp', 'test.gdb')
             maps = seeder.get_field_lengths(
@@ -229,6 +265,18 @@ if __name__ == '__main__':
 
             for key in maps.keys():
                 print '{}'.format(maps[key])
+        elif args.relate:
+            seeder = Seeder('C:\\temp', 'test.gdb')
+            seeder.create_relationship()
+        else:
+            if args.seed is None:
+                args.seed = ['Stations', 'Results']
 
+            seeder = Seeder('C:\\temp', 'test.gdb')
+            seeder.seed(
+                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data',
+                args.seed)
+
+        print 'finished'
     except:
         raise
