@@ -1,6 +1,7 @@
 """DbSeeder creates and seeds esri file geodatabases"""
 
 import arcpy
+import argparse
 import csv
 import glob
 import os
@@ -31,7 +32,7 @@ class Seeder(object):
 
     def _create_feature_classes(self):
         results_table = TableInfo(self.template_location, 'Results')
-        station_points = TableInfo(self.template_location, 'Chemistry')
+        station_points = TableInfo(self.template_location, 'Stations')
 
         arcpy.CreateTable_management(self.location, 
                                         results_table.name, 
@@ -60,7 +61,7 @@ class Seeder(object):
 
         print 'inserting into {}'.format(location)
 
-        if feature_class == 'Chemistry':
+        if feature_class == 'Results':
             Type = Result
         elif feature_class == 'Stations':
             Type = Stations
@@ -77,41 +78,8 @@ class Seeder(object):
         for file in glob.glob(folder):
             yield file
 
-    def seed(self, folder):
-        """
-            method to seed the database from files on disk
-            expects a parent folder with two child folders
-            named stations and chemistry.
-            within those folders are the csv's to be imported
-        """
-        print 'creating gdb'
-        self._create_gdb()
-        print 'creating gdb: done'
-
-        print 'creating feature classes'
-        self._create_feature_classes()
-        print 'creating feature classes: done'
-
-        types = ['Stations', 'Chemistry']
-
-        for type in types:
-            for csv_file in self._csvs_on_disk(folder, type):
-                with open(csv_file, 'r') as f:
-                    print 'processing {}'.format(csv_file)
-                    self._insert_rows(csv.DictReader(f), type)
-                    print 'processing {}: done'.format(csv_file)
-
-    def update(self):
-        """
-            method to update database with queries to a url
-        """
-        response = self._query(self.chemistry_query_url)
-        csv = self._read_response(response)
-
-        self._insert_rows(csv, 'Chemistry')
-
     def get_field_lengths(self, folder, type):
-        chemistry = {
+        results = {
             'AnalysisStartDate': ['AnalysisDate', 0],
             'ResultAnalyticalMethod/MethodIdentifierContext': ['AnalytContext', 0],
             'ResultAnalyticalMethod/MethodName': ['AnalytMeth', 0],
@@ -185,8 +153,8 @@ class Seeder(object):
 
         if type == 'Stations':
             maps = stations
-        elif type == 'Chemistry':
-            maps = chemistry
+        elif type == 'Results':
+            maps = results
 
         for csv_file in self._csvs_on_disk(folder, type):
             print 'processing {}'.format(csv_file)
@@ -198,16 +166,71 @@ class Seeder(object):
                         if maps[key][1] < length:
                             maps[key][1] = length
 
-        for key in maps.keys():
-            print '{}'.format(maps[key])
-
         return maps
 
+    def seed(self, folder):
+        """
+            method to seed the database from files on disk
+            expects a parent folder with two child folders
+            named stations and chemistry.
+            within those folders are the csv's to be imported
+        """
+        print 'creating gdb'
+        self._create_gdb()
+        print 'creating gdb: done'
+
+        print 'creating feature classes'
+        self._create_feature_classes()
+        print 'creating feature classes: done'
+
+        types = ['Stations', 'Results']
+
+        for type in types:
+            for csv_file in self._csvs_on_disk(folder, type):
+                with open(csv_file, 'r') as f:
+                    print 'processing {}'.format(csv_file)
+                    self._insert_rows(csv.DictReader(f), type)
+                    print 'processing {}: done'.format(csv_file)
+
+    def update(self):
+        """
+            method to update database with queries to a url
+        """
+        response = self._query(self.chemistry_query_url)
+        csv = self._read_response(response)
+
+        self._insert_rows(csv, 'Results')
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='seed a geodatabse.')
+
+    parser.add_argument('--update', action='store_true', help='update the gdb from a web service call')
+    parser.add_argument('--seed', action='store_true', help='seed the gdb from csv\'s on disk')
+    parser.add_argument('--length', action='store_true', help='get the max field sizes form files on disk')
+
+    args = parser.parse_args()
+    print args
+
     try:
-        seeder = Seeder('C:\\temp', 'test.gdb')
-        seeder.seed(
-            'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data')
+        if args.seed:
+            seeder = Seeder('C:\\temp', 'test.gdb')
+            seeder.seed(
+                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data')
+
+            print 'finished'
+
+        elif args.update:
+            pass
+
+        elif args.length:
+            seeder = Seeder('C:\\temp', 'test.gdb')
+            maps = seeder.get_field_lengths(
+                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data',
+                'Stations')
+
+            for key in maps.keys():
+                print '{}'.format(maps[key])
+
     except:
         print 'deleting the gdb'
         raise

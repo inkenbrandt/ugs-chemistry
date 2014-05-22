@@ -4,6 +4,7 @@ from setuptools.command.test import test as TestCommand
 import sys
 import dbseeder
 
+
 setup(
     name='dbseeder',
     version=dbseeder.__version__,
@@ -13,7 +14,6 @@ setup(
     tests_require=['nose>=1.0', 'mock>=1.0'],
     install_requires=['requests>=2.3.0'],
     # setup_requires=['nose>=1.0'],
-    # cmdclass={'test': PyTest},
     author_email='sgourley@utah.gov',
     description='build and seed a file geodatabase',
     long_description='',
@@ -30,6 +30,6 @@ setup(
         'Operating System :: Windows'
     ],
     extras_require={
-        'testing': ['nose']
+        'testing': ['nose'],
     }
 )

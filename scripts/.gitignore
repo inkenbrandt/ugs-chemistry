@@ -2,8 +2,9 @@
 *.egg
 *.egg-info
 
-# esri gdb locks
+# esri
 *.lock
+*.sde
 
 # python code coverage
 .coverage
@@ -15,3 +16,6 @@ temp_tests
 build
 dist
 *.dmp
+
+# data files
+\data

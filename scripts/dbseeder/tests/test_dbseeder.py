@@ -43,7 +43,7 @@ class TestDbSeeder(unittest.TestCase):
         gdb = os.path.join(self.location, self.gdb_name)
         assert os.path.exists(gdb)
 
-    def _test_csv_reader_with_data_from_requests(self):
+    def test_csv_reader_with_data_from_requests(self):
         handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
         httpd = TestServer(('localhost', 8001), handler)
@@ -54,7 +54,7 @@ class TestDbSeeder(unittest.TestCase):
 
         url = 'http://localhost:8001/dbseeder/tests/data/sample_chemistry.csv'
 
-        data = self.patient._query_chemistry(url)
+        data = self.patient._query(url)
         reader = self.patient._read_response(data)
         values = reader.next()
 
@@ -97,7 +97,7 @@ class TestDbSeeder(unittest.TestCase):
         # self.patient.update()
         pass
 
-    def test_seed(self):
+    def _test_seed(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'data')
         self.patient.seed(folder)
 
@@ -111,7 +111,7 @@ class TestDbSeeder(unittest.TestCase):
 
     def test_chemistry_csv_on_disk(self):
         data = os.path.join(os.getcwd(), 'dbseeder', 'data')
-        gen = self.patient._csvs_on_disk(data, 'Chemistry')
+        gen = self.patient._csvs_on_disk(data, 'Results')
         count = 0
 
         for file in gen:
@@ -132,8 +132,8 @@ class TestDbSeeder(unittest.TestCase):
         del self.patient
         self.patient = None
 
-        while os.path.exists(self.location):
-            pass#shutil.rmtree(self.location)
+        if os.path.exists(self.location):
+            shutil.rmtree(self.location)
 
 
 class TestServer(SocketServer.TCPServer):
