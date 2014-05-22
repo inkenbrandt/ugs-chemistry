@@ -15,7 +15,7 @@ import shutil
 import threading
 import unittest
 from dbseeder.dbseeder import Seeder
-from dbseeder.models import Stations
+from dbseeder.models import Results
 
 
 class TestDbSeeder(unittest.TestCase):
@@ -106,7 +106,7 @@ class TestDbSeeder(unittest.TestCase):
         reader = self.patient._read_response(data)
         values = reader.next()
 
-        model = Stations(values)
+        model = Results(values)
 
         org_index = model.schema_map.keys().index('OrgId')
         param_index = model.schema_map.keys().index('Param')

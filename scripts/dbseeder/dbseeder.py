@@ -62,7 +62,7 @@ class Seeder(object):
         print 'inserting into {}'.format(location)
 
         if feature_class == 'Results':
-            Type = Result
+            Type = Results
         elif feature_class == 'Stations':
             Type = Stations
 
@@ -209,7 +209,6 @@ if __name__ == '__main__':
     parser.add_argument('--length', action='store_true', help='get the max field sizes form files on disk')
 
     args = parser.parse_args()
-    print args
 
     try:
         if args.seed:
@@ -232,5 +231,4 @@ if __name__ == '__main__':
                 print '{}'.format(maps[key])
 
     except:
-        print 'deleting the gdb'
         raise

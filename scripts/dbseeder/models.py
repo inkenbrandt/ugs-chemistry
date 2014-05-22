@@ -12,6 +12,7 @@ class TableInfo(object):
 
 
 class Table(object):
+
     def __init__(self, row):
 
         self._row = []
@@ -24,9 +25,10 @@ class Table(object):
     def row(self):
         return self._row
 
-class Stations(Table):
 
-    """ORM mapping from chemistry schema to Stations feature class"""
+class Results(Table):
+
+    """ORM mapping to station schema to Results table"""
 
     schema_map = OrderedDict([
         ('AnalysisDate', 'AnalysisStartDate'),
@@ -68,9 +70,10 @@ class Stations(Table):
         ('USGSPCode', 'USGSPCode')
     ])
 
-class Results(Table):
 
-    """ORM mapping to station schema to Results table"""
+class Stations(Table):
+
+    """ORM mapping from chemistry schema to Stations feature class"""
 
     schema_map = OrderedDict([
         ('OrgID', 'OrganizationIdentifier'),
