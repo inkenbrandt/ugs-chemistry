@@ -4,16 +4,28 @@ import os
 from collections import OrderedDict
 
 
-class FeatureClassInfo(object):
+class TableInfo(object):
 
     def __init__(self, template, name):
         self.template = os.path.join(template, name)
         self.name = name
 
+class Table(object):
+    def __init__(self, row):
 
-class Chemistry(object):
+        self._row = []
 
-    """ORM mapping to chemistry feature class"""
+        for key in self.schema_map:
+            value = str(row[self.schema_map[key]]).strip()
+            self._row.append(value)
+
+    @property
+    def row(self):
+        return self._row
+
+class Stations(Table):
+
+    """ORM mapping from chemistry schema to Stations feature class"""
 
     schema_map = OrderedDict([
         ('AnalysisDate', 'AnalysisStartDate'),
@@ -55,22 +67,9 @@ class Chemistry(object):
         ('USGSPCode', 'USGSPCode')
     ])
 
-    def __init__(self, row):
+class Results(Table):
 
-        self._row = []
-
-        for key in self.schema_map:
-            value = str(row[self.schema_map[key]]).strip()
-            self._row.append(value)
-
-    @property
-    def row(self):
-        return self._row
-
-
-class Stations(object):
-
-    """ORM mapping to station feature class"""
+    """ORM mapping to station schema to Results table"""
 
     schema_map = OrderedDict([
         ('OrgID', 'OrganizationIdentifier'),
@@ -103,15 +102,3 @@ class Stations(object):
         ('HoleDepth', 'WellHoleDepthMeasure/MeasureValue'),
         ('HoleDUnit', 'WellHoleDepthMeasure/MeasureUnitCode')
     ])
-
-    def __init__(self, row):
-
-        self._row = []
-
-        for key in self.schema_map:
-            value = str(row[self.schema_map[key]]).strip()
-            self._row.append(value)
-
-    @property
-    def row(self):
-        return self._row

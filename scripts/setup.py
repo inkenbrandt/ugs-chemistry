@@ -2,21 +2,7 @@ from __future__ import print_function
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
-
 import dbseeder
-
-
-class PyTest(TestCommand):
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
 
 setup(
     name='dbseeder',
@@ -24,16 +10,17 @@ setup(
     url='https://github.com/agrc/ugs-chemistry',
     license='MIT',
     author='Steve Gourley',
-    tests_require=['pytest', 'mock'],
+    tests_require=['nose>=1.0', 'mock>=1.0'],
     install_requires=['requests>=2.3.0'],
-    cmdclass={'test': PyTest},
+    # setup_requires=['nose>=1.0'],
+    # cmdclass={'test': PyTest},
     author_email='sgourley@utah.gov',
     description='build and seed a file geodatabase',
     long_description='',
     packages=['dbseeder'],
     include_package_data=True,
     platforms='any',
-    test_suite='dbseeder.test.test_dbseeder',
+    test_suite='nose.collector',
     classifiers=[
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
@@ -43,6 +30,6 @@ setup(
         'Operating System :: Windows'
     ],
     extras_require={
-        'testing': ['pytest'],
+        'testing': ['nose']
     }
 )

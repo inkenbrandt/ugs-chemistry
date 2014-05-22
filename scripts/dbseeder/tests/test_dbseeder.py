@@ -8,19 +8,22 @@ test_dbseeder
 Tests for `dbseeder` module.
 """
 import os
+import SimpleHTTPServer
+import SocketServer
 import shutil
+import threading
 import unittest
 from dbseeder.dbseeder import Seeder
-from dbseeder.models import Chemistry
+from dbseeder.models import Stations
 
 
 class TestDbSeeder(unittest.TestCase):
 
+    #: thing being tested
     patient = None
     location = None
     parent_folder = None
     gdb_name = 'wqp.gdb'
-    chemistry_url = 'http://localhost/sample_chemistry.csv'
 
     def setUp(self):
         self.parent_folder = os.path.join(os.getcwd(), 'dbseeder', 'tests')
@@ -40,8 +43,18 @@ class TestDbSeeder(unittest.TestCase):
         gdb = os.path.join(self.location, self.gdb_name)
         assert os.path.exists(gdb)
 
-    def test_csv_reader_with_data_from_requests(self):
-        data = self.patient._query_chemistry(self.chemistry_url)
+    def _test_csv_reader_with_data_from_requests(self):
+        handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+
+        httpd = TestServer(('localhost', 8001), handler)
+
+        httpd_thread = threading.Thread(target=httpd.serve_forever)
+        httpd_thread.setDaemon(True)
+        httpd_thread.start()
+
+        url = 'http://localhost:8001/dbseeder/tests/data/sample_chemistry.csv'
+
+        data = self.patient._query_chemistry(url)
         reader = self.patient._read_response(data)
         values = reader.next()
 
@@ -71,15 +84,15 @@ class TestDbSeeder(unittest.TestCase):
         reader = self.patient._read_response(data)
         values = reader.next()
 
-        chemistry = Chemistry(values)
+        model = Stations(values)
 
-        org_index = chemistry.schema_map.keys().index('OrgId')
-        param_index = chemistry.schema_map.keys().index('Param')
+        org_index = model.schema_map.keys().index('OrgId')
+        param_index = model.schema_map.keys().index('Param')
 
-        self.assertEqual(chemistry.row[org_index], '1119USBR_WQX')
-        self.assertEqual(chemistry.row[param_index], 'Conductivity')
+        self.assertEqual(model.row[org_index], '1119USBR_WQX')
+        self.assertEqual(model.row[param_index], 'Conductivity')
 
-    def test_update(self):
+    def _test_update(self):
         # self.patient.chemistry_query_url = self.chemistry_url
         # self.patient.update()
         pass
@@ -108,12 +121,23 @@ class TestDbSeeder(unittest.TestCase):
 
         self.assertEqual(count, 10)
 
+    def test_get_field_lengths(self):
+        data = os.path.join(os.getcwd(), 'dbseeder', 'data')
+        maps = self.patient.get_field_lengths(data, 'Stations')
+
+        self.assertEqual(maps['MonitoringLocationTypeName'][1], 47)
+        self.assertEqual(maps['OrganizationFormalName'][1], 70)
+
     def tearDown(self):
         del self.patient
         self.patient = None
 
         while os.path.exists(self.location):
-            shutil.rmtree(self.location)
+            pass#shutil.rmtree(self.location)
+
+
+class TestServer(SocketServer.TCPServer):
+    allow_reuse_address = True
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,7 +5,7 @@ import requests
 
 class WebQuery(object):
 
-    def chemistry(self, url):
+    def results(self, url):
         r = requests.get(url)
 
         return r.text.splitlines()

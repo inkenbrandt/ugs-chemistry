@@ -4,9 +4,7 @@ import arcpy
 import csv
 import glob
 import os
-import shutil
-from collections import namedtuple
-from models import FeatureClassInfo, Chemistry, Stations
+from models import TableInfo, Results, Stations
 from services import WebQuery
 
 
@@ -32,21 +30,23 @@ class Seeder(object):
                                        'CURRENT')
 
     def _create_feature_classes(self):
+        results_table = TableInfo(self.template_location, 'Results')
+        station_points = TableInfo(self.template_location, 'Chemistry')
 
-        feature_info = (FeatureClassInfo(self.template_location, 'Stations'),
-                        FeatureClassInfo(self.template_location, 'Chemistry'))
+        arcpy.CreateTable_management(self.location, 
+                                        results_table.name, 
+                                        results_table.template)
 
-        for feature in feature_info:
-            arcpy.CreateFeatureclass_management(self.location,
-                                                feature.name,
+        arcpy.CreateFeatureclass_management(self.location,
+                                                station_points.name,
                                                 "POINT",
-                                                feature.template,
+                                                station_points.template,
                                                 "DISABLED",
                                                 "DISABLED",
-                                                feature.template)
+                                                station_points.template)
 
-    def _query_chemistry(self, url):
-        data = WebQuery().chemistry(url)
+    def _query(self, url):
+        data = WebQuery().results(url)
 
         return data
 
@@ -61,7 +61,7 @@ class Seeder(object):
         print 'inserting into {}'.format(location)
 
         if feature_class == 'Chemistry':
-            Type = Chemistry
+            Type = Result
         elif feature_class == 'Stations':
             Type = Stations
 
@@ -105,12 +105,12 @@ class Seeder(object):
         """
             method to update database with queries to a url
         """
-        response = self._query_chemistry(self.chemistry_query_url)
+        response = self._query(self.chemistry_query_url)
         csv = self._read_response(response)
 
         self._insert_rows(csv, 'Chemistry')
 
-    def getFieldLengths(self, folder, type):
+    def get_field_lengths(self, folder, type):
         chemistry = {
             'AnalysisStartDate': ['AnalysisDate', 0],
             'ResultAnalyticalMethod/MethodIdentifierContext': ['AnalytContext', 0],
@@ -201,13 +201,13 @@ class Seeder(object):
         for key in maps.keys():
             print '{}'.format(maps[key])
 
+        return maps
+
 if __name__ == '__main__':
     try:
         seeder = Seeder('C:\\temp', 'test.gdb')
-        # seeder.getFieldLengths('C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data', 'Stations')
         seeder.seed(
             'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data')
     except:
         print 'deleting the gdb'
-        # shutil.rmtree('c:\\temp\\test.gdb')
         raise
