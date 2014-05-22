@@ -10,6 +10,7 @@ class TableInfo(object):
         self.template = os.path.join(template, name)
         self.name = name
 
+
 class Table(object):
     def __init__(self, row):
 

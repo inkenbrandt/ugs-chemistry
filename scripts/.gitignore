@@ -18,4 +18,4 @@ dist
 *.dmp
 
 # data files
-\data
+/dbseeder/data/

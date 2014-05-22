@@ -7,6 +7,7 @@ test_dbseeder
 
 Tests for `dbseeder` module.
 """
+import arcpy
 import os
 import SimpleHTTPServer
 import SocketServer
@@ -43,6 +44,24 @@ class TestDbSeeder(unittest.TestCase):
         gdb = os.path.join(self.location, self.gdb_name)
         assert os.path.exists(gdb)
 
+    def test_fc_creation(self):
+        templates = os.path.join(
+            os.getcwd(),
+            'dbseeder',
+            'templates',
+            'Templates.gdb'
+        )
+
+        self.patient.template_location = templates
+        print 'templates: {}'.format(self.patient.template_location)
+        self.patient._create_gdb()
+        self.patient._create_feature_classes()
+
+        arcpy.env.workspace = self.patient.location
+
+        self.assertEqual(len(arcpy.ListFeatureClasses()), 1)
+        self.assertEqual(len(arcpy.ListTables()), 1)
+
     def test_csv_reader_with_data_from_requests(self):
         handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
@@ -52,7 +71,10 @@ class TestDbSeeder(unittest.TestCase):
         httpd_thread.setDaemon(True)
         httpd_thread.start()
 
-        url = 'http://localhost:8001/dbseeder/tests/data/sample_chemistry.csv'
+        host = 'http://localhost:8001'
+        path = '/dbseeder/tests/data/Results/'
+
+        url = '{}{}sample_chemistry.csv'.format(host, path)
 
         data = self.patient._query(url)
         reader = self.patient._read_response(data)
@@ -63,7 +85,7 @@ class TestDbSeeder(unittest.TestCase):
         self.assertEqual(values['OrganizationIdentifier'], '1119USBR_WQX')
 
     def test_csv_reader(self):
-        test_data = 'dbseeder\\tests\\data\\sample_chemistry.csv'
+        test_data = 'dbseeder\\tests\\data\\Results\\sample_chemistry.csv'
         f = open(os.path.join(os.getcwd(), test_data))
         data = f.readlines(2)
         f.close()
@@ -76,7 +98,7 @@ class TestDbSeeder(unittest.TestCase):
         self.assertEqual(values['OrganizationIdentifier'], '1119USBR_WQX')
 
     def test_model_hydration(self):
-        test_data = 'dbseeder\\tests\\data\\sample_chemistry.csv'
+        test_data = 'dbseeder\\tests\\data\\Results\\sample_chemistry.csv'
         f = open(os.path.join(os.getcwd(), test_data))
         data = f.readlines(2)
         f.close()
@@ -98,11 +120,22 @@ class TestDbSeeder(unittest.TestCase):
         pass
 
     def _test_seed(self):
-        folder = os.path.join(os.getcwd(), 'dbseeder', 'data')
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+        templates = os.path.join(
+            os.getcwd(),
+            'dbseeder',
+            'templates',
+            'Templates.gdb'
+        )
+
+        self.patient.template_location = templates
         self.patient.seed(folder)
 
+        arcpy.env.workspace = self.patient.location
+        self.assertEqual(arcpy.GetCount_management('Stations'), 50)
+
     def test_csv_on_disk(self):
-        data = os.path.join(os.getcwd(), 'dbseeder', 'data')
+        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
         gen = self.patient._csvs_on_disk(data, 'Stations')
         csv = gen.next()
 
@@ -110,7 +143,7 @@ class TestDbSeeder(unittest.TestCase):
         self.assertRegexpMatches('Stations.csv', 'Stations.csv$')
 
     def test_chemistry_csv_on_disk(self):
-        data = os.path.join(os.getcwd(), 'dbseeder', 'data')
+        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
         gen = self.patient._csvs_on_disk(data, 'Results')
         count = 0
 
@@ -119,7 +152,7 @@ class TestDbSeeder(unittest.TestCase):
             self.assertIsNotNone(file)
             self.assertRegexpMatches(file, 'Result.*.csv$')
 
-        self.assertEqual(count, 10)
+        self.assertEqual(count, 2)
 
     def test_get_field_lengths(self):
         data = os.path.join(os.getcwd(), 'dbseeder', 'data')
