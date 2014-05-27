@@ -76,9 +76,9 @@ class Stations(Table):
     """ORM mapping from chemistry schema to Stations feature class"""
 
     schema_map = OrderedDict([
-        ('OrgID', 'OrganizationIdentifier'),
+        ('OrgId', 'OrganizationIdentifier'),
         ('OrgName', 'OrganizationFormalName'),
-        ('StationID', 'MonitoringLocationIdentifier'),
+        ('StationId', 'MonitoringLocationIdentifier'),
         ('StationName', 'MonitoringLocationName'),
         ('StationType', 'MonitoringLocationTypeName'),
         ('StationComment', 'MonitoringLocationDescriptionText'),
@@ -105,4 +105,62 @@ class Stations(Table):
         ('DepthUnit', 'WellDepthMeasure/MeasureUnitCode'),
         ('HoleDepth', 'WellHoleDepthMeasure/MeasureValue'),
         ('HoleDUnit', 'WellHoleDepthMeasure/MeasureUnitCode')
+    ])
+
+
+class SdwisResults(object):
+    def __init__(self, row):
+
+        self.row = []
+
+        for item in self.row:
+            value = str(item).strip()
+            self.row.append(value)
+
+    schema = sorted([
+        'AnalysisDate',
+        'LabName',
+        'MDL',
+        'MDLUnit',
+        'OrgId',
+        'OrgName',
+        'Param',
+        'ResultValue',
+        'SampleDate',
+        'SampleTime',
+        'SampleId',
+        'SampType',
+        'StationId',
+        'Unit',
+        'Lat_Y',
+        'Lon_X'
+    ])
+
+
+class SdwisStations(object):
+    def __init__(self, row):
+
+        self.row = []
+
+        for item in row:
+            value = str(item).strip()
+            self.row.append(value)
+
+    schema = sorted([
+        'OrgId',
+        'OrgName',
+        'StationId',
+        'StationName',
+        'StationType',
+        'Lat_Y',
+        'Lon_X',
+        'HorAcc',
+        'HorCollMeth',
+        'HorRef',
+        'Elev',
+        'ElevAcc',
+        'ElevMeth',
+        'ElevRef',
+        'Depth',
+        'DepthUnit'
     ])

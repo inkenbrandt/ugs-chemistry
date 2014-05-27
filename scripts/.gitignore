@@ -19,3 +19,6 @@ dist
 
 # data files
 /dbseeder/data/
+
+# secrets
+secrets.cfg
