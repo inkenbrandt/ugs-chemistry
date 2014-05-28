@@ -7,6 +7,8 @@ test_programs
 
 Tests for `programs` module.
 """
+import arcpy
+import datetime
 import os
 import unittest
 import SimpleHTTPServer
@@ -120,7 +122,7 @@ class TestWqpProgram(unittest.TestCase):
 
         self.assertEqual(count, 2)
 
-    def test_get_field_lengths(self):
+    def test_field_lengths(self):
         data = os.path.join(os.getcwd(), 'dbseeder', 'data')
         maps = self.patient.field_lengths(data, 'Stations')
 
@@ -145,7 +147,7 @@ class TestSdwisProgram(unittest.TestCase):
         if not os.path.exists(self.location):
             os.makedirs(self.location)
 
-        folder = os.path.join(self.location, self.gdb_name)
+        self.folder = os.path.join(self.location, self.gdb_name)
 
         seed = Seeder(self.location, self.gdb_name)
         templates = os.path.join(
@@ -159,17 +161,58 @@ class TestSdwisProgram(unittest.TestCase):
         seed._create_gdb()
         seed._create_feature_classes(['Results', 'Stations'])
 
-        self.patient = Sdwis(folder, InsertCursor)
+        self.patient = Sdwis(self.folder, InsertCursor)
 
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
 
-    def _test_sdwis_model_hydration(self):
-        result = self.patient.sdwis_results()
-        station = self.patient.sdwis_stations()
+    def test_insert_rows_result(self):
+        one_row_from_query = [(None,
+                               'UT00007   ',
+                               0.1,
+                               'MG/L     ',
+                               1748,
+                               'SUMMIT CHATEAU IN BRIAN HEAD',
+                               'NITRATE-NITRITE                         ',
+                               0.0,
+                               datetime.datetime(2014, 4, 23, 0, 0),
+                               datetime.datetime(1, 1, 1, 14, 10),
+                               'K201400801',
+                               'WL',
+                               9032,
+                               '         ',
+                               37.732475,
+                               -112.871236,
+                               None,
+                               3908822)]
 
-        print result
-        print station
+        self.patient._insert_rows(one_row_from_query, 'Results')
+
+        table = os.path.join(self.folder, 'Results')
+        self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
+
+    def test_insert_rows_station(self):
+        one_row_from_query = [(750,
+                               'HANNA WATER & SEWER IMPROVEMENT DISTRICT',
+                               3382,
+                               'STOCKMORE WELL                          ',
+                               'WL',
+                               40.460074,
+                               -110.826317,
+                               15.0,
+                               '018',
+                               '003',
+                               2126.71,
+                               1.84,
+                               '003',
+                               '003',
+                               0,
+                               None)]
+
+        self.patient._insert_rows(one_row_from_query, 'Stations')
+
+        table = os.path.join(self.folder, 'Stations')
+        self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
 
     def tearDown(self):
         del self.patient

@@ -20,7 +20,7 @@ class TestDbSeeder(unittest.TestCase):
     patient = None
     location = None
     parent_folder = None
-    gdb_name = 'wqp.gdb'
+    gdb_name = 'seed.gdb'
 
     def setUp(self):
         self.parent_folder = os.path.join(os.getcwd(), 'dbseeder', 'tests')

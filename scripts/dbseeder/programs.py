@@ -40,9 +40,11 @@ class Wqp(Program):
                     lat = row[etl.schema_map['Lat_Y']]
 
                     try:
-                        x, y = Project.transform(lon, lat)
+                        x, y = Project().to_utm(lon, lat)
                         insert_row.append((x, y))
-                    except:
+                    except Exception as detail:
+                        print 'Handling projection error:', detail
+
                         insert_row.append(None)
 
                 curser.insertRow(insert_row)
@@ -188,7 +190,7 @@ class Sdwis(Program):
         UTV80.TINLOC.LATITUDE_MEASURE AS "Lat_Y",
         UTV80.TINLOC.LONGITUDE_MEASURE AS "Lon_X",
         UTV80.TSAANLYT.CAS_REGISTRY_NUM AS "CAS_Reg",
-        UTV80.TSASAR.TSASAR_IS_NUMBER AS "ID_NUM"
+        UTV80.TSASAR.TSASAR_IS_NUMBER AS "Id_Num"
 
         FROM UTV80.TINWSF
         JOIN UTV80.TINWSYS ON
@@ -228,8 +230,7 @@ class Sdwis(Program):
         UTV80.TINLOC.VER_COL_METH_CD AS "ElevMeth",
         UTV80.TINLOC.VERT_REF_DATUM_CD AS "ElevRef",
         MAX(UTV80.TINWLCAS.BOTTOM_DEPTH_MSR) AS "Depth",
-        UTV80.TINWLCAS.BOTTOM_DP_MSR_UOM AS "DepthUnit",
-        UTV80.TINLOC.SRC_MAP_SCALE_NUM AS "MapScale"
+        UTV80.TINWLCAS.BOTTOM_DP_MSR_UOM AS "DepthUnit"
 
         FROM UTV80.TINWSF
         JOIN UTV80.TINWSYS ON
@@ -283,10 +284,12 @@ class Sdwis(Program):
         cursor = conn.cursor()
 
         results = cursor.execute(query)
-        return results.fetchone()
+        one = results.fetchone()
 
         cursor.close()
         conn.close()
+
+        return one
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
@@ -298,7 +301,7 @@ class Sdwis(Program):
         elif feature_class == 'Stations':
             Type = SdwisStations
 
-        fields = Type.schema
+        fields = Type.schema_index_map.keys()
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
@@ -308,13 +311,18 @@ class Sdwis(Program):
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
-                    lon = row[etl.schema_map['Lon_X']]
-                    lat = row[etl.schema_map['Lat_Y']]
+                    lat = row[etl.schema_index_map['Lat_Y']]
+                    lon = row[etl.schema_index_map['Lon_X']]
+
+                    print 'lat {}, lon {}'.format(lat, lon)
 
                     try:
-                        x, y = Project.to_utm(lon, lat)
+                        x, y = Project().to_utm(lon, lat)
+                        print 'x {}, y {}'.format(x, y)
                         insert_row.append((x, y))
-                    except:
+                    except Exception as detail:
+                        print 'Handling projection error:', detail
+
                         insert_row.append(None)
 
                 curser.insertRow(insert_row)

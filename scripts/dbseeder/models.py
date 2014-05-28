@@ -113,27 +113,29 @@ class SdwisResults(object):
 
         self.row = []
 
-        for item in self.row:
+        for item in row:
             value = str(item).strip()
             self.row.append(value)
 
-    schema = sorted([
-        'AnalysisDate',
-        'LabName',
-        'MDL',
-        'MDLUnit',
-        'OrgId',
-        'OrgName',
-        'Param',
-        'ResultValue',
-        'SampleDate',
-        'SampleTime',
-        'SampleId',
-        'SampType',
-        'StationId',
-        'Unit',
-        'Lat_Y',
-        'Lon_X'
+    schema_index_map = OrderedDict([
+        ('AnalysisDate', 0),
+        ('LabName', 1),
+        ('MDL', 2),
+        ('MDLUnit', 3),
+        ('OrgId', 4),
+        ('OrgName', 5),
+        ('Param', 6),
+        ('ResultValue', 7),
+        ('SampleDate', 8),
+        ('SampleTime', 9),
+        ('SampleId', 10),
+        ('SampType', 11),
+        ('StationId', 12),
+        ('Unit', 13),
+        ('Lat_Y', 14),
+        ('Lon_X', 15),
+        ('CAS_Reg', 16),
+        ('Id_Num', 17)
     ])
 
 
@@ -146,21 +148,21 @@ class SdwisStations(object):
             value = str(item).strip()
             self.row.append(value)
 
-    schema = sorted([
-        'OrgId',
-        'OrgName',
-        'StationId',
-        'StationName',
-        'StationType',
-        'Lat_Y',
-        'Lon_X',
-        'HorAcc',
-        'HorCollMeth',
-        'HorRef',
-        'Elev',
-        'ElevAcc',
-        'ElevMeth',
-        'ElevRef',
-        'Depth',
-        'DepthUnit'
+    schema_index_map = OrderedDict([
+        ('OrgId', 0),
+        ('OrgName', 1),
+        ('StationId', 2),
+        ('StationName', 3),
+        ('StationType', 4),
+        ('Lat_Y', 5),
+        ('Lon_X', 6),
+        ('HorAcc', 7),
+        ('HorCollMeth', 8),
+        ('HorRef', 9),
+        ('Elev', 10),
+        ('ElevAcc', 11),
+        ('ElevMeth', 12),
+        ('ElevRef', 13),
+        ('Depth', 14),
+        ('DepthUnit', 15)
     ])
