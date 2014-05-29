@@ -279,17 +279,23 @@ class Sdwis(Program):
         self._connection_string = '{}/{}@{}/{}'.format(
             user, password, server, instance)
 
-    def _query(self, query):
+    def _query(self, query, count=None):
+        print 'querying SDWIS database'
+
         conn = cx_Oracle.connect(self._connection_string)
         cursor = conn.cursor()
 
         results = cursor.execute(query)
-        one = results.fetchone()
 
-        cursor.close()
-        conn.close()
+        if count is not None:
+            some = results.fetchmany(count)
 
-        return one
+            cursor.close()
+            conn.close()
+
+            return some
+
+        return results
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
@@ -314,11 +320,8 @@ class Sdwis(Program):
                     lat = row[etl.schema_index_map['Lat_Y']]
                     lon = row[etl.schema_index_map['Lon_X']]
 
-                    print 'lat {}, lon {}'.format(lat, lon)
-
                     try:
                         x, y = Project().to_utm(lon, lat)
-                        print 'x {}, y {}'.format(x, y)
                         insert_row.append((x, y))
                     except Exception as detail:
                         print 'Handling projection error:', detail
@@ -337,6 +340,4 @@ class Sdwis(Program):
                 query_string = self._result_query
 
             records = self._query(query_string)
-
-            for record in records:
-                self._insert_rows(record, type)
+            self._insert_rows(records, type)

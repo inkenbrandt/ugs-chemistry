@@ -10,7 +10,9 @@
       "folder_exclude_patterns": [
         "*.egg",
         "*.egg-info",
-        "__pycache__"
+        "__pycache__",
+        "Results",
+        "Stations"
       ],
       "path": "/"
     }

@@ -17,7 +17,7 @@ import threading
 from arcpy.da import InsertCursor
 from dbseeder.dbseeder import Seeder
 from dbseeder.programs import Wqp, Sdwis
-from dbseeder.models import Results
+from dbseeder.models import Results, SdwisResults
 from shutil import rmtree
 
 
@@ -144,27 +144,34 @@ class TestSdwisProgram(unittest.TestCase):
         self.location = os.path.join(self.parent_folder, 'temp_tests')
         self.gdb_name = 'sdwis.gdb'
 
-        if not os.path.exists(self.location):
-            os.makedirs(self.location)
+        # if not os.path.exists(self.location):
+        #     os.makedirs(self.location)
 
         self.folder = os.path.join(self.location, self.gdb_name)
 
-        seed = Seeder(self.location, self.gdb_name)
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
+        # seed = Seeder(self.location, self.gdb_name)
+        # templates = os.path.join(
+        #     os.getcwd(),
+        #     'dbseeder',
+        #     'templates',
+        #     'Templates.gdb'
+        # )
 
-        seed.template_location = templates
-        seed._create_gdb()
-        seed._create_feature_classes(['Results', 'Stations'])
+        # seed.template_location = templates
+        # seed._create_gdb()
+        # seed._create_feature_classes(['Results', 'Stations'])
 
         self.patient = Sdwis(self.folder, InsertCursor)
 
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
+
+    def test_query(self):
+      data = self.patient._query(self.patient._result_query, 2)
+      for item in data:
+        etl = SdwisResults(item)
+
+        self.assertIsNotNone(etl.row)
 
     def test_insert_rows_result(self):
         one_row_from_query = [(None,
@@ -186,7 +193,7 @@ class TestSdwisProgram(unittest.TestCase):
                                None,
                                3908822)]
 
-        self.patient._insert_rows(one_row_from_query, 'Results')
+        self.patient._insert_rows(one_row_from_query, 'Results', 1)
 
         table = os.path.join(self.folder, 'Results')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
@@ -209,7 +216,7 @@ class TestSdwisProgram(unittest.TestCase):
                                0,
                                None)]
 
-        self.patient._insert_rows(one_row_from_query, 'Stations')
+        self.patient._insert_rows(one_row_from_query, 'Stations', 1)
 
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))

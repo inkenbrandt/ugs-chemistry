@@ -111,29 +111,33 @@ if __name__ == '__main__':
                         help='creates the releationship class between stations and results')
 
     args = parser.parse_args()
+    location = 'c:\\temp'
+    gdb = 'sdwis.gdb'
+    seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
 
     try:
 
         if args.update:
             pass
         elif args.length:
-            seeder = Seeder('C:\\temp', 'test.gdb')
+            seeder = Seeder(location, gdb)
             maps = seeder.field_lengths(
-                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data',
+                seed_data,
                 'Stations')
 
             for key in maps.keys():
                 print '{}'.format(maps[key])
         elif args.relate:
-            seeder = Seeder('C:\\temp', 'test.gdb')
+            seeder = Seeder(location, gdb)
             seeder.create_relationship()
         else:
             if args.seed is None:
                 args.seed = ['Stations', 'Results']
 
-            seeder = Seeder('C:\\temp', 'test.gdb')
+            print 'seeding {} with {}'.format(gdb, args.seed)
+            seeder = Seeder(location, gdb)
             seeder.seed(
-                'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data',
+                seed_data,
                 args.seed)
 
         print 'finished'
