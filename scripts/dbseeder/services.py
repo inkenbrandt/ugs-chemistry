@@ -1,10 +1,12 @@
-"""the http query wrapper over requests for unit testing"""
+"""service classes for performing specific tasks"""
 
 import requests
 import sys
+from pyproj import Proj, transform
 
 
 class WebQuery(object):
+    """the http query wrapper over requests for unit testing"""
 
     def results(self, url):
         r = requests.get(url)
@@ -45,3 +47,16 @@ class ConsolePrompt(object):
             else:
                 sys.stdout.write("Please respond with 'yes' or 'no' "
                                  "(or 'y' or 'n').\n")
+
+
+class Project(object):
+
+    input_system = Proj(init='epsg:4326')
+    ouput_system = Proj(init='epsg:26912')
+
+    def to_utm(self, x, y):
+        return transform(
+            self.input_system,
+            self.ouput_system,
+            x,
+            y)
