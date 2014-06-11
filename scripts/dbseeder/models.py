@@ -108,9 +108,23 @@ class Stations(Table):
     ])
 
 
-class SdwisResults(object):
+class Sdwis(object):
+    """base class for building sdwis schema map"""
+    def _build_index_map(self, schema):
+        results_schema = schema
+        schema_index_items = [
+            (schema['destination'], schema['index'])
+            for schema in results_schema]
+
+        self.schema_index_map = OrderedDict(
+            sorted(schema_index_items, key=lambda t: t[1]))
+
+
+class SdwisResults(Sdwis):
 
     def __init__(self, row):
+
+        self._build_index_map(Schema().result)
 
         self.row = []
 
@@ -118,31 +132,14 @@ class SdwisResults(object):
             value = str(item).strip()
             self.row.append(value)
 
-    schema_index_map = OrderedDict([
-        ('AnalysisDate', 0),
-        ('LabName', 1),
-        ('MDL', 2),
-        ('MDLUnit', 3),
-        ('OrgId', 4),
-        ('OrgName', 5),
-        ('Param', 6),
-        ('ResultValue', 7),
-        ('SampleDate', 8),
-        ('SampleTime', 9),
-        ('SampleId', 10),
-        ('SampType', 11),
-        ('StationId', 12),
-        ('Unit', 13),
-        ('Lat_Y', 14),
-        ('Lon_X', 15),
-        ('CAS_Reg', 16),
-        ('Id_Num', 17)
-    ])
+    schema_index_map = None
 
 
 class SdwisStations(object):
 
     def __init__(self, row):
+
+        self._build_index_map(Schema().station)
 
         self.row = []
 
@@ -180,213 +177,245 @@ class Schema(object):
             'source': 'OrganizationIdentifier',
             'alias': 'Organization Id',
             'type': 'String',
-            'length': 20
+            'length': 20,
+            'index': 0
         },
         {
             'destination': 'OrgName',
             'source': 'OrganizationFormalName',
             'alias': 'Organization Name',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 1
         },
         {
             'destination': 'StationId',
             'source': 'MonitoringLocationIdentifier',
             'alias': 'Monitoring Location Id',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 2
         },
         {
             'destination': 'StationName',
             'source': 'MonitoringLocationName',
             'alias': 'Monitoring Location Name',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 3
         },
         {
             'destination': 'StationType',
             'source': 'MonitoringLocationTypeName',
             'alias': 'Monitoring Location Type',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 4
         },
         {
             'destination': 'StationComment',
             'source': 'MonitoringLocationDescriptionText',
             'alias': 'Monitoring Location Description',
             'type': 'String',
-            'length': 1500
+            'length': 1500,
+            'index': 5
         },
         {
             'destination': 'HUC8',
             'source': 'HUCEightDigitCode',
             'alias': 'HUC 8 Digit Code',
             'type': 'String',
-            'length': 8
+            'length': 8,
+            'index': 6
         },
         {
             'destination': 'Lon_X',
             'source': 'LongitudeMeasure',
             'alias': 'Latitude',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 7
         },
         {
             'destination': 'Lat_Y',
             'source': 'LatitudeMeasure',
             'alias': 'Longitude',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 8
         },
         {
             'destination': 'HorAcc',
             'source': 'HorizontalAccuracyMeasure/MeasureValue',
             'alias': 'Horizontal Accuracy',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 9
         },
         {
             'destination': 'HorAccUnit',
             'source': 'HorizontalAccuracyMeasure/MeasureUnitCode',
             'alias': 'Horizontal Accuracy Unit',
             'type': 'String',
-            'length': 10
+            'length': 10,
+            'index': 10
         },
         {
             'destination': 'HorCollMeth',
             'source': 'HorizontalCollectionMethodName',
             'alias': 'Horizontal Collection Method',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 11
         },
         {
             'destination': 'HorRef',
             'source': 'HorizontalCoordinateReferenceSystemDatumName',
             'alias': 'Horizontal Reference Datum',
             'type': 'String',
-            'length': 10
+            'length': 10,
+            'index': 12
         },
         {
             'destination': 'Elev',
             'source': 'VerticalMeasure/MeasureValue',
             'alias': 'Elevation',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 13
         },
         {
             'destination': 'ElevUnit',
             'source': 'VerticalMeasure/MeasureUnitCode',
             'alias': 'Elevation Unit',
             'type': 'String',
-            'length': 15
+            'length': 15,
+            'index': 14
         },
         {
             'destination': 'ElevAcc',
             'source': 'VerticalAccuracyMeasure/MeasureValue',
             'alias': 'Elevation Accuracy',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 15
         },
         {
             'destination': 'ElevAccUnit',
             'source': 'VerticalAccuracyMeasure/MeasureUnitCode',
             'alias': 'Elevation Accuracy Units',
             'type': 'String',
-            'length': 4
+            'length': 4,
+            'index': 16
         },
         {
             'destination': 'ElevMeth',
             'source': 'VerticalCollectionMethodName',
             'alias': 'Elevation Collection Method',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 17
         },
         {
             'destination': 'ElevRef',
             'source': 'VerticalCoordinateReferenceSystemDatumName',
             'alias': 'Elevation Reference Datum',
             'type': 'String',
-            'length': 12
+            'length': 12,
+            'index': 18
         },
         {
             'destination': 'StateCode',
             'source': 'StateCode',
             'alias': 'State Code',
-            'type': 'Short Int'
+            'type': 'Short Int',
+            'index': 19
         },
         {
             'destination': 'CountyCode',
             'source': 'CountyCode',
             'alias': 'County Code',
-            'type': 'Short Int'
+            'type': 'Short Int',
+            'index': 20
         },
         {
             'destination': 'Aquifer',
             'source': 'AquiferName',
             'alias': 'Aquifer',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 21
         },
         {
             'destination': 'FmType',
             'source': 'FormationTypeText',
             'alias': 'Formation Type',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 22
         },
         {
             'destination': 'AquiferType',
             'source': 'AquiferTypeName',
             'alias': 'Aquifer Type',
             'type': 'String',
-            'length': 100
+            'length': 100,
+            'index': 23
         },
         {
             'destination': 'ConstDate',
             'source': 'ConstructionDateText',
             'alias': 'Construction Date',
             'type': 'Date',
-            'length': 8
+            'length': 8,
+            'index': 24
         },
         {
             'destination': 'Depth',
             'source': 'WellDepthMeasure/MeasureValue',
             'alias': 'Well Depth',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 25
         },
         {
             'destination': 'DepthUnit',
             'source': 'WellDepthMeasure/MeasureUnitCode',
             'alias': 'Well Depth Units',
             'type': 'String',
-            'length': 10
+            'length': 10,
+            'index': 26
         },
         {
             'destination': 'HoleDepth',
             'source': 'WellDepthMeasure/MeasureUnitCode',
             'alias': 'Hole Depth',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 27
         },
         {
             'destination': 'HoleDUnit',
             'source': 'WellHoleDepthMeasure/MeasureUnitCode',
             'alias': 'Hole Depth Units',
             'type': 'String',
-            'length': 10
+            'length': 10,
+            'index': 28
         },
         {
             'destination': 'demELEVm',
             'source': None,
             'alias': 'DEM Elevation m',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 29
         },
         {
             'destination': 'DataSource',
             'source': None,
             'alias': 'Database Source',
             'type': 'String',
-            'length': 20
+            'length': 20,
+            'index': 30
         },
         {
             'destination': 'WIN',
             'source': None,
             'alias': 'WR Well Id',
-            'type': 'Long Int'
+            'type': 'Long Int',
+            'index': 31
         }
     ]
 
@@ -395,281 +424,323 @@ class Schema(object):
             'destination': 'AnalysisDate',
             'source': 'AnalysisStartDate',
             'alias': 'Analysis Start Date',
-            'type': 'Date'
+            'type': 'Date',
+            'index': 0
         },
         {
             'destination': 'AnalytMeth',
             'source': 'ResultAnalyticalMethod/MethodName',
             'alias': 'Analytical Method Name',
             'type': 'Text',
-            'length': 150
+            'length': 150,
+            'index': 1
         },
         {
             'destination': 'AnalytMethId',
             'source': 'ResultAnalyticalMethod/MethodIdentifier',
             'alias': 'Analytical Method Id',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 2
         },
         {
             'destination': 'AutoQual',
             'source': None,
             'alias': 'Auto Quality Check',
-            'type': 'Text'
+            'type': 'Text',
+            'index': 3
         },
         {
             'destination': 'CAS_Reg',
             'source': None,
             'alias': 'CAS Registry',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 4
         },
         {
             'destination': 'Chrg',
             'source': None,
             'alias': 'Charge',
-            'type': 'Float'
+            'type': 'Float',
+            'index': 5
         },
         {
             'destination': 'DataSource',
             'source': None,
             'alias': 'Database Source',
-            'type': 'Text'
+            'type': 'Text',
+            'index': 6
         },
         {
             'destination': 'DetectCond',
             'source': 'ResultDetectionConditionText',
             'alias': 'Result Detection Condition',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 7
         },
         {
             'destination': 'IdNum',
             'source': None,
             'alias': 'Unique Id',
-            'type': 'Long Int'
+            'type': 'Long Int',
+            'index': 8
         },
         {
             'destination': 'LabComments',
             'source': 'ResultLaboratoryCommentText',
             'alias': 'Laboratory Comment',
             'type': 'Text',
-            'length': 500
+            'length': 500,
+            'index': 9
         },
         {
             'destination': 'LabName',
             'source': 'LaboratoryName',
             'alias': 'Laboratory Name',
             'type': 'Text',
-            'length': 100
+            'length': 100,
+            'index': 10
         },
         {
             'destination': 'Lat_Y',
             'source': None,
             'alias': 'Latitude',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 11
         },
         {
             'destination': 'LimitType',
             'source': 'DetectionQuantitationLimitTypeName',
             'alias': 'Detection Limit Type',
             'type': 'Text',
-            'length': 250
+            'length': 250,
+            'index': 12
         },
         {
             'destination': 'Lon_X',
             'source': None,
             'alias': 'Longitude',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 13
         },
         {
             'destination': 'MDL',
             'source': 'DetectionQuantitationLimitMeasure/MeasureValue',
             'alias': 'Detection Quantitation Limit',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 14
         },
         {
             'destination': 'MDLUnit',
             'source': 'DetectionQuantitationLimitMeasure/MeasureUnitCode',
             'alias': 'Detection Quantitation Limit Unit',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 15
         },
         {
             'destination': 'MethodDescript',
             'source': 'MethodDescriptionText',
             'alias': 'Method Description',
             'type': 'Text',
-            'length': 100
+            'length': 100,
+            'index': 16
         },
         {
             'destination': 'OrgId',
             'source': 'OrganizationIdentifier',
             'alias': 'Organization Id',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 17
         },
         {
             'destination': 'OrgName',
             'source': 'OrganizationFormalName',
             'alias': 'Organization Name',
             'type': 'Text',
-            'length': 150
+            'length': 150,
+            'index': 18
         },
         {
             'destination': 'Param',
             'source': 'CharacteristicName',
             'alias': 'Parameter',
             'type': 'Text',
-            'length': 500
+            'length': 500,
+            'index': 19
         },
         {
             'destination': 'ParamGroup',
             'source': None,
             'alias': 'Parameter Group',
-            'type': 'Text'
+            'type': 'Text',
+            'index': 20
         },
         {
             'destination': 'ProjectId',
             'source': 'ProjectIdentifier',
             'alias': 'Project Id',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 21
         },
         {
             'destination': 'QualCode',
             'source': 'MeasureQualifierCode',
             'alias': 'Measure Qualifier Code',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 22
         },
         {
             'destination': 'ResultComment',
             'source': 'ResultCommentText',
             'alias': 'Result Comment',
             'type': 'Text',
-            'length': 1500
+            'length': 1500,
+            'index': 23
         },
         {
             'destination': 'ResultStatus',
             'source': 'ResultStatusIdentifier',
             'alias': 'Result Status',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 24
         },
         {
             'destination': 'ResultValue',
             'source': 'ResultMeasureValue',
             'alias': 'Result Measure Value',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 25
         },
         {
             'destination': 'SampComment',
             'source': 'ActivityCommentText',
             'alias': 'Sample Comment',
-            'type': 'Text'
+            'type': 'Text',
+            'index': 26
         },
         {
             'destination': 'SampDepth',
             'source': 'ActivityDepthHeightMeasure/MeasureValue',
             'alias': 'Sample Depth',
-            'type': 'Double'
+            'type': 'Double',
+            'index': 27
         },
         {
             'destination': 'SampDepthRef',
             'source': 'ActivityDepthAltitudeReferencePointText',
             'alias': 'Sample Depth Reference',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 28
         },
         {
             'destination': 'SampDepthU',
             'source': 'ActivityDepthHeightMeasure/MeasureUnitCode',
             'alias': 'Sample Depth Units',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 29
         },
         {
             'destination': 'SampEquip',
             'source': 'SampleCollectionEquipmentName',
             'alias': 'Collection Equipment',
             'type': 'Text',
-            'length': 75
+            'length': 75,
+            'index': 30
         },
         {
             'destination': 'SampFrac',
             'source': 'ResultSampleFractionText',
             'alias': 'Result Sample Fraction',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 31
         },
         {
             'destination': 'SampleDate',
             'source': 'ActivityStartDate',
             'alias': 'Sample Date',
-            'type': 'Date'
+            'type': 'Date',
+            'index': 32
         },
         {
             'destination': 'SampleTime',
             'source': 'ActivityStartTime/Time',
             'alias': 'Sample Time',
-            'type': 'Time'
+            'type': 'Time',
+            'index': 33
         },
         {
             'destination': 'SampleId',
             'source': 'ActivityIdentifier',
             'alias': 'Sample Id',
             'type': 'Text',
-            'length': 100
+            'length': 100,
+            'index': 34
         },
         {
             'destination': 'SampMedia',
             'source': 'ActivityMediaSubdivisionName',
             'alias': 'Sample Media',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 35
         },
         {
             'destination': 'SampMeth',
             'source': 'SampleCollectionMethod/MethodIdentifier',
             'alias': 'Collection Method',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 36
         },
         {
             'destination': 'SampMethName',
             'source': 'SampleCollectionMethod/MethodName',
             'alias': 'Collection Method Name',
             'type': 'Text',
-            'length': 75
+            'length': 75,
+            'index': 37
         },
         {
             'destination': 'SampType',
             'source': 'ActivityTypeCode',
             'alias': 'Sample Type',
             'type': 'Text',
-            'length': 75
+            'length': 75,
+            'index': 38
         },
         {
             'destination': 'StationId',
             'source': 'MonitoringLocationIdentifier',
             'alias': 'Station Id',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 39
         },
         {
             'destination': 'Unit',
             'source': 'ResultMeasure/MeasureUnitCode',
             'alias': 'Result Measure Unit',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 40
         },
         {
             'destination': 'USGSPCode',
             'source': 'USGSPCode',
             'alias': 'USGS P Code',
             'type': 'Text',
-            'length': 50
+            'length': 50,
+            'index': 41
         }
     ]
 
@@ -697,48 +768,6 @@ class Schema(object):
 
         return self.required_schema - input_schema
 
-        class Field(object):
-
-            """a field model for taking the data in gdoc
-            and transform it into the data for the addfield gp tool"""
-
-            #: the field name to add to the feature class
-            field_name = None
-
-            #: the field type
-            field_type = None
-
-            #: the length of the field. Only useful for type String
-            field_length = None
-
-            #: the fields alias name
-            field_alias = None
-
-            def __init__(self, arg):
-                """ args should be a set of field options
-                (column, alias, type, ?length)"""
-
-                self.field_name = arg[0]
-                self.field_alias = arg[1]
-                self.field_type = self.etl_type(arg[2])
-
-                if self.field_type == 'TEXT':
-                    self.field_length = arg[3]
-
-            def etl_type(self, field_type):
-                """Turn schema types into acpy fields types"""
-
-                # arcpy wants field types upper case
-                field_type = field_type.upper()
-
-                # fields names are pretty similar if you remove int
-                field_type.strip('INT')
-
-                if field_type == 'STRING':
-                    return 'TEXT'
-                else:
-                    return field_type
-
     @property
     def station(self):
         return self.station_gdoc_schema
@@ -746,3 +775,46 @@ class Schema(object):
     @property
     def result(self):
         return self.result_gdoc_schema
+
+
+class Field(object):
+
+    """a field model for taking the data in gdoc
+    and transform it into the data for the addfield gp tool"""
+
+    #: the field name to add to the feature class
+    field_name = None
+
+    #: the field type
+    field_type = None
+
+    #: the length of the field. Only useful for type String
+    field_length = None
+
+    #: the fields alias name
+    field_alias = None
+
+    def __init__(self, arg):
+        """ args should be a set of field options
+        (column, alias, type, ?length)"""
+
+        self.field_name = arg[0]
+        self.field_alias = arg[1]
+        self.field_type = self.etl_type(arg[2])
+
+        if self.field_type == 'TEXT':
+            self.field_length = arg[3]
+
+    def etl_type(self, field_type):
+        """Turn schema types into acpy fields types"""
+
+        # arcpy wants field types upper case
+        field_type = field_type.upper()
+
+        # fields names are pretty similar if you remove int
+        field_type.strip('INT')
+
+        if field_type == 'STRING':
+            return 'TEXT'
+        else:
+            return field_type
