@@ -67,7 +67,6 @@ class Wqp(Program):
     def field_lengths(self, folder, type):
         results = {
             'AnalysisStartDate': ['AnalysisDate', 0],
-            'ResultAnalyticalMethod/MethodIdentifierContext': ['AnalytContext', 0],
             'ResultAnalyticalMethod/MethodName': ['AnalytMeth', 0],
             'ResultAnalyticalMethod/MethodIdentifier': ['AnalytMethId', 0],
             'ResultDetectionConditionText': ['DetectCond', 0],
@@ -86,7 +85,6 @@ class Wqp(Program):
             'ResultStatusIdentifier': ['ResultStatus', 0],
             'ResultMeasureValue': ['ResultValue', 0],
             'ActivityCommentText': ['SampComment', 0],
-            'SampleCollectionMethod/MethodIdentifierContext': ['SampContext', 0],
             'ActivityDepthHeightMeasure/MeasureValue': ['SampDepth', 0],
             'ActivityDepthAltitudeReferencePointText': ['SampDepthRef', 0],
             'ActivityDepthHeightMeasure/MeasureUnitCode': ['SampDepthU', 0],
@@ -95,8 +93,7 @@ class Wqp(Program):
             'ActivityStartDate': ['SampleDate', 0],
             'ActivityStartTime/Time': ['SampleTime', 0],
             'ActivityIdentifier': ['SampleId', 0],
-            'ActivityMediaName': ['SampMedia', 0],
-            'ActivityMediaSubdivisionName': ['SampMediaSub', 0],
+            'ActivityMediaSubdivisionName': ['SampMedia', 0],
             'SampleCollectionMethod/MethodIdentifier': ['SampMeth', 0],
             'SampleCollectionMethod/MethodName': ['SampMethName', 0],
             'ActivityTypeCode': ['SampType', 0],
