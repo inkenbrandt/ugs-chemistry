@@ -738,3 +738,11 @@ class Schema(object):
                     return 'TEXT'
                 else:
                     return field_type
+
+    @property
+    def station(self):
+        return self.station_gdoc_schema
+
+    @property
+    def result(self):
+        return self.result_gdoc_schema

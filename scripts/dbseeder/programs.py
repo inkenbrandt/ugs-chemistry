@@ -3,7 +3,7 @@ import csv
 import cx_Oracle
 import glob
 import os
-from models import Results, Stations, SdwisResults, SdwisStations
+from models import Results, Stations, SdwisResults, SdwisStations, Schema
 from services import Project, WebQuery
 
 
@@ -64,80 +64,29 @@ class Wqp(Program):
 
         return reader
 
-    def field_lengths(self, folder, type):
-        results = {
-            'AnalysisStartDate': ['AnalysisDate', 0],
-            'ResultAnalyticalMethod/MethodName': ['AnalytMeth', 0],
-            'ResultAnalyticalMethod/MethodIdentifier': ['AnalytMethId', 0],
-            'ResultDetectionConditionText': ['DetectCond', 0],
-            'ResultLaboratoryCommentText': ['LabComments', 0],
-            'LaboratoryName': ['LabName', 0],
-            'DetectionQuantitationLimitTypeName': ['LimitType', 0],
-            'DetectionQuantitationLimitMeasure/MeasureValue': ['MDL', 0],
-            'DetectionQuantitationLimitMeasure/MeasureUnitCode': ['MDLUnit', 0],
-            'MethodDescriptionText': ['MethodDescript', 0],
-            'OrganizationIdentifier': ['OrgId', 0],
-            'OrganizationFormalName': ['OrgName', 0],
-            'CharacteristicName': ['Param', 0],
-            'ProjectIdentifier': ['ProjectId', 0],
-            'MeasureQualifierCode': ['QualCode', 0],
-            'ResultCommentText': ['ResultComment', 0],
-            'ResultStatusIdentifier': ['ResultStatus', 0],
-            'ResultMeasureValue': ['ResultValue', 0],
-            'ActivityCommentText': ['SampComment', 0],
-            'ActivityDepthHeightMeasure/MeasureValue': ['SampDepth', 0],
-            'ActivityDepthAltitudeReferencePointText': ['SampDepthRef', 0],
-            'ActivityDepthHeightMeasure/MeasureUnitCode': ['SampDepthU', 0],
-            'SampleCollectionEquipmentName': ['SampEquip', 0],
-            'ResultSampleFractionText': ['SampFrac', 0],
-            'ActivityStartDate': ['SampleDate', 0],
-            'ActivityStartTime/Time': ['SampleTime', 0],
-            'ActivityIdentifier': ['SampleId', 0],
-            'ActivityMediaSubdivisionName': ['SampMedia', 0],
-            'SampleCollectionMethod/MethodIdentifier': ['SampMeth', 0],
-            'SampleCollectionMethod/MethodName': ['SampMethName', 0],
-            'ActivityTypeCode': ['SampType', 0],
-            'MonitoringLocationIdentifier': ['StationId', 0],
-            'ResultMeasure/MeasureUnitCode': ['Unit', 0],
-            'USGSPCode': ['USGSPCode', 0]
-        }
+    def _build_field_length_structure(self, schema):
+        """turns the schema doc into a structure that can count fields lengths
+            dict[source column] = array[destination column, count]
+        """
+        results = {}
 
-        stations = {
-            'OrganizationIdentifier': ['OrgID', 0],
-            'OrganizationFormalName': ['OrgName', 0],
-            'MonitoringLocationIdentifier': ['StationsID', 0],
-            'MonitoringLocationName': ['StationName', 0],
-            'MonitoringLocationTypeName': ['StationType', 0],
-            'MonitoringLocationDescriptionText': ['StationComment', 0],
-            'HUCEightDigitCode': ['HUC8', 0],
-            'LatitudeMeasure': ['Lat_Y', 0],
-            'LongitudeMeasure': ['Lon_X', 0],
-            'HorizontalAccuracyMeasure/MeasureValue': ['HorAcc', 0],
-            'HorizontalAccuracyMeasure/MeasureUnitCode': ['HorAccUnit', 0],
-            'HorizontalCollectionMethodName': ['HorCollMeth', 0],
-            'HorizontalCoordinateReferenceSystemDatumName': ['HorRef', 0],
-            'VerticalMeasure/MeasureValue': ['Elev', 0],
-            'VerticalMeasure/MeasureUnitCode': ['ElevUnit', 0],
-            'VerticalAccuracyMeasure/MeasureValue': ['ElevAcc', 0],
-            'VerticalAccuracyMeasure/MeasureUnitCode': ['ElevAccUnit', 0],
-            'VerticalCollectionMethodName': ['ElevMeth', 0],
-            'VerticalCoordinateReferenceSystemDatumName': ['ElevRef', 0],
-            'StateCode': ['StateCode', 0],
-            'CountyCode': ['CountyCode', 0],
-            'AquiferName': ['Aquifer', 0],
-            'FormationTypeText': ['FmType', 0],
-            'AquiferTypeName': ['AquiferType', 0],
-            'ConstructionDateText': ['ConstDate', 0],
-            'WellDepthMeasure/MeasureValue': ['Depth', 0],
-            'WellDepthMeasure/MeasureUnitCode': ['DepthUnit', 0],
-            'WellHoleDepthMeasure/MeasureValue': ['HoleDepth', 0],
-            'WellHoleDepthMeasure/MeasureUnitCode': ['HoleDUnit', 0]
-        }
+        for column in schema:
+            if column['source'] is None and (
+                    column['type'].lower() != 'text' or
+                    column['type'].lower() != 'string'):
+                continue
+
+            results[column['source']] = [column['destination'], 0]
+
+        return results
+
+    def field_lengths(self, folder, type):
+        schema = Schema()
 
         if type == 'Stations':
-            maps = stations
+            maps = self._build_field_length_structure(schema.station)
         elif type == 'Results':
-            maps = results
+            maps = self._build_field_length_structure(schema.result)
 
         for csv_file in self._csvs_on_disk(folder, type):
             print 'processing {}'.format(csv_file)

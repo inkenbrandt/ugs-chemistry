@@ -63,8 +63,12 @@ class Seeder(object):
     def update(self):
         pass
 
-    def field_lengths(self):
-        pass
+    def field_lengths(self, types):
+        if types[0].lower() == 'wqp':
+            seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
+            program = Wqp(self.location, arcpy.da.InsertCursor)
+
+            return program.field_lengths(seed_data, types[1])
 
     def seed(self, folder, types):
         """
@@ -105,12 +109,14 @@ if __name__ == '__main__':
         '--update', action='store_true', help='update the gdb from a web service call')
     parser.add_argument(
         '--seed', nargs='*', help='seed the gdb from csv\'s on disk')
-    parser.add_argument('--length', action='store_true',
-                        help='get the max field sizes form files on disk')
-    parser.add_argument('--relate', action='store_true',
-                        help='creates the releationship class between stations and results')
+    parser.add_argument(
+        '--length', nargs='*', help='get the max field sizes form files on disk. --length program featureclass')
+    parser.add_argument(
+        '--relate', action='store_true',
+        help='creates the releationship class between stations and results')
 
     args = parser.parse_args()
+
     location = 'c:\\temp'
     gdb = 'sdwis.gdb'
     seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
@@ -121,9 +127,7 @@ if __name__ == '__main__':
             pass
         elif args.length:
             seeder = Seeder(location, gdb)
-            maps = seeder.field_lengths(
-                seed_data,
-                'Stations')
+            maps = seeder.field_lengths(args.length)
 
             for key in maps.keys():
                 print '{}'.format(maps[key])
