@@ -21,6 +21,15 @@ class Table(object):
             value = str(row[self.schema_map[key]]).strip()
             self._row.append(value)
 
+    def _build_schema_map(self, schema):
+        results_schema = schema
+        schema_index_items = [
+            (schema['destination'], schema['source'], schema['index'])
+            for schema in results_schema]
+
+        self.schema_map = OrderedDict(
+            sorted(schema_index_items, key=lambda t: t[2]))
+
     @property
     def row(self):
         return self._row
@@ -30,87 +39,27 @@ class Results(Table):
 
     """ORM mapping to station schema to Results table"""
 
-    schema_map = OrderedDict([
-        ('AnalysisDate', 'AnalysisStartDate'),
-        ('AnalytContext', 'ResultAnalyticalMethod/MethodIdentifierContext'),
-        ('AnalytMeth', 'ResultAnalyticalMethod/MethodName'),
-        ('AnalytMethId', 'ResultAnalyticalMethod/MethodIdentifier'),
-        ('DetectCond', 'ResultDetectionConditionText'),
-        ('LabComments', 'ResultLaboratoryCommentText'),
-        ('LabName', 'LaboratoryName'),
-        ('LimitType', 'DetectionQuantitationLimitTypeName'),
-        ('MDL', 'DetectionQuantitationLimitMeasure/MeasureValue'),
-        ('MDLUnit', 'DetectionQuantitationLimitMeasure/MeasureUnitCode'),
-        ('MethodDescript', 'MethodDescriptionText'),
-        ('OrgId', 'OrganizationIdentifier'),
-        ('OrgName', 'OrganizationFormalName'),
-        ('Param', 'CharacteristicName'),
-        ('ProjectId', 'ProjectIdentifier'),
-        ('QualCode', 'MeasureQualifierCode'),
-        ('ResultComment', 'ResultCommentText'),
-        ('ResultStatus', 'ResultStatusIdentifier'),
-        ('ResultValue', 'ResultMeasureValue'),
-        ('SampComment', 'ActivityCommentText'),
-        ('SampContext', 'SampleCollectionMethod/MethodIdentifierContext'),
-        ('SampDepth', 'ActivityDepthHeightMeasure/MeasureValue'),
-        ('SampDepthRef', 'ActivityDepthAltitudeReferencePointText'),
-        ('SampDepthU', 'ActivityDepthHeightMeasure/MeasureUnitCode'),
-        ('SampEquip', 'SampleCollectionEquipmentName'),
-        ('SampFrac', 'ResultSampleFractionText'),
-        ('SampleDate', 'ActivityStartDate'),
-        ('SampleTime', 'ActivityStartTime/Time'),
-        ('SampleId', 'ActivityIdentifier'),
-        ('SampMedia', 'ActivityMediaName'),
-        ('SampMediaSub', 'ActivityMediaSubdivisionName'),
-        ('SampMeth', 'SampleCollectionMethod/MethodIdentifier'),
-        ('SampMethName', 'SampleCollectionMethod/MethodName'),
-        ('SampType', 'ActivityTypeCode'),
-        ('StationId', 'MonitoringLocationIdentifier'),
-        ('Unit', 'ResultMeasure/MeasureUnitCode'),
-        ('USGSPCode', 'USGSPCode')
-    ])
+    def __init(self):
+        self._build_schema_map(Schema().result)
+
+    schema_map = None
 
 
 class Stations(Table):
 
     """ORM mapping from chemistry schema to Stations feature class"""
 
-    schema_map = OrderedDict([
-        ('OrgId', 'OrganizationIdentifier'),
-        ('OrgName', 'OrganizationFormalName'),
-        ('StationId', 'MonitoringLocationIdentifier'),
-        ('StationName', 'MonitoringLocationName'),
-        ('StationType', 'MonitoringLocationTypeName'),
-        ('StationComment', 'MonitoringLocationDescriptionText'),
-        ('HUC8', 'HUCEightDigitCode'),
-        ('Lat_Y', 'LatitudeMeasure'),
-        ('Lon_X', 'LongitudeMeasure'),
-        ('HorAcc', 'HorizontalAccuracyMeasure/MeasureValue'),
-        ('HorAccUnit', 'HorizontalAccuracyMeasure/MeasureUnitCode'),
-        ('HorCollMeth', 'HorizontalCollectionMethodName'),
-        ('HorRef', 'HorizontalCoordinateReferenceSystemDatumName'),
-        ('Elev', 'VerticalMeasure/MeasureValue'),
-        ('ElevUnit', 'VerticalMeasure/MeasureUnitCode'),
-        ('ElevAcc', 'VerticalAccuracyMeasure/MeasureValue'),
-        ('ElevAccUnit', 'VerticalAccuracyMeasure/MeasureUnitCode'),
-        ('ElevMeth', 'VerticalCollectionMethodName'),
-        ('ElevRef', 'VerticalCoordinateReferenceSystemDatumName'),
-        ('StateCode', 'StateCode'),
-        ('CountyCode', 'CountyCode'),
-        ('Aquifer', 'AquiferName'),
-        ('FmType', 'FormationTypeText'),
-        ('AquiferType', 'AquiferTypeName'),
-        ('ConstDate', 'ConstructionDateText'),
-        ('Depth', 'WellDepthMeasure/MeasureValue'),
-        ('DepthUnit', 'WellDepthMeasure/MeasureUnitCode'),
-        ('HoleDepth', 'WellHoleDepthMeasure/MeasureValue'),
-        ('HoleDUnit', 'WellHoleDepthMeasure/MeasureUnitCode')
-    ])
+    def __init(self):
+        self._build_schema_map(Schema().station)
+
+    schema_map = None
 
 
 class Sdwis(object):
+
     """base class for building sdwis schema map"""
-    def _build_index_map(self, schema):
+
+    def _build_schema_map(self, schema):
         results_schema = schema
         schema_index_items = [
             (schema['destination'], schema['index'])
@@ -124,7 +73,7 @@ class SdwisResults(Sdwis):
 
     def __init__(self, row):
 
-        self._build_index_map(Schema().result)
+        self._build_schema_map(Schema().result)
 
         self.row = []
 
@@ -139,7 +88,7 @@ class SdwisStations(object):
 
     def __init__(self, row):
 
-        self._build_index_map(Schema().station)
+        self._build_schema_map(Schema().station)
 
         self.row = []
 
