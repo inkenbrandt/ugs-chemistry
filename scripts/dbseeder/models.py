@@ -6,8 +6,8 @@ from collections import OrderedDict
 
 class TableInfo(object):
 
-    def __init__(self, template, name):
-        self.template = os.path.join(template, name)
+    def __init__(self, location, name):
+        self.location = os.path.join(location, name)
         self.name = name
 
 
@@ -39,7 +39,7 @@ class Results(Table):
 
     """ORM mapping to station schema to Results table"""
 
-    def __init(self):
+    def __init__(self):
         self._build_schema_map(Schema().result)
 
     schema_map = None
@@ -49,7 +49,7 @@ class Stations(Table):
 
     """ORM mapping from chemistry schema to Stations feature class"""
 
-    def __init(self):
+    def __init__(self):
         self._build_schema_map(Schema().station)
 
     schema_map = None
@@ -84,7 +84,7 @@ class SdwisResults(Sdwis):
     schema_index_map = None
 
 
-class SdwisStations(object):
+class SdwisStations(Sdwis):
 
     def __init__(self, row):
 
@@ -696,26 +696,26 @@ class Schema(object):
     def __init__(self):
         pass
 
-    def validate_schema(self, file_location):
-        if self.get_extension(file_location) != ".shp":
-            file_location = self.get_featureclass_from_fgdb(file_location)
+    # def validate_schema(self, file_location):
+    #     if self.get_extension(file_location) != ".shp":
+    #         file_location = self.get_featureclass_from_fgdb(file_location)
 
-        if file_location is None:
-            return False
+    #     if file_location is None:
+    #         return False
 
-        properties = arcpy.Describe(file_location)
+    #     properties = arcpy.Describe(file_location)
 
-        input_schema = set([])
+    #     input_schema = set([])
 
-        for field in properties.fields:
-            if field.type == 'String':
-                input_schema.add((field.name, field.type, field.length))
-            elif field.type == 'Date' or field.type == 'Geometry':
-                input_schema.add((field.name, field.type))
-            elif field.type == 'Double':
-                input_schema.add((field.name, field.type))
+    #     for field in properties.fields:
+    #         if field.type == 'String':
+    #             input_schema.add((field.name, field.type, field.length))
+    #         elif field.type == 'Date' or field.type == 'Geometry':
+    #             input_schema.add((field.name, field.type))
+    #         elif field.type == 'Double':
+    #             input_schema.add((field.name, field.type))
 
-        return self.required_schema - input_schema
+    #     return self.required_schema - input_schema
 
     @property
     def station(self):
@@ -734,25 +734,33 @@ class Field(object):
     #: the field name to add to the feature class
     field_name = None
 
+    #: the fields alias name
+    field_alias = None
+
     #: the field type
     field_type = None
 
     #: the length of the field. Only useful for type String
     field_length = None
 
-    #: the fields alias name
-    field_alias = None
+    #: the field length default if none is set
+    length_default = 50
 
     def __init__(self, arg):
         """ args should be a set of field options
         (column, alias, type, ?length)"""
 
-        self.field_name = arg[0]
-        self.field_alias = arg[1]
-        self.field_type = self.etl_type(arg[2])
+        self.field_name = arg['destination']
+        self.field_alias = arg['alias']
+        self.field_type = self.etl_type(arg['type'])
 
         if self.field_type == 'TEXT':
-            self.field_length = arg[3]
+            try:
+                self.field_length = arg['length']
+            except KeyError:
+                print ('{} is of type text and '.format(self.field_name) +
+                       'has no limit set.' +
+                       ' Defaulting to {}'.format(self.length_default))
 
     def etl_type(self, field_type):
         """Turn schema types into acpy fields types"""
@@ -761,9 +769,11 @@ class Field(object):
         field_type = field_type.upper()
 
         # fields names are pretty similar if you remove int
-        field_type.strip('INT')
+        field_type = field_type.replace('INT', '').strip()
 
         if field_type == 'STRING':
             return 'TEXT'
+        elif field_type == 'TIME':
+            return 'DATE'
         else:
             return field_type

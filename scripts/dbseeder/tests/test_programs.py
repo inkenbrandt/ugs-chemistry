@@ -34,14 +34,7 @@ class TestWqpProgram(unittest.TestCase):
         folder = os.path.join(self.location, self.gdb_name)
 
         seed = Seeder(self.location, self.gdb_name)
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
 
-        seed.template_location = templates
         seed._create_gdb()
         seed._create_feature_classes(['Results', 'Stations'])
 
@@ -150,14 +143,7 @@ class TestSdwisProgram(unittest.TestCase):
         self.folder = os.path.join(self.location, self.gdb_name)
 
         # seed = Seeder(self.location, self.gdb_name)
-        # templates = os.path.join(
-        #     os.getcwd(),
-        #     'dbseeder',
-        #     'templates',
-        #     'Templates.gdb'
-        # )
 
-        # seed.template_location = templates
         # seed._create_gdb()
         # seed._create_feature_classes(['Results', 'Stations'])
 
@@ -167,11 +153,11 @@ class TestSdwisProgram(unittest.TestCase):
         self.assertIsNotNone(self.patient)
 
     def test_query(self):
-      data = self.patient._query(self.patient._result_query, 2)
-      for item in data:
-        etl = SdwisResults(item)
+        data = self.patient._query(self.patient._result_query, 2)
+        for item in data:
+            etl = SdwisResults(item)
 
-        self.assertIsNotNone(etl.row)
+            self.assertIsNotNone(etl.row)
 
     def test_insert_rows_result(self):
         one_row_from_query = [(None,

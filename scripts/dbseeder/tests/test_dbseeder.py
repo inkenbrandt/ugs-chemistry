@@ -38,18 +38,10 @@ class TestDbSeeder(unittest.TestCase):
         self.patient._create_gdb()
 
         gdb = os.path.join(self.location, self.gdb_name)
-        assert os.path.exists(gdb)
+
+        self.assertTrue(os.path.exists(gdb))
 
     def test_fc_creation(self):
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
-
-        self.patient.template_location = templates
-        print 'templates: {}'.format(self.patient.template_location)
         self.patient._create_gdb()
         self.patient._create_feature_classes(['Stations', 'Results'])
 
@@ -65,14 +57,6 @@ class TestDbSeeder(unittest.TestCase):
 
     def _test_seed(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
-
-        self.patient.template_location = templates
         self.patient.seed(folder)
 
         arcpy.env.workspace = self.patient.location
