@@ -179,11 +179,7 @@ class TestSdwisProgram(unittest.TestCase):
                                None,
                                3908822)]
 
-        try:
-            self.patient._insert_rows(one_row_from_query, 'Results')
-        except Exception as ex:
-            print ex
-            raise ex
+        self.patient._insert_rows(one_row_from_query, 'Results')
 
         table = os.path.join(self.folder, 'Results')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
@@ -206,7 +202,7 @@ class TestSdwisProgram(unittest.TestCase):
                                0,
                                None)]
 
-        self.patient._insert_rows(one_row_from_query, 'Stations', 1)
+        self.patient._insert_rows(one_row_from_query, 'Stations')
 
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))

@@ -1,5 +1,6 @@
 """module containing project models"""
 
+import datetime
 import os
 from collections import OrderedDict
 from dateutil.parser import parse
@@ -72,7 +73,6 @@ class Results(Table):
     """ORM mapping to station schema to Results table"""
 
     def __init__(self, row):
-        print 'Results Ctor'
         self.schema_map = self._build_schema_map(Schema().result)
         super(Results, self).__init__(row)
 
@@ -94,44 +94,131 @@ class Sdwis(object):
 
     """base class for building sdwis schema map"""
 
+    def __init__(self, row):
+        """
+            this base class takes a csv row
+            it then pulls all of the values out via the schema map
+            and creates a row object that is ordered correctly for
+            inserting into the feature class
+        """
+
+        #: probably should refactor this out.
+        #: it's here to get the schema map from an empty object
+        if row is None or len(row) < 1:
+            return
+
+        self._row = []
+
+        for key in self.schema_map.keys():
+            #: the key index maps to the column index in the feature class
+            etl_info = self.schema_map[key]
+            destination_field_name = etl_info['destination']
+            destination_field_type = Field(etl_info).field_type
+
+            #: not all of the programs have the same schema
+            if destination_field_name not in self.fields:
+                self._row.append(None)
+                continue
+
+            destination_value = row[self.fields[destination_field_name]]
+            if destination_value is None:
+                self._row.append(None)
+                continue
+
+            try:
+                destination_value = destination_value.strip()
+            except:
+                pass
+
+            if destination_field_type == 'TEXT':
+                cast = str
+            elif destination_field_type == 'LONG':
+                cast = long
+            elif destination_field_type == 'SHORT':
+                cast = int
+            elif (destination_field_type == 'FLOAT' or
+                  destination_field_type == 'DOUBLE'):
+                cast = float
+            elif destination_field_type == 'DATE':
+                if isinstance(destination_value, datetime.datetime):
+                    cast = lambda x: x
+                else:
+                    cast = parse
+
+            value = cast(destination_value)
+
+            self._row.append(value)
+
     def _build_schema_map(self, schema):
         results_schema = schema
-        schema_index_items = [
-            (schema['destination'], schema['index'])
-            for schema in results_schema]
+        schema_index_items = {}
 
-        return OrderedDict(
-            sorted(schema_index_items, key=lambda t: t[1]))
+        for item in results_schema:
+            schema_index_items.update({item['index']: item})
+
+        return OrderedDict(schema_index_items)
+
+    @property
+    def row(self):
+        return self._row
 
 
-class SdwisResults(Table):
+class SdwisResults(Sdwis):
+
+    fields = OrderedDict([
+        ('AnalysisDate', 0),
+        ('LabName', 1),
+        ('MDL', 2),
+        ('MDLUnit', 3),
+        ('OrgId', 4),
+        ('OrgName', 5),
+        ('Param', 6),
+        ('ResultValue', 7),
+        ('SampleDate', 8),
+        ('SampleTime', 9),
+        ('SampleId', 10),
+        ('SampType', 11),
+        ('StationId', 12),
+        ('Unit', 13),
+        ('Lat_Y', 14),
+        ('Lon_X', 15),
+        ('CAS_Reg', 16),
+        ('Id_Num', 17)
+    ])
 
     def __init__(self, row):
-
-        self.schema_index_map = self._build_schema_map(Schema().result)
         self.schema_map = self._build_schema_map(Schema().result)
         super(SdwisResults, self).__init__(row)
 
-        self.row = []
-
-        for item in row:
-            value = str(item).strip()
-            self.row.append(value)
-
-    schema_index_map = None
+    schema_map = None
 
 
 class SdwisStations(Sdwis):
 
+    fields = OrderedDict([
+        ('OrgId', 0),
+        ('OrgName', 1),
+        ('StationId', 2),
+        ('StationName', 3),
+        ('StationType', 4),
+        ('Lat_Y', 5),
+        ('Lon_X', 6),
+        ('HorAcc', 7),
+        ('HorCollMeth', 8),
+        ('HorRef', 9),
+        ('Elev', 10),
+        ('ElevAcc', 11),
+        ('ElevMeth', 12),
+        ('ElevRef', 13),
+        ('Depth', 14),
+        ('DepthUnit', 15)
+    ])
+
     def __init__(self, row):
+        self.schema_map = self._build_schema_map(Schema().result)
+        super(SdwisStations, self).__init__(row)
 
-        self.schema_index_map = self._build_schema_map(Schema().station)
-
-        self.row = []
-
-        for item in row:
-            value = str(item).strip()
-            self.row.append(value)
+    schema_map = None
 
 
 class Schema(object):
