@@ -13,6 +13,9 @@ class Program(object):
         self.location = location
         self.InsertCursor = InsertCursor
 
+    def _get_fields(self, schema_map):
+        return [schema_map[item]['destination'] for item in schema_map]
+
 
 class Wqp(Program):
 
@@ -253,7 +256,8 @@ class Sdwis(Program):
         elif feature_class == 'Stations':
             Type = SdwisStations
 
-        fields = Type.schema_index_map.keys()
+        fields = self._get_fields(Type(None).schema_map)
+
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
@@ -263,8 +267,8 @@ class Sdwis(Program):
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
-                    lat = row[etl.schema_index_map['Lat_Y']]
-                    lon = row[etl.schema_index_map['Lon_X']]
+                    lat = row[etl.schema_map['Lat_Y']]
+                    lon = row[etl.schema_map['Lon_X']]
 
                     try:
                         x, y = Project().to_utm(lon, lat)
