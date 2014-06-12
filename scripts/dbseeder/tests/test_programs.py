@@ -137,15 +137,15 @@ class TestSdwisProgram(unittest.TestCase):
         self.location = os.path.join(self.parent_folder, 'temp_tests')
         self.gdb_name = 'sdwis.gdb'
 
-        # if not os.path.exists(self.location):
-        #     os.makedirs(self.location)
+        if not os.path.exists(self.location):
+            os.makedirs(self.location)
 
         self.folder = os.path.join(self.location, self.gdb_name)
 
-        # seed = Seeder(self.location, self.gdb_name)
+        seed = Seeder(self.location, self.gdb_name)
 
-        # seed._create_gdb()
-        # seed._create_feature_classes(['Results', 'Stations'])
+        seed._create_gdb()
+        seed._create_feature_classes(['Results', 'Stations'])
 
         self.patient = Sdwis(self.folder, InsertCursor)
 
@@ -179,7 +179,11 @@ class TestSdwisProgram(unittest.TestCase):
                                None,
                                3908822)]
 
-        self.patient._insert_rows(one_row_from_query, 'Results', 1)
+        try:
+            self.patient._insert_rows(one_row_from_query, 'Results')
+        except Exception as ex:
+            print ex
+            raise ex
 
         table = os.path.join(self.folder, 'Results')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
