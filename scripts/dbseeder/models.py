@@ -2,6 +2,7 @@
 
 import os
 from collections import OrderedDict
+from dateutil.parser import parse
 
 
 class TableInfo(object):
@@ -14,21 +15,52 @@ class TableInfo(object):
 class Table(object):
 
     def __init__(self, row):
+        """
+            this base class takes a csv row
+            it then pulls all of the values out via the schema map
+            and creates a row object that is ordered correctly for
+            inserting into the feature class
+        """
 
         self._row = []
 
-        for key in self.schema_map:
-            value = str(row[self.schema_map[key]]).strip()
+        for key in self.schema_map.keys():
+            #: the key index maps to the column index in the feature class
+            etl_info = self.schema_map[key]
+            source_field_name = etl_info['source']
+            destination_field_type = Field(etl_info).field_type
+
+            #: not all of the programs have the same schema
+            if source_field_name not in row:
+                self._row.append(None)
+                continue
+
+            destination_value = row[source_field_name].strip()
+
+            if destination_field_type == 'TEXT':
+                cast = str
+            elif destination_field_type == 'LONG':
+                cast = long
+            elif destination_field_type == 'SHORT':
+                cast = int
+            elif (destination_field_type == 'FLOAT' or
+                  destination_field_type == 'DOUBLE'):
+                cast = float
+            elif destination_field_type == 'DATE':
+                cast = parse
+
+            value = cast(destination_value)
+
             self._row.append(value)
 
     def _build_schema_map(self, schema):
         results_schema = schema
-        schema_index_items = [
-            (schema['destination'], schema['source'], schema['index'])
-            for schema in results_schema]
+        schema_index_items = {}
 
-        self.schema_map = OrderedDict(
-            sorted(schema_index_items, key=lambda t: t[2]))
+        for item in results_schema:
+            schema_index_items.update({item['index']: item})
+
+        return OrderedDict(schema_index_items)
 
     @property
     def row(self):
@@ -39,8 +71,10 @@ class Results(Table):
 
     """ORM mapping to station schema to Results table"""
 
-    def __init__(self):
-        self._build_schema_map(Schema().result)
+    def __init__(self, row):
+        print 'Results Ctor'
+        self.schema_map = self._build_schema_map(Schema().result)
+        super(Results, self).__init__(row)
 
     schema_map = None
 
@@ -49,8 +83,9 @@ class Stations(Table):
 
     """ORM mapping from chemistry schema to Stations feature class"""
 
-    def __init__(self):
-        self._build_schema_map(Schema().station)
+    def __init__(self, row):
+        self.schema_map = self._build_schema_map(Schema().station)
+        super(Stations, self).__init__(row)
 
     schema_map = None
 
@@ -65,15 +100,17 @@ class Sdwis(object):
             (schema['destination'], schema['index'])
             for schema in results_schema]
 
-        self.schema_index_map = OrderedDict(
+        return OrderedDict(
             sorted(schema_index_items, key=lambda t: t[1]))
 
 
-class SdwisResults(Sdwis):
+class SdwisResults(Table):
 
     def __init__(self, row):
 
-        self._build_schema_map(Schema().result)
+        self.schema_index_map = self._build_schema_map(Schema().result)
+        self.schema_map = self._build_schema_map(Schema().result)
+        super(SdwisResults, self).__init__(row)
 
         self.row = []
 
@@ -88,32 +125,13 @@ class SdwisStations(Sdwis):
 
     def __init__(self, row):
 
-        self._build_schema_map(Schema().station)
+        self.schema_index_map = self._build_schema_map(Schema().station)
 
         self.row = []
 
         for item in row:
             value = str(item).strip()
             self.row.append(value)
-
-    schema_index_map = OrderedDict([
-        ('OrgId', 0),
-        ('OrgName', 1),
-        ('StationId', 2),
-        ('StationName', 3),
-        ('StationType', 4),
-        ('Lat_Y', 5),
-        ('Lon_X', 6),
-        ('HorAcc', 7),
-        ('HorCollMeth', 8),
-        ('HorRef', 9),
-        ('Elev', 10),
-        ('ElevAcc', 11),
-        ('ElevMeth', 12),
-        ('ElevRef', 13),
-        ('Depth', 14),
-        ('DepthUnit', 15)
-    ])
 
 
 class Schema(object):
