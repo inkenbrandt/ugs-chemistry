@@ -1,9 +1,8 @@
 """module containing project models"""
 
-import datetime
 import os
 from collections import OrderedDict
-from dateutil.parser import parse
+from services import Caster
 
 
 class TableInfo(object):
@@ -37,20 +36,7 @@ class Table(object):
                 continue
 
             destination_value = row[source_field_name].strip()
-
-            if destination_field_type == 'TEXT':
-                cast = str
-            elif destination_field_type == 'LONG':
-                cast = long
-            elif destination_field_type == 'SHORT':
-                cast = int
-            elif (destination_field_type == 'FLOAT' or
-                  destination_field_type == 'DOUBLE'):
-                cast = float
-            elif destination_field_type == 'DATE':
-                cast = parse
-
-            value = cast(destination_value)
+            value = Caster.cast(destination_value, destination_field_type)
 
             self._row.append(value)
 
@@ -121,31 +107,8 @@ class Sdwis(object):
                 continue
 
             destination_value = row[self.fields[destination_field_name]]
-            if destination_value is None:
-                self._row.append(None)
-                continue
 
-            try:
-                destination_value = destination_value.strip()
-            except:
-                pass
-
-            if destination_field_type == 'TEXT':
-                cast = str
-            elif destination_field_type == 'LONG':
-                cast = long
-            elif destination_field_type == 'SHORT':
-                cast = int
-            elif (destination_field_type == 'FLOAT' or
-                  destination_field_type == 'DOUBLE'):
-                cast = float
-            elif destination_field_type == 'DATE':
-                if isinstance(destination_value, datetime.datetime):
-                    cast = lambda x: x
-                else:
-                    cast = parse
-
-            value = cast(destination_value)
+            value = Caster.cast(destination_value, destination_field_type)
 
             self._row.append(value)
 
@@ -183,7 +146,7 @@ class SdwisResults(Sdwis):
         ('Lat_Y', 14),
         ('Lon_X', 15),
         ('CAS_Reg', 16),
-        ('Id_Num', 17)
+        ('IdNum', 17)
     ])
 
     def __init__(self, row):
@@ -215,7 +178,7 @@ class SdwisStations(Sdwis):
     ])
 
     def __init__(self, row):
-        self.schema_map = self._build_schema_map(Schema().result)
+        self.schema_map = self._build_schema_map(Schema().station)
         super(SdwisStations, self).__init__(row)
 
     schema_map = None

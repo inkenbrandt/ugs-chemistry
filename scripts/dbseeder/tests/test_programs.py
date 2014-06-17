@@ -89,8 +89,10 @@ class TestWqpProgram(unittest.TestCase):
 
         model = Results(values)
 
-        org_index = model.schema_map.keys().index('OrgId')
-        param_index = model.schema_map.keys().index('Param')
+        print model.row
+
+        org_index = model.schema_map[17]['index']
+        param_index = model.schema_map[19]['index']
 
         self.assertEqual(model.row[org_index], '1119USBR_WQX')
         self.assertEqual(model.row[param_index], 'Conductivity')
@@ -126,8 +128,14 @@ class TestWqpProgram(unittest.TestCase):
         del self.patient
         self.patient = None
 
-        if os.path.exists(self.location):
-            rmtree(self.location)
+        limit = 5000
+        i = 0
+
+        while os.path.exists(self.location) and i < limit:
+            try:
+                rmtree(self.location)
+            except:
+                i += 1
 
 
 class TestSdwisProgram(unittest.TestCase):
@@ -136,6 +144,8 @@ class TestSdwisProgram(unittest.TestCase):
         self.parent_folder = os.path.join(os.getcwd(), 'dbseeder', 'tests')
         self.location = os.path.join(self.parent_folder, 'temp_tests')
         self.gdb_name = 'sdwis.gdb'
+
+        self.tearDown()
 
         if not os.path.exists(self.location):
             os.makedirs(self.location)
@@ -208,11 +218,17 @@ class TestSdwisProgram(unittest.TestCase):
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
 
     def tearDown(self):
-        del self.patient
         self.patient = None
+        del self.patient
 
-        if os.path.exists(self.location):
-            rmtree(self.location)
+        limit = 5000
+        i = 0
+
+        while os.path.exists(self.location) and i < limit:
+            try:
+                rmtree(self.location)
+            except:
+                i += 1
 
 
 class TestServer(SocketServer.TCPServer):
