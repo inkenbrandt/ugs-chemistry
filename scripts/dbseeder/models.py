@@ -22,6 +22,11 @@ class Table(object):
             inserting into the feature class
         """
 
+        #: probably should refactor this out.
+        #: it's here to get the schema map from an empty object
+        if row is None or len(row) < 1:
+            return
+
         self._row = []
 
         for key in self.schema_map.keys():
@@ -60,7 +65,8 @@ class Results(Table):
 
     def __init__(self, row):
         self.schema_map = self._build_schema_map(Schema().result)
-        super(Results, self).__init__(row)
+        if row is not None:
+            super(Results, self).__init__(row)
 
     schema_map = None
 
@@ -71,7 +77,8 @@ class Stations(Table):
 
     def __init__(self, row):
         self.schema_map = self._build_schema_map(Schema().station)
-        super(Stations, self).__init__(row)
+        if row is not None:
+            super(Stations, self).__init__(row)
 
     schema_map = None
 
@@ -151,7 +158,8 @@ class SdwisResults(Sdwis):
 
     def __init__(self, row):
         self.schema_map = self._build_schema_map(Schema().result)
-        super(SdwisResults, self).__init__(row)
+        if row is not None:
+            super(SdwisResults, self).__init__(row)
 
     schema_map = None
 
@@ -179,7 +187,8 @@ class SdwisStations(Sdwis):
 
     def __init__(self, row):
         self.schema_map = self._build_schema_map(Schema().station)
-        super(SdwisStations, self).__init__(row)
+        if row is not None:
+            super(SdwisStations, self).__init__(row)
 
     schema_map = None
 
@@ -640,7 +649,8 @@ class Schema(object):
             'source': 'ActivityCommentText',
             'alias': 'Sample Comment',
             'type': 'Text',
-            'index': 26
+            'index': 26,
+            'length': 500
         },
         {
             'destination': 'SampDepth',
@@ -826,9 +836,10 @@ class Field(object):
             try:
                 self.field_length = arg['length']
             except KeyError:
-                print ('{} is of type text and '.format(self.field_name) +
-                       'has no limit set.' +
-                       ' Defaulting to {}'.format(self.length_default))
+                pass
+                # print ('{} is of type text and '.format(self.field_name) +
+                #        'has no limit set.' +
+                #        ' Defaulting to {}'.format(self.length_default))
 
     def etl_type(self, field_type):
         """Turn schema types into acpy fields types"""

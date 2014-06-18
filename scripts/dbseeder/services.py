@@ -6,7 +6,9 @@ import sys
 from dateutil.parser import parse
 from pyproj import Proj, transform
 
+
 class WebQuery(object):
+
     """the http query wrapper over requests for unit testing"""
 
     def results(self, url):
@@ -64,6 +66,7 @@ class Project(object):
 
 
 class Caster(object):
+
     """takes argis row input and casts it to the defined schema type"""
     @staticmethod
     def cast(destination_value, destination_field_type):

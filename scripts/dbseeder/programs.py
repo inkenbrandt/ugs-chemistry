@@ -16,6 +16,12 @@ class Program(object):
     def _get_fields(self, schema_map):
         return [schema_map[item]['destination'] for item in schema_map]
 
+    def _find_field(self, schema_map, field):
+        for key in schema_map.keys():
+            item = schema_map[key]
+            if item['destination'] == field:
+                return item
+
 
 class Wqp(Program):
 
@@ -29,7 +35,9 @@ class Wqp(Program):
         elif feature_class == 'Stations':
             Type = Stations
 
-        fields = Type.schema_map.keys()
+        schema_map = Type(None).schema_map
+        fields = self._get_fields(schema_map)
+
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
@@ -39,8 +47,11 @@ class Wqp(Program):
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
-                    lon = row[etl.schema_map['Lon_X']]
-                    lat = row[etl.schema_map['Lat_Y']]
+                    source_lon = self._find_field(schema_map, 'Lon_X')
+                    source_lat = self._find_field(schema_map, 'Lat_Y')
+
+                    lon = row[source_lon['source']]
+                    lat = row[source_lat['source']]
 
                     try:
                         x, y = Project().to_utm(lon, lat)
@@ -50,7 +61,14 @@ class Wqp(Program):
 
                         insert_row.append(None)
 
-                curser.insertRow(insert_row)
+                try:
+                    curser.insertRow(insert_row)
+                except Exception as e:
+                    print insert_row
+                    print e
+                    samp_comment = self._find_field(schema_map, 'SampComment')
+                    print row[samp_comment['source']]
+                    raise e
 
     def _csvs_on_disk(self, parent_folder, type):
         folder = os.path.join(parent_folder, type, '*.csv')
@@ -86,10 +104,12 @@ class Wqp(Program):
     def field_lengths(self, folder, type):
         schema = Schema()
 
-        if type == 'Stations':
+        if type.lower() == 'stations':
             maps = self._build_field_length_structure(schema.station)
-        elif type == 'Results':
+        elif type.lower() == 'results':
             maps = self._build_field_length_structure(schema.result)
+        else:
+            raise Exception('flag must be stations or results')
 
         for csv_file in self._csvs_on_disk(folder, type):
             print 'processing {}'.format(csv_file)
