@@ -21,9 +21,9 @@ Once that is done you can create the relationship feature class by running
 
 `setup.py test`
 
+To run specific tests cd to the `scripts` folder and run 
+`nosetests dbseeder.tests.file:class.testname`
+
 ## Installation
 
-`setup.py install`*
-
-
-*_I haven't tried it with a clean install_
+`setup.py install`

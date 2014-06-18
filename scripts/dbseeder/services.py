@@ -1,11 +1,14 @@
 """service classes for performing specific tasks"""
 
+import datetime
 import requests
 import sys
+from dateutil.parser import parse
 from pyproj import Proj, transform
 
 
 class WebQuery(object):
+
     """the http query wrapper over requests for unit testing"""
 
     def results(self, url):
@@ -60,3 +63,40 @@ class Project(object):
             self.ouput_system,
             x,
             y)
+
+
+class Caster(object):
+
+    """takes argis row input and casts it to the defined schema type"""
+    @staticmethod
+    def cast(destination_value, destination_field_type):
+        if destination_value is None:
+            return None
+
+        try:
+            destination_value = destination_value.strip()
+        except:
+            pass
+
+        if destination_field_type == 'TEXT':
+            cast = str
+        elif destination_field_type == 'LONG':
+            cast = long
+        elif destination_field_type == 'SHORT':
+            cast = int
+        elif (destination_field_type == 'FLOAT' or
+              destination_field_type == 'DOUBLE'):
+            cast = float
+        elif destination_field_type == 'DATE':
+            if isinstance(destination_value, datetime.datetime):
+                cast = lambda x: x
+            elif destination_value == '':
+                return None
+            else:
+                cast = parse
+
+        try:
+            value = cast(destination_value)
+            return value
+        except:
+            return None

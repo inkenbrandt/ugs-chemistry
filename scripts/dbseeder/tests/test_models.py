@@ -16,7 +16,7 @@ from dbseeder.models import SdwisResults, SdwisStations
 class TestSdwisModels(unittest.TestCase):
 
     def test_SdwisStations_creation(self):
-        db_row = (750,
+        db_row = [750,
                   'HANNA WATER & SEWER IMPROVEMENT DISTRICT',
                   3382,
                   'STOCKMORE WELL                          ',
@@ -31,27 +31,45 @@ class TestSdwisModels(unittest.TestCase):
                   '003',
                   '003',
                   0,
-                  None)
+                  None]
         patient = SdwisStations(db_row)
-        self.assertItemsEqual(('750',
+        row = patient.row
+        print row
+        self.assertItemsEqual(['750',
                                'HANNA WATER & SEWER IMPROVEMENT DISTRICT',
                                '3382',
                                'STOCKMORE WELL',
                                'WL',
-                               '40.460074',
-                               '-110.826317',
-                               '15.0',
+                               None,
+                               None,
+                               40.460074,
+                               -110.826317,
+                               15.0,
+                               None,
                                '018',
                                '003',
-                               '2126.71',
-                               '1.84',
+                               2126.71,
+                               None,
+                               1.84,
+                               None,
                                '003',
                                '003',
-                               '0',
-                               'None'), patient.row)
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               0.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None], row)
 
     def test_SdwisResults_creation(self):
-        db_row = (None,
+        db_row = [None,
                   'UT00007   ',
                   0.1,
                   'MG/L     ',
@@ -68,25 +86,49 @@ class TestSdwisModels(unittest.TestCase):
                   37.732475,
                   -112.871236,
                   None,
-                  3908822)
+                  3908822]
 
         patient = SdwisResults(db_row)
-        self.assertItemsEqual(['None',
-                               'UT00007',
-                               '0.1',
+        self.assertItemsEqual(patient.row,
+                              [None,
+                               None,
+                               None,
+                               None,
+                               None, #: cas_reg
+                               None,
+                               None,
+                               None,
+                               3908822, #: idnum
+                               None,
+                               'UT00007', #: lab comments
+                               37.732475,
+                               None,
+                               -112.871236,
+                               0.1,
                                'MG/L',
-                               '1748',
+                               None,
+                               '1748', #: orgid
                                'SUMMIT CHATEAU IN BRIAN HEAD',
                                'NITRATE-NITRITE',
-                               '0.0',
-                               '2014-04-23 00:00:00',
-                               '0001-01-01 14:10:00',
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               0.0, #: result value
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               None,
+                               datetime.datetime(2014, 04, 23, 0, 0),
+                               datetime.datetime(1, 1, 1, 14, 10),
                                'K201400801',
+                               None,
+                               None,
+                               None,
                                'WL',
                                '9032',
                                '',
-                               '37.732475',
-                               '-112.871236',
-                               'None',
-                               '3908822'],
-                              patient.row)
+                               None])

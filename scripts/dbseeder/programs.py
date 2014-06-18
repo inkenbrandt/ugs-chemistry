@@ -3,7 +3,7 @@ import csv
 import cx_Oracle
 import glob
 import os
-from models import Results, Stations, SdwisResults, SdwisStations
+from models import Results, Stations, SdwisResults, SdwisStations, Schema
 from services import Project, WebQuery
 
 
@@ -12,6 +12,15 @@ class Program(object):
     def __init__(self, location, InsertCursor):
         self.location = location
         self.InsertCursor = InsertCursor
+
+    def _get_fields(self, schema_map):
+        return [schema_map[item]['destination'] for item in schema_map]
+
+    def _find_field(self, schema_map, field):
+        for key in schema_map.keys():
+            item = schema_map[key]
+            if item['destination'] == field:
+                return item
 
 
 class Wqp(Program):
@@ -26,7 +35,9 @@ class Wqp(Program):
         elif feature_class == 'Stations':
             Type = Stations
 
-        fields = Type.schema_map.keys()
+        schema_map = Type(None).schema_map
+        fields = self._get_fields(schema_map)
+
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
@@ -36,8 +47,11 @@ class Wqp(Program):
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
-                    lon = row[etl.schema_map['Lon_X']]
-                    lat = row[etl.schema_map['Lat_Y']]
+                    source_lon = self._find_field(schema_map, 'Lon_X')
+                    source_lat = self._find_field(schema_map, 'Lat_Y')
+
+                    lon = row[source_lon['source']]
+                    lat = row[source_lat['source']]
 
                     try:
                         x, y = Project().to_utm(lon, lat)
@@ -47,7 +61,14 @@ class Wqp(Program):
 
                         insert_row.append(None)
 
-                curser.insertRow(insert_row)
+                try:
+                    curser.insertRow(insert_row)
+                except Exception as e:
+                    print insert_row
+                    print e
+                    samp_comment = self._find_field(schema_map, 'SampComment')
+                    print row[samp_comment['source']]
+                    raise e
 
     def _csvs_on_disk(self, parent_folder, type):
         folder = os.path.join(parent_folder, type, '*.csv')
@@ -64,80 +85,31 @@ class Wqp(Program):
 
         return reader
 
+    def _build_field_length_structure(self, schema):
+        """turns the schema doc into a structure that can count fields lengths
+            dict[source column] = array[destination column, count]
+        """
+        results = {}
+
+        for column in schema:
+            if column['source'] is None and (
+                    column['type'].lower() != 'text' or
+                    column['type'].lower() != 'string'):
+                continue
+
+            results[column['source']] = [column['destination'], 0]
+
+        return results
+
     def field_lengths(self, folder, type):
-        results = {
-            'AnalysisStartDate': ['AnalysisDate', 0],
-            'ResultAnalyticalMethod/MethodName': ['AnalytMeth', 0],
-            'ResultAnalyticalMethod/MethodIdentifier': ['AnalytMethId', 0],
-            'ResultDetectionConditionText': ['DetectCond', 0],
-            'ResultLaboratoryCommentText': ['LabComments', 0],
-            'LaboratoryName': ['LabName', 0],
-            'DetectionQuantitationLimitTypeName': ['LimitType', 0],
-            'DetectionQuantitationLimitMeasure/MeasureValue': ['MDL', 0],
-            'DetectionQuantitationLimitMeasure/MeasureUnitCode': ['MDLUnit', 0],
-            'MethodDescriptionText': ['MethodDescript', 0],
-            'OrganizationIdentifier': ['OrgId', 0],
-            'OrganizationFormalName': ['OrgName', 0],
-            'CharacteristicName': ['Param', 0],
-            'ProjectIdentifier': ['ProjectId', 0],
-            'MeasureQualifierCode': ['QualCode', 0],
-            'ResultCommentText': ['ResultComment', 0],
-            'ResultStatusIdentifier': ['ResultStatus', 0],
-            'ResultMeasureValue': ['ResultValue', 0],
-            'ActivityCommentText': ['SampComment', 0],
-            'ActivityDepthHeightMeasure/MeasureValue': ['SampDepth', 0],
-            'ActivityDepthAltitudeReferencePointText': ['SampDepthRef', 0],
-            'ActivityDepthHeightMeasure/MeasureUnitCode': ['SampDepthU', 0],
-            'SampleCollectionEquipmentName': ['SampEquip', 0],
-            'ResultSampleFractionText': ['SampFrac', 0],
-            'ActivityStartDate': ['SampleDate', 0],
-            'ActivityStartTime/Time': ['SampleTime', 0],
-            'ActivityIdentifier': ['SampleId', 0],
-            'ActivityMediaSubdivisionName': ['SampMedia', 0],
-            'SampleCollectionMethod/MethodIdentifier': ['SampMeth', 0],
-            'SampleCollectionMethod/MethodName': ['SampMethName', 0],
-            'ActivityTypeCode': ['SampType', 0],
-            'MonitoringLocationIdentifier': ['StationId', 0],
-            'ResultMeasure/MeasureUnitCode': ['Unit', 0],
-            'USGSPCode': ['USGSPCode', 0]
-        }
+        schema = Schema()
 
-        stations = {
-            'OrganizationIdentifier': ['OrgID', 0],
-            'OrganizationFormalName': ['OrgName', 0],
-            'MonitoringLocationIdentifier': ['StationsID', 0],
-            'MonitoringLocationName': ['StationName', 0],
-            'MonitoringLocationTypeName': ['StationType', 0],
-            'MonitoringLocationDescriptionText': ['StationComment', 0],
-            'HUCEightDigitCode': ['HUC8', 0],
-            'LatitudeMeasure': ['Lat_Y', 0],
-            'LongitudeMeasure': ['Lon_X', 0],
-            'HorizontalAccuracyMeasure/MeasureValue': ['HorAcc', 0],
-            'HorizontalAccuracyMeasure/MeasureUnitCode': ['HorAccUnit', 0],
-            'HorizontalCollectionMethodName': ['HorCollMeth', 0],
-            'HorizontalCoordinateReferenceSystemDatumName': ['HorRef', 0],
-            'VerticalMeasure/MeasureValue': ['Elev', 0],
-            'VerticalMeasure/MeasureUnitCode': ['ElevUnit', 0],
-            'VerticalAccuracyMeasure/MeasureValue': ['ElevAcc', 0],
-            'VerticalAccuracyMeasure/MeasureUnitCode': ['ElevAccUnit', 0],
-            'VerticalCollectionMethodName': ['ElevMeth', 0],
-            'VerticalCoordinateReferenceSystemDatumName': ['ElevRef', 0],
-            'StateCode': ['StateCode', 0],
-            'CountyCode': ['CountyCode', 0],
-            'AquiferName': ['Aquifer', 0],
-            'FormationTypeText': ['FmType', 0],
-            'AquiferTypeName': ['AquiferType', 0],
-            'ConstructionDateText': ['ConstDate', 0],
-            'WellDepthMeasure/MeasureValue': ['Depth', 0],
-            'WellDepthMeasure/MeasureUnitCode': ['DepthUnit', 0],
-            'WellHoleDepthMeasure/MeasureValue': ['HoleDepth', 0],
-            'WellHoleDepthMeasure/MeasureUnitCode': ['HoleDUnit', 0]
-        }
-
-        if type == 'Stations':
-            maps = stations
-        elif type == 'Results':
-            maps = results
+        if type.lower() == 'stations':
+            maps = self._build_field_length_structure(schema.station)
+        elif type.lower() == 'results':
+            maps = self._build_field_length_structure(schema.result)
+        else:
+            raise Exception('flag must be stations or results')
 
         for csv_file in self._csvs_on_disk(folder, type):
             print 'processing {}'.format(csv_file)
@@ -187,7 +159,7 @@ class Sdwis(Program):
         UTV80.TINLOC.LATITUDE_MEASURE AS "Lat_Y",
         UTV80.TINLOC.LONGITUDE_MEASURE AS "Lon_X",
         UTV80.TSAANLYT.CAS_REGISTRY_NUM AS "CAS_Reg",
-        UTV80.TSASAR.TSASAR_IS_NUMBER AS "Id_Num"
+        UTV80.TSASAR.TSASAR_IS_NUMBER AS "IdNum"
 
         FROM UTV80.TINWSF
         JOIN UTV80.TINWSYS ON
@@ -304,7 +276,8 @@ class Sdwis(Program):
         elif feature_class == 'Stations':
             Type = SdwisStations
 
-        fields = Type.schema_index_map.keys()
+        fields = self._get_fields(Type(None).schema_map)
+
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
@@ -314,8 +287,8 @@ class Sdwis(Program):
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
-                    lat = row[etl.schema_index_map['Lat_Y']]
-                    lon = row[etl.schema_index_map['Lon_X']]
+                    lat = row[etl.fields['Lat_Y']]
+                    lon = row[etl.fields['Lon_X']]
 
                     try:
                         x, y = Project().to_utm(lon, lat)

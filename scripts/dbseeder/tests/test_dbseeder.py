@@ -9,9 +9,9 @@ Tests for `dbseeder` module.
 """
 import arcpy
 import os
-import shutil
 import unittest
 from dbseeder.dbseeder import Seeder
+from shutil import rmtree
 
 
 class TestDbSeeder(unittest.TestCase):
@@ -26,6 +26,8 @@ class TestDbSeeder(unittest.TestCase):
         self.parent_folder = os.path.join(os.getcwd(), 'dbseeder', 'tests')
         self.location = os.path.join(self.parent_folder, 'temp_tests')
 
+        self.tearDown()
+
         if not os.path.exists(self.location):
             os.makedirs(self.location)
 
@@ -38,18 +40,10 @@ class TestDbSeeder(unittest.TestCase):
         self.patient._create_gdb()
 
         gdb = os.path.join(self.location, self.gdb_name)
-        assert os.path.exists(gdb)
+
+        self.assertTrue(os.path.exists(gdb))
 
     def test_fc_creation(self):
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
-
-        self.patient.template_location = templates
-        print 'templates: {}'.format(self.patient.template_location)
         self.patient._create_gdb()
         self.patient._create_feature_classes(['Stations', 'Results'])
 
@@ -65,25 +59,23 @@ class TestDbSeeder(unittest.TestCase):
 
     def _test_seed(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
-        templates = os.path.join(
-            os.getcwd(),
-            'dbseeder',
-            'templates',
-            'Templates.gdb'
-        )
-
-        self.patient.template_location = templates
         self.patient.seed(folder)
 
         arcpy.env.workspace = self.patient.location
         self.assertEqual(arcpy.GetCount_management('Stations'), 50)
 
     def tearDown(self):
-        del self.patient
         self.patient = None
+        del self.patient
 
-        if os.path.exists(self.location):
-            shutil.rmtree(self.location)
+        limit = 5000
+        i = 0
+
+        while os.path.exists(self.location) and i < limit:
+            try:
+                rmtree(self.location)
+            except:
+                i += 1
 
 
 if __name__ == '__main__':

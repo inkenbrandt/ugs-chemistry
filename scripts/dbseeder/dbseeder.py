@@ -3,8 +3,8 @@
 import arcpy
 import argparse
 import os
-from models import TableInfo
-from programs import Wqp, Sdwis
+from models import Field, Schema, TableInfo
+from programs import Sdwis, Wqp
 from services import ConsolePrompt
 
 
@@ -12,8 +12,6 @@ class Seeder(object):
     parent_folder = None
     gdb_name = None
     location = None
-    template_location = os.path.join(
-        os.getcwd(), 'templates', 'Templates.gdb')
 
     def __init__(self, parent_folder='./', gdb_name='WQP.gdb'):
         self.parent_folder = parent_folder
@@ -26,22 +24,37 @@ class Seeder(object):
                                        'CURRENT')
 
     def _create_feature_classes(self, types):
-        results_table = TableInfo(self.template_location, 'Results')
-        station_points = TableInfo(self.template_location, 'Stations')
+        """creates feature classes for the given types"""
+
+        results_table = TableInfo(self.location, 'Results')
+        station_points = TableInfo(self.location, 'Stations')
+        schema = Schema()
 
         if 'Results' in types:
             arcpy.CreateTable_management(self.location,
-                                         results_table.name,
-                                         results_table.template)
+                                         results_table.name)
+
+            self._add_fields(results_table, schema.result)
 
         if 'Stations' in types:
+            sr = arcpy.SpatialReference(26912)
             arcpy.CreateFeatureclass_management(self.location,
                                                 station_points.name,
-                                                "POINT",
-                                                station_points.template,
-                                                "DISABLED",
-                                                "DISABLED",
-                                                station_points.template)
+                                                'POINT',
+                                                spatial_reference=sr)
+
+            self._add_fields(station_points, schema.station)
+
+    def _add_fields(self, table, schema):
+        """adds fields to the table"""
+
+        for schema_info in schema:
+            field = Field(schema_info)
+            arcpy.AddField_management(table.location,
+                                      field.field_name,
+                                      field.field_type,
+                                      field_length=field.field_length,
+                                      field_alias=field.field_alias)
 
     def create_relationship(self):
         origin = os.path.join(self.location, 'Stations')
@@ -63,8 +76,12 @@ class Seeder(object):
     def update(self):
         pass
 
-    def field_lengths(self):
-        pass
+    def field_lengths(self, types):
+        if types[0].lower() == 'wqp':
+            seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
+            program = Wqp(self.location, arcpy.da.InsertCursor)
+
+            return program.field_lengths(seed_data, types[1])
 
     def seed(self, folder, types):
         """
@@ -105,12 +122,14 @@ if __name__ == '__main__':
         '--update', action='store_true', help='update the gdb from a web service call')
     parser.add_argument(
         '--seed', nargs='*', help='seed the gdb from csv\'s on disk')
-    parser.add_argument('--length', action='store_true',
-                        help='get the max field sizes form files on disk')
-    parser.add_argument('--relate', action='store_true',
-                        help='creates the releationship class between stations and results')
+    parser.add_argument(
+        '--length', nargs='*', help='get the max field sizes form files on disk. --length program featureclass')
+    parser.add_argument(
+        '--relate', action='store_true',
+        help='creates the releationship class between stations and results')
 
     args = parser.parse_args()
+
     location = 'c:\\temp'
     gdb = 'sdwis.gdb'
     seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
@@ -121,9 +140,7 @@ if __name__ == '__main__':
             pass
         elif args.length:
             seeder = Seeder(location, gdb)
-            maps = seeder.field_lengths(
-                seed_data,
-                'Stations')
+            maps = seeder.field_lengths(args.length)
 
             for key in maps.keys():
                 print '{}'.format(maps[key])
