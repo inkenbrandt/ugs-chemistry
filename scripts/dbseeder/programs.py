@@ -3,7 +3,7 @@ import csv
 import cx_Oracle
 import glob
 import os
-from models import Results, Stations, SdwisResults, SdwisStations, Schema
+from models import Results, Stations, SdwisResults, SdwisStations, Schema, OgmStation, OgmResult
 from services import Project, WebQuery
 
 
@@ -12,6 +12,13 @@ class Program(object):
     def __init__(self, location, InsertCursor):
         self.location = location
         self.InsertCursor = InsertCursor
+
+    def _get_default_fields(self, schema_map):
+        fields = []
+        for item in schema_map:
+            fields.append(item['destination'])
+
+        return fields
 
     def _get_fields(self, schema_map):
         return [schema_map[item]['destination'] for item in schema_map]
@@ -64,10 +71,6 @@ class Wqp(Program):
                 try:
                     curser.insertRow(insert_row)
                 except Exception as e:
-                    print insert_row
-                    print e
-                    samp_comment = self._find_field(schema_map, 'SampComment')
-                    print row[samp_comment['source']]
                     raise e
 
     def _csvs_on_disk(self, parent_folder, type):
@@ -311,3 +314,56 @@ class Sdwis(Program):
 
             records = self._query(query_string)
             self._insert_rows(records, type)
+
+
+class Dogm(Program):
+    #: location to dogm gdb
+    gdb_name = 'DOGM\DOGM_AGRC.gdb'
+    #: results table name
+    results = 'DOGM_RESULT'
+    #: stations feature class name
+    stations = 'DOGM_STATION'
+
+    def __init__(self, location, SearchCursor, InsertCursor):
+        super(Dogm, self).__init__(location, InsertCursor)
+        self.SearchCursor = SearchCursor
+
+    def _read_gdb(self, location, fields):
+        #: location - the path to the table data
+        #: fields - the fields form the data to pull
+
+        with self.SearchCursor(location, fields) as cursor:
+            for row in cursor:
+                yield row
+
+    def _insert_row(self, row, fields, location):
+        with self.InsertCursor(location, fields) as cursor:
+            cursor.insertRow(row)
+
+    def seed(self, folder, types):
+        #: folder - the parent folder to the data directory
+        #: types - [Staions, Results]
+
+        for type in types:
+            if type == 'Stations':
+                table = os.path.join(folder, self.gdb_name, self.stations)
+                Type = OgmStation
+                schema = Schema().station
+            elif type == 'Results':
+                table = os.path.join(folder, self.gdb_name, self.results)
+                Type = OgmResult
+                schema = Schema().result
+
+            fields = self._get_default_fields(schema)
+
+            if type == 'Stations':
+                fields.append('SHAPE@XY')
+
+            location = os.path.join(self.location, type)
+
+            print 'inserting into {} type {}'.format(location, type)
+
+            for record in self._read_gdb(table, Type.fields):
+                etl = Type(record, schema)
+
+                self._insert_row(etl.row, fields, location)

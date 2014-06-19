@@ -14,10 +14,10 @@ import unittest
 import SimpleHTTPServer
 import SocketServer
 import threading
-from arcpy.da import InsertCursor
+from arcpy.da import InsertCursor, SearchCursor
 from dbseeder.dbseeder import Seeder
-from dbseeder.programs import Wqp, Sdwis
-from dbseeder.models import Results, Stations, SdwisResults
+from dbseeder.programs import Wqp, Sdwis, Dogm
+from dbseeder.models import Results, Stations, SdwisResults, Schema, OgmResult, OgmStation
 from shutil import rmtree
 
 
@@ -41,6 +41,25 @@ class TestWqpProgram(unittest.TestCase):
         seed._create_feature_classes(['Results', 'Stations'])
 
         self.patient = Wqp(self.folder, InsertCursor)
+
+    def test_model_hydration_station(self):
+        test_data = 'dbseeder\\tests\\data\\Stations\\sample_stations.csv'
+        f = open(os.path.join(os.getcwd(), test_data))
+        data = f.readlines(2)
+        f.close()
+
+        reader = self.patient._read_response(data)
+        values = reader.next()
+
+        print values
+
+        model = Stations(values)
+
+        org_index = model.schema_map[17]['index']
+        param_index = model.schema_map[19]['index']
+
+        self.assertEqual(model.row[org_index], '')
+        self.assertEqual(model.row[param_index], 'Conductivity')
 
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
@@ -79,40 +98,6 @@ class TestWqpProgram(unittest.TestCase):
         self.assertIsNotNone(reader)
         self.assertEqual(len(values.keys()), 62)
         self.assertEqual(values['OrganizationIdentifier'], '1119USBR_WQX')
-
-    def test_model_hydration_result(self):
-        test_data = 'dbseeder\\tests\\data\\Results\\sample_chemistry.csv'
-        f = open(os.path.join(os.getcwd(), test_data))
-        data = f.readlines(2)
-        f.close()
-
-        reader = self.patient._read_response(data)
-        values = reader.next()
-
-        model = Results(values)
-
-        org_index = model.schema_map[17]['index']
-        param_index = model.schema_map[19]['index']
-
-        self.assertEqual(model.row[org_index], '1119USBR_WQX')
-        self.assertEqual(model.row[param_index], 'Conductivity')
-
-    def test_model_hydration_station(self):
-        test_data = 'dbseeder\\tests\\data\\Stations\\sample_stations.csv'
-        f = open(os.path.join(os.getcwd(), test_data))
-        data = f.readlines(2)
-        f.close()
-
-        reader = self.patient._read_response(data)
-        values = reader.next()
-
-        model = Stations(values)
-
-        org_index = model.schema_map[17]['index']
-        param_index = model.schema_map[19]['index']
-
-        self.assertEqual(model.row[org_index], '1119USBR_WQX')
-        self.assertEqual(model.row[param_index], 'Conductivity')
 
     def test_csv_on_disk(self):
         data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
@@ -291,7 +276,7 @@ class TestSdwisProgram(unittest.TestCase):
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
 
-    def test_query(self):
+    def tevst_query(self):
         data = self.patient._query(self.patient._result_query, 2)
         for item in data:
             etl = SdwisResults(item)
@@ -342,6 +327,105 @@ class TestSdwisProgram(unittest.TestCase):
                                None)]
 
         self.patient._insert_rows(one_row_from_query, 'Stations')
+
+        table = os.path.join(self.folder, 'Stations')
+        self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
+
+    def tearDown(self):
+        self.patient = None
+        del self.patient
+
+        limit = 5000
+        i = 0
+
+        while os.path.exists(self.location) and i < limit:
+            try:
+                rmtree(self.location)
+            except:
+                i += 1
+
+
+class TestDogmProgram(unittest.TestCase):
+
+    def setUp(self):
+        self.parent_folder = os.path.join(os.getcwd(), 'dbseeder', 'tests')
+        self.location = os.path.join(self.parent_folder, 'temp_tests')
+        self.gdb_name = 'dogm.gdb'
+
+        self.analysisdate = datetime.datetime(2014, 11, 17, 0, 0)
+        self.sampledate = datetime.datetime(2008, 11, 17, 0, 0)
+        self.sampletime = datetime.datetime(1899, 12, 30, 11, 10)
+        self.resultvalue = 10.0
+
+        self.tearDown()
+
+        if not os.path.exists(self.location):
+            os.makedirs(self.location)
+
+        self.folder = os.path.join(self.location, self.gdb_name)
+
+        seed = Seeder(self.location, self.gdb_name)
+
+        seed._create_gdb()
+        seed._create_feature_classes(['Results', 'Stations'])
+
+        self.patient = Dogm(self.folder, SearchCursor, InsertCursor)
+
+    def test_sanity(self):
+        self.assertIsNotNone(self.patient)
+
+    def test_insert_rows_result(self):
+        mdl = 0
+        gdb_row = ('StationId',
+                   'Param',
+                   'SampleId',
+                   self.sampledate,
+                   self.analysisdate,
+                   'AnalytMeth',
+                   'MDLUnit',
+                   self.resultvalue,
+                   self.sampletime,
+                   mdl,
+                   'Unit',
+                   'SampComment')
+
+        schema = Schema().result
+
+        one_row_from_query = OgmResult(gdb_row, schema).row
+
+        fields = self.patient._get_default_fields(schema)
+        print '{}-{}'.format(len(one_row_from_query), len(fields))
+
+        location = os.path.join(self.patient.location, 'Results')
+        self.patient._insert_row(one_row_from_query, fields, location)
+
+        table = os.path.join(self.folder, 'Results')
+        self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
+
+    def test_insert_rows_station(self):
+        gdb_row = ('UDOGM',
+                   'Utah Division Of Oil Gas And Mining',
+                   'UDOGM-0035',
+                   'WILLOW CREEK; 1',
+                   None,
+                   'ft',
+                   'MD',
+                   'UPDES',
+                   39.72882937000003,
+                   -110.85612099299999,
+                   512329.9142,
+                   4397670.5318)
+
+        schema = Schema().station
+
+        one_row_from_query = OgmStation(gdb_row, schema).row
+
+        fields = self.patient._get_default_fields(schema)
+        fields.append('SHAPE@XY')
+
+        location = os.path.join(self.patient.location, 'Stations')
+
+        self.patient._insert_row(one_row_from_query, fields, location)
 
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
