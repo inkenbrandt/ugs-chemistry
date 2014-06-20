@@ -109,11 +109,11 @@ class Seeder(object):
                 self._create_feature_classes(types)
                 print 'creating feature classes: done'
 
-        # wqp = Wqp(self.location, arcpy.da.InsertCursor)
-        # wqp.seed(folder, types)
+        wqp = Wqp(self.location, arcpy.da.InsertCursor)
+        wqp.seed(folder, types)
 
-        # sdwis = Sdwis(self.location, arcpy.da.InsertCursor)
-        # sdwis.seed(types)
+        sdwis = Sdwis(self.location, arcpy.da.InsertCursor)
+        sdwis.seed(types)
 
         dogm = Dogm(
             self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
