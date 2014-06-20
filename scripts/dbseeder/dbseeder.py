@@ -4,13 +4,16 @@ import arcpy
 import argparse
 import os
 from models import Field, Schema, TableInfo
-from programs import Sdwis, Wqp
+from programs import Sdwis, Wqp, Dogm
 from services import ConsolePrompt
 
 
 class Seeder(object):
+    #: the parent location of the gdb
     parent_folder = None
+    #: the name of the gdb to seed
     gdb_name = None
+    #: the combination of the parent_folder and the gdb_name
     location = None
 
     def __init__(self, parent_folder='./', gdb_name='WQP.gdb'):
@@ -85,10 +88,8 @@ class Seeder(object):
 
     def seed(self, folder, types):
         """
-            method to seed the database from files on disk
-            expects a parent folder with two child folders
-            named stations and chemistry.
-            within those folders are the csv's to be imported
+            #: folder - parent folder to seed data
+            #: types - the type of data to seed [Stations, Results]
         """
         gdb_exists = os.path.exists(self.location)
 
@@ -114,6 +115,10 @@ class Seeder(object):
         sdwis = Sdwis(self.location, arcpy.da.InsertCursor)
         sdwis.seed(types)
 
+        dogm = Dogm(
+            self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
+        dogm.seed(folder, types)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='seed a geodatabse.')
@@ -131,7 +136,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     location = 'c:\\temp'
-    gdb = 'sdwis.gdb'
+    gdb = 'dogm.gdb'
     seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
 
     try:
@@ -153,9 +158,7 @@ if __name__ == '__main__':
 
             print 'seeding {} with {}'.format(gdb, args.seed)
             seeder = Seeder(location, gdb)
-            seeder.seed(
-                seed_data,
-                args.seed)
+            seeder.seed(seed_data, args.seed)
 
         print 'finished'
     except:

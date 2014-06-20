@@ -59,30 +59,6 @@ class Table(object):
         return self._row
 
 
-class Results(Table):
-
-    """ORM mapping to station schema to Results table"""
-
-    def __init__(self, row):
-        self.schema_map = self._build_schema_map(Schema().result)
-        if row is not None:
-            super(Results, self).__init__(row)
-
-    schema_map = None
-
-
-class Stations(Table):
-
-    """ORM mapping from chemistry schema to Stations feature class"""
-
-    def __init__(self, row):
-        self.schema_map = self._build_schema_map(Schema().station)
-        if row is not None:
-            super(Stations, self).__init__(row)
-
-    schema_map = None
-
-
 class Sdwis(object):
 
     """base class for building sdwis schema map"""
@@ -131,6 +107,30 @@ class Sdwis(object):
     @property
     def row(self):
         return self._row
+
+
+class Results(Table):
+
+    """ORM mapping to station schema to Results table"""
+
+    def __init__(self, row):
+        self.schema_map = self._build_schema_map(Schema().result)
+        if row is not None:
+            super(Results, self).__init__(row)
+
+    schema_map = None
+
+
+class Stations(Table):
+
+    """ORM mapping from chemistry schema to Stations feature class"""
+
+    def __init__(self, row):
+        self.schema_map = self._build_schema_map(Schema().station)
+        if row is not None:
+            super(Stations, self).__init__(row)
+
+    schema_map = None
 
 
 class SdwisResults(Sdwis):
@@ -191,6 +191,93 @@ class SdwisStations(Sdwis):
             super(SdwisStations, self).__init__(row)
 
     schema_map = None
+
+
+class OgmStation(object):
+
+    """docstring for OgmStation"""
+
+    fields = ['OrgId',
+              'OrgName',
+              'StationId',
+              'StationName',
+              'Elev',
+              'ElevUnit',
+              'StationType',
+              'StationComment',
+              'Lat_Y',
+              'Lon_X',
+              'UTM_X',
+              'UTM_Y']
+
+    def __init__(self, row, schema):
+        super(OgmStation, self).__init__()
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map)
+
+    def _build_schema_map(self, schema):
+        schema_index_items = OrderedDict()
+
+        for item in schema:
+            schema_index_items.update({item['destination']: item['index']})
+
+        return OrderedDict(schema_index_items)
+
+    def _etl_row(self, row, schema_map):
+        _row = []
+        for item in schema_map:
+            if item in self.fields:
+                _row.append(row[self.fields.index(item)])
+            else:
+                _row.append(None)
+
+        x = row[self.fields.index('UTM_X')]
+        y = row[self.fields.index('UTM_Y')]
+
+        _row.append((x, y))
+
+        return _row
+
+
+class OgmResult(object):
+
+    """docstring for OgmResult"""
+
+    fields = ['StationId',
+              'Param',
+              'SampleId',
+              'SampleDate',
+              'AnalysisDate',
+              'AnalytMeth',
+              'MDLUnit',
+              'ResultValue',
+              'SampleTime',
+              'MDL',
+              'Unit',
+              'SampComment']
+
+    def __init__(self, row, schema):
+            super(OgmResult, self).__init__()
+            schema_map = self._build_schema_map(schema)
+            self.row = self._etl_row(row, schema_map)
+
+    def _build_schema_map(self, schema):
+        schema_index_items = OrderedDict()
+
+        for item in schema:
+            schema_index_items.update({item['destination']: item['index']})
+
+        return OrderedDict(schema_index_items)
+
+    def _etl_row(self, row, schema_map):
+        _row = []
+        for item in schema_map:
+            if item in self.fields:
+                _row.append(row[self.fields.index(item)])
+            else:
+                _row.append(None)
+
+        return _row
 
 
 class Schema(object):
@@ -408,7 +495,7 @@ class Schema(object):
         },
         {
             'destination': 'HoleDepth',
-            'source': 'WellDepthMeasure/MeasureUnitCode',
+            'source': 'WellHoleDepthMeasure/MeasureValue',
             'alias': 'Hole Depth',
             'type': 'Double',
             'index': 27
