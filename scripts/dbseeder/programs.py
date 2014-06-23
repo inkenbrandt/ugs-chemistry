@@ -31,14 +31,15 @@ class Program(object):
 
 
 class GdbBase(Program):
+
     """docstring for GdbBase"""
+
     def __init__(self, location, InsertCursor):
         super(GdbBase, self).__init__(location, InsertCursor)
 
     def _read_gdb(self, location, fields):
         #: location - the path to the table data
         #: fields - the fields form the data to pull
-
         with self.SearchCursor(location, fields) as cursor:
             for row in cursor:
                 yield row
@@ -384,7 +385,7 @@ class Udwr(GdbBase):
     stations = 'UDWR_STATION'
 
     def __init__(self, location, SearchCursor, InsertCursor):
-        super(Dogm, self).__init__(location, InsertCursor)
+        super(Udwr, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
 
     def seed(self, folder, types):
@@ -394,11 +395,11 @@ class Udwr(GdbBase):
         for type in types:
             if type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = None #models.OgmStation
+                Type = models.DwrStation
                 schema = models.Schema().station
             elif type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = None #models.OgmResult
+                Type = models.DwrResult
                 schema = models.Schema().result
 
             fields = self._get_default_fields(schema)
