@@ -21,7 +21,7 @@ class TestWqpModels(unittest.TestCase):
         sampdepth = 0
         analysisdate = datetime.datetime(2014, 02, 24, 0, 0)
         sampledate = datetime.datetime(2014, 02, 24, 0, 0)
-        sampletime = datetime.datetime(2014, 6, 19, 11, 40)
+        sampletime = datetime.datetime.now().replace(hour=11, minute=40, second=0, microsecond=0) # time parsing gives current date
 
         csv_data = {'ActivityIdentifier': 'SampleId',
                     'CharacteristicName': 'Param',

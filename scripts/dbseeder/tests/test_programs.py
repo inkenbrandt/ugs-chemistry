@@ -42,25 +42,6 @@ class TestWqpProgram(unittest.TestCase):
 
         self.patient = Wqp(self.folder, InsertCursor)
 
-    def test_model_hydration_station(self):
-        test_data = 'dbseeder\\tests\\data\\Stations\\sample_stations.csv'
-        f = open(os.path.join(os.getcwd(), test_data))
-        data = f.readlines(2)
-        f.close()
-
-        reader = self.patient._read_response(data)
-        values = reader.next()
-
-        print values
-
-        model = Stations(values)
-
-        org_index = model.schema_map[17]['index']
-        param_index = model.schema_map[19]['index']
-
-        self.assertEqual(model.row[org_index], '')
-        self.assertEqual(model.row[param_index], 'Conductivity')
-
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
 
