@@ -2,8 +2,8 @@ import ConfigParser
 import csv
 import cx_Oracle
 import glob
+import models
 import os
-from models import Results, Stations, SdwisResults, SdwisStations, Schema, OgmStation, OgmResult
 from services import Project, WebQuery
 
 
@@ -38,9 +38,9 @@ class Wqp(Program):
         print 'inserting into {} type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
-            Type = Results
+            Type = models.Results
         elif feature_class == 'Stations':
-            Type = Stations
+            Type = models.Stations
 
         schema_map = Type(None).schema_map
         fields = self._get_fields(schema_map)
@@ -105,7 +105,7 @@ class Wqp(Program):
         return results
 
     def field_lengths(self, folder, type):
-        schema = Schema()
+        schema = models.Schema()
 
         if type.lower() == 'stations':
             maps = self._build_field_length_structure(schema.station)
@@ -275,9 +275,9 @@ class Sdwis(Program):
         print 'inserting into {} type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
-            Type = SdwisResults
+            Type = models.SdwisResults
         elif feature_class == 'Stations':
-            Type = SdwisStations
+            Type = models.SdwisStations
 
         fields = self._get_fields(Type(None).schema_map)
 
@@ -347,12 +347,12 @@ class Dogm(Program):
         for type in types:
             if type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = OgmStation
-                schema = Schema().station
+                Type = models.OgmStation
+                schema = models.Schema().station
             elif type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = OgmResult
-                schema = Schema().result
+                Type = models.OgmResult
+                schema = models.Schema().result
 
             fields = self._get_default_fields(schema)
 
