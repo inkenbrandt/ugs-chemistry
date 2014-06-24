@@ -2,7 +2,7 @@
 
 import os
 from collections import OrderedDict
-from services import Caster
+from services import Caster, Project
 
 
 class TableInfo(object):
@@ -127,15 +127,32 @@ class GdbDatasource(object):
                 _row.append(None)
 
         if type == 'Station':
+            has_utm = False
             try:
                 utmx_index = self.fields.index('UTM_X')
                 utmy_index = self.fields.index('UTM_Y')
+                has_utm = True
             except ValueError:
+                pass
+
+            try:
                 utmx_index = self.fields.index('X_UTM')
                 utmy_index = self.fields.index('Y_UTM')
+                has_utm = True
+            except ValueError:
+                pass
 
-            x = row[utmx_index]
-            y = row[utmy_index]
+            if has_utm:
+                x = row[utmx_index]
+                y = row[utmy_index]
+            else:
+                try:
+                    x_index = self.fields.index('Lon_X')
+                    y_index = self.fields.index('Lat_Y')
+
+                    x, y = Project().to_utm(row[x_index], row[y_index])
+                except Exception as detail:
+                    print 'Handling projection error:', detail
 
             _row.append((x, y))
 
@@ -316,6 +333,55 @@ class DwrResult(GdbDatasource):
 
     def __init__(self, row, schema):
             super(DwrResult, self).__init__()
+            schema_map = self._build_schema_map(schema)
+            self.row = self._etl_row(row, schema_map, 'Result')
+
+
+class UgsStation(GdbDatasource):
+
+    fields = ['OrgId',
+              'DataSource',
+              'HUC8',
+              'StateCode',
+              'CountyCode',
+              'OrgName',
+              'Lat_Y',
+              'Lon_X',
+              'StationName',
+              'StationComment',
+              'StationId']
+
+    def __init__(self, row, schema):
+        super(UgsStation, self).__init__()
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map, 'Station')
+
+
+class UgsResult(GdbDatasource):
+
+    fields = ['StationId',
+              'ResultValue',
+              'AnalysisDate',
+              'OrgId',
+              'OrgName',
+              'SampleDate',
+              'SampleTime',
+              'DetectCond',
+              'Unit',
+              'MDLUnit',
+              'AnalytMethId',
+              'AnalytMeth',
+              'SampMedia',
+              'SampFrac',
+              'StationId',
+              'MDL',
+              'IdNum',
+              'LabName',
+              'SampComment',
+              'CASReg']
+
+    def __init__(self, row, schema):
+            super(UgsResult, self).__init__()
             schema_map = self._build_schema_map(schema)
             self.row = self._etl_row(row, schema_map, 'Result')
 

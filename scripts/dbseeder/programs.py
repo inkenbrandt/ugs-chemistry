@@ -415,3 +415,44 @@ class Udwr(GdbBase):
                 etl = Type(record, schema)
 
                 self._insert_row(etl.row, fields, location)
+
+
+class Ugs(GdbBase):
+    #: location to dogm gdb
+    gdb_name = 'UGS\UGS_AGRC.gdb'
+    #: results table name
+    results = 'RESULTS'
+    #: stations feature class name
+    stations = 'STATIONS'
+
+    def __init__(self, location, SearchCursor, InsertCursor):
+        super(Ugs, self).__init__(location, InsertCursor)
+        self.SearchCursor = SearchCursor
+
+    def seed(self, folder, types):
+        #: folder - the parent folder to the data directory
+        #: types - [Staions, Results]
+
+        for type in types:
+            if type == 'Stations':
+                table = os.path.join(folder, self.gdb_name, self.stations)
+                Type = models.UgsStation
+                schema = models.Schema().station
+            elif type == 'Results':
+                table = os.path.join(folder, self.gdb_name, self.results)
+                Type = models.UgsResult
+                schema = models.Schema().result
+
+            fields = self._get_default_fields(schema)
+
+            if type == 'Stations':
+                fields.append('SHAPE@XY')
+
+            location = os.path.join(self.location, type)
+
+            print 'inserting into {} type {}'.format(location, type)
+
+            for record in self._read_gdb(table, Type.fields):
+                etl = Type(record, schema)
+
+                self._insert_row(etl.row, fields, location)
