@@ -109,6 +109,39 @@ class Sdwis(object):
         return self._row
 
 
+class GdbDatasource(object):
+    def _build_schema_map(self, schema):
+        schema_index_items = OrderedDict()
+
+        for item in schema:
+            schema_index_items.update({item['destination']: item['index']})
+
+        return OrderedDict(schema_index_items)
+
+    def _etl_row(self, row, schema_map, type):
+        _row = []
+        for item in schema_map:
+            if item in self.fields:
+                _row.append(row[self.fields.index(item)])
+            else:
+                _row.append(None)
+
+        if type == 'Station':
+            try:
+                utmx_index = self.fields.index('UTM_X')
+                utmy_index = self.fields.index('UTM_Y')
+            except ValueError:
+                utmx_index = self.fields.index('X_UTM')
+                utmy_index = self.fields.index('Y_UTM')
+
+            x = row[utmx_index]
+            y = row[utmy_index]
+
+            _row.append((x, y))
+
+        return _row
+
+
 class Results(Table):
 
     """ORM mapping to station schema to Results table"""
@@ -193,7 +226,7 @@ class SdwisStations(Sdwis):
     schema_map = None
 
 
-class OgmStation(object):
+class OgmStation(GdbDatasource):
 
     """docstring for OgmStation"""
 
@@ -213,33 +246,10 @@ class OgmStation(object):
     def __init__(self, row, schema):
         super(OgmStation, self).__init__()
         schema_map = self._build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map)
-
-    def _build_schema_map(self, schema):
-        schema_index_items = OrderedDict()
-
-        for item in schema:
-            schema_index_items.update({item['destination']: item['index']})
-
-        return OrderedDict(schema_index_items)
-
-    def _etl_row(self, row, schema_map):
-        _row = []
-        for item in schema_map:
-            if item in self.fields:
-                _row.append(row[self.fields.index(item)])
-            else:
-                _row.append(None)
-
-        x = row[self.fields.index('UTM_X')]
-        y = row[self.fields.index('UTM_Y')]
-
-        _row.append((x, y))
-
-        return _row
+        self.row = self._etl_row(row, schema_map, 'Station')
 
 
-class OgmResult(object):
+class OgmResult(GdbDatasource):
 
     """docstring for OgmResult"""
 
@@ -259,25 +269,55 @@ class OgmResult(object):
     def __init__(self, row, schema):
             super(OgmResult, self).__init__()
             schema_map = self._build_schema_map(schema)
-            self.row = self._etl_row(row, schema_map)
+            self.row = self._etl_row(row, schema_map, 'Result')
 
-    def _build_schema_map(self, schema):
-        schema_index_items = OrderedDict()
 
-        for item in schema:
-            schema_index_items.update({item['destination']: item['index']})
+class DwrStation(GdbDatasource):
 
-        return OrderedDict(schema_index_items)
+    fields = ['WIN',
+              'OrgId',
+              'OrgName',
+              'StationId',
+              'Lat_Y',
+              'Lon_X',
+              'StateCode',
+              'CountyCode',
+              'Depth',
+              'HoleDepth',
+              'HUC8',
+              'StationName',
+              'StationType',
+              'X_UTM',
+              'Y_UTM']
 
-    def _etl_row(self, row, schema_map):
-        _row = []
-        for item in schema_map:
-            if item in self.fields:
-                _row.append(row[self.fields.index(item)])
-            else:
-                _row.append(None)
+    def __init__(self, row, schema):
+        super(DwrStation, self).__init__()
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map, 'Station')
 
-        return _row
+
+class DwrResult(GdbDatasource):
+
+    fields = ['WIN',
+              'SampleDate',
+              'USGSPCode',
+              'ResultValue',
+              'Param',
+              'Unit',
+              'SampFrac',
+              'OrgId',
+              'OrgName',
+              'StationId',
+              'Lat_Y',
+              'Lon_X',
+              'SampMedia',
+              'SampleId',
+              'IdNum']
+
+    def __init__(self, row, schema):
+            super(DwrResult, self).__init__()
+            schema_map = self._build_schema_map(schema)
+            self.row = self._etl_row(row, schema_map, 'Result')
 
 
 class Schema(object):

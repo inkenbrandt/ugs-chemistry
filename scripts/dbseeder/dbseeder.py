@@ -4,7 +4,7 @@ import arcpy
 import argparse
 import os
 from models import Field, Schema, TableInfo
-from programs import Sdwis, Wqp, Dogm
+from programs import Sdwis, Wqp, Dogm, Udwr
 from services import ConsolePrompt
 
 
@@ -92,6 +92,7 @@ class Seeder(object):
             #: types - the type of data to seed [Stations, Results]
         """
         gdb_exists = os.path.exists(self.location)
+        prompt = ConsolePrompt()
 
         if not gdb_exists:
             print 'creating gdb'
@@ -102,13 +103,19 @@ class Seeder(object):
             self._create_feature_classes(types)
             print 'creating feature classes: done'
         else:
-            if not ConsolePrompt().query_yes_no('gdb already exists. Seeed missing feature classes?'):
-                raise SystemExit('stopping')
+            if not prompt.query_yes_no('gdb already exists. Seeed missing feature classes?'):
+                if not prompt.query_yes_no('seed data? Could cause duplication'):
+                    raise SystemExit('stopping')
+                else:
+                    self._seed(folder, types)
             else:
                 print 'creating feature classes'
                 self._create_feature_classes(types)
                 print 'creating feature classes: done'
 
+        self._seed(folder, types)
+
+    def _seed(self, folder, types):
         wqp = Wqp(self.location, arcpy.da.InsertCursor)
         wqp.seed(folder, types)
 
@@ -118,6 +125,10 @@ class Seeder(object):
         dogm = Dogm(
             self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
         dogm.seed(folder, types)
+
+        dwr = Udwr(
+            self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
+        dwr.seed(folder, types)
 
 
 if __name__ == '__main__':
@@ -135,8 +146,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    location = 'c:\\temp'
-    gdb = 'dogm.gdb'
+    location = 'c:\\temp\\udwr'
+    gdb = 'master.gdb'
     seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
 
     try:
