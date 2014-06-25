@@ -112,8 +112,9 @@ class Normalizer(object):
         Fill the ParamGroup field using the table
 
         """
+        inorgmajmet = ['Calcium', 'Magnesium', 'Potassium', 'Sodium adsorption ratio [(Na)/(sq root of 1/2 Ca + Mg)]', 'Sodium adsorption ratio', 'Sodium plus potassium', 'Sodium, percent total cations', 'Sodium']
 
-        if paramGroup == 'inorganics, major, metals' and unit == 'ug/l':
+        if param in inorgmajmet and unit == 'ug/l':
             ResultValue = ResultValue * 0.001
             unit = 'mg/l'
 
