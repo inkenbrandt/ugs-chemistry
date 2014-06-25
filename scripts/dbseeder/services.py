@@ -102,17 +102,16 @@ class Caster(object):
             return None
 
 class Normalizer(object):
-    """class for handling the normalization of units"""
+    """class for handling the normalization of fields"""
     def __init__(self):
         super(Normalizer, self).__init__()
 
-    def normalize(self, param, unit):
+    def normalize_unit(self, param, unit):
         """
         In the units field, make all mg/L and ug/L lowercase while preserving other uppercase letters
         Fill the ParamGroup field using the table
 
         """
-
 
         if paramGroup == 'inorganics, major, metals' and unit == 'ug/l':
             ResultValue = ResultValue * 0.001
