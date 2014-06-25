@@ -106,10 +106,10 @@ class Normalizer(object):
     def __init__(self):
         super(Normalizer, self).__init__()
 
-    def normalize_unit(self, param, unit):
+    def normalize_unit(self, chemical, unit, current_amount):
         """
         In the units field, make all mg/L and ug/L lowercase while preserving other uppercase letters
-        Fill the ParamGroup field using the table
+        convert units
 
         """
         inorganics_major_metals = ['calcium', 'magnesium', 'potassium', 'sodium adsorption ratio [(na)/(sq root of 1/2 ca + mg)]', 'sodium adsorption ratio', 'sodium plus potassium', 'sodium, percent total cations', 'sodium']
@@ -117,187 +117,106 @@ class Normalizer(object):
         inorganics_minor_metals = []
         inorganics_minor_nonmetals = []
         nutrient = []
+        milli_per_liter = 'mg/l'
 
-        if param in inorganics_major_metals and unit == 'ug/l':
-            ResultValue = ResultValue * 0.001
-            unit = 'mg/l'
-
-        if param in inorganics_minor_metals and unit == 'mg/l':
-            ResultValue = ResultValue * 1000
-            unit = 'ug/l'
-
-        if param in inorganics_major_nonmetals and unit == 'ug/l':
-            ResultValue = ResultValue * 0.001
-            unit = 'mg/l'
-
-        if param in inorganics_minor_nonmetals and unit == 'mg/l':
-            ResultValue = ResultValue * 1000
-            unit = 'ug/l'
-
-        if param in nutrient and unit == 'ug/l':
-            ResultValue = ResultValue * 0.001
-            unit = 'mg/l'
-
-        if param == 'nitrate' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 4.426802887
-            unit = 'mg/l'
-
-        if param == 'nitrite' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 3.284535258
-            unit = 'mg/l'
-
-        if param == 'phosphate' and unit == 'mg/l as p':
-            ResultValue = ResultValue * 3.131265779
-            unit = 'mg/l'
-
-        if param == 'bicarbonate as caco3' and unit == 'mg/l':
-            ResultValue = ResultValue * 1.22
-            param = 'Bicarbonate'
-
-        if param == 'bicarbonate as caco3' and unit == 'mg/l as caco3':
-            ResultValue = ResultValue * 1.22
-            unit = 'mg/l'
-            param = 'Bicarbonate'
-
-        if param == 'bicarbonate' and unit == 'mg/l as caco3':
-            ResultValue = ResultValue * 1.22
-            unit = 'mg/l'
-
-        if param == 'phosphate-phosphorus' and unit == 'mg/l as p':
-            ResultValue = ResultValue * 3.131265779
-            unit = 'mg/l'
-            param = 'Phosphate'
-
-        if param == 'phosphate-phosphorus' and unit == 'mg/l':
-            ResultValue = ResultValue * 3.131265779
-            param = 'Phosphate'
-
-        if param == 'sulfate as s' and unit == 'mg/l':
-            ResultValue = ResultValue * 0.333792756
-            param = 'Sulfate'
-
-        if param == 'nitrate-nitrogen' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 4.426802887
-            unit = 'mg/l'
-            param = 'Nitrate'
-
-        if param == 'nitrate as n' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 4.426802887
-            unit = 'mg/l'
-            param = 'Nitrate'
-
-        if param == 'nitrite as n' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 3.284535258
-            unit = 'mg/l'
-            param = 'Nitrite'
-
-        if param == 'nitrate-nitrogen' and unit == 'mg/l':
-            ResultValue = ResultValue * 4.426802887
-            param = 'Nitrite'
-
-        if param == 'nitrate as n' and unit == 'mg/l':
-            ResultValue = ResultValue * 4.426802887
-            param = 'Nitrate'
-
-        if param == 'nitrite as n' and unit == 'mg/l':
-            ResultValue = ResultValue * 3.284535258
-            unit = 'mg/l'
-            param = 'Nitrite'
-
-        if param == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 4.426802887
-            unit = 'mg/l'
-            param = 'Inorganic nitrogen (nitrate and nitrite) as no3'
-
-        if param == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == 'mg/l':
-            ResultValue = ResultValue * 4.426802887
-            unit = 'mg/l'
-            param = 'Inorganic nitrogen (nitrate and nitrite) as no3'
-
-        if param == 'phosphate-phosphorus as p' and unit == 'mg/l as p':
-            ResultValue = ResultValue * 3.131265779
-            param = 'Phosphate'
-
-        if param == 'orthophosphate as p' and unit == 'mg/l as p':
-            ResultValue = ResultValue * 3.131265779
-            unit = 'mg/l'
-            param = 'Phosphate'
-
-        if param == 'phosphate-phosphorus as p' and unit == 'mg/l':
-            ResultValue = ResultValue * 3.131265779
-            param = 'Phosphate'
-
-        if param == 'orthophosphate as p' and unit == 'mg/l':
-            ResultValue = ResultValue * 3.131265779
-            param = 'Phosphate'
-
-        if param == 'orthophosphate' and unit == 'mg/l as p':
-            ResultValue = ResultValue * 3.131265779
-            unit = 'mg/l'
-            param = 'Phosphate'
-
-        if param == 'ammonia and ammonium' and unit == 'mg/l nh4':
-            ResultValue = ResultValue * 1.05918619
-            unit = 'mg/l'
-            param = 'Ammonia'
-
-        if param == 'ammonia-nitrogen as n' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 1.21587526
-            unit = 'mg/l'
-            param = 'Ammonia'
-
-        if param == 'ammonia-nitrogen' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 1.21587526
-            unit = 'mg/l'
-            param = 'Ammonia'
-
-        if param == 'ammonia-nitrogen as n' and unit == 'mg/l':
-            ResultValue = ResultValue * 1.21587526
-            param = 'Ammonia'
-
-        if param == 'ammonia-nitrogen' and unit == 'mg/l':
-            ResultValue = ResultValue * 1.21587526
-            param = 'Ammonia'
-
-        if param == 'ammonia' and unit == 'mg/l as n':
-            ResultValue = ResultValue * 1.21587526
-            unit = 'mg/l'
-
-        if param == 'specific conductance' and unit == 'ms/cm':
-            ResultValue = ResultValue * 1000
-            unit = 'uS/cm'
-
-        if param == 'specific conductance' and unit == 'umho/cm':
-            unit = 'uS/cm'
-
-        if param == 'calcium' and unit == 'ueq/l':
-            ResultValue = ResultValue * 20.039
-            unit = 'mg/l'
-
-        if param == 'magnesium' and unit == 'ueq/l':
-            ResultValue = ResultValue * 12.1525
-            unit = 'mg/l'
-
-        if param == 'potassium' and unit == 'ueq/l':
-            ResultValue = ResultValue * 39.0983
-            unit = 'mg/l'
-
-        if param == 'sodium' and unit == 'ueq/l':
-            ResultValue = ResultValue * 22.9897
-            unit = 'mg/l'
-
-        if param == 'nitrate' and unit == 'ueq/l':
-            ResultValue = ResultValue * 62.0049
-            unit = 'mg/l'
-
-        if param == 'chloride' and unit == 'ueq/l':
-            ResultValue = ResultValue * 35.453
-            unit = 'mg/l'
-
-        if param == 'hydroxide' and unit == 'ueq/l':
-            ResultValue = ResultValue * 17.0073
-            unit = 'mg/l'
-
-        if param == 'sulfate' and unit == 'ueq/l':
-            ResultValue = ResultValue * 24.01565
-            unit = 'mg/l'
+        if chemical in inorganics_major_metals and unit == 'ug/l':
+            return current_amount * 0.001, milli_per_liter
+        elif chemical in inorganics_minor_metals and unit == milli_per_liter:
+            return current_amount * 1000, 'ug/l'
+        elif chemical in inorganics_major_nonmetals and unit == 'ug/l':
+            return current_amount * 0.001, milli_per_liter
+        elif chemical in inorganics_minor_nonmetals and unit == milli_per_liter:
+            return current_amount * 1000, 'ug/l'
+        elif chemical in nutrient and unit == 'ug/l':
+            return current_amount * 0.001, milli_per_liter
+        elif chemical == 'nitrate' and unit == 'mg/l as n':
+            return current_amount * 4.426802887, milli_per_liter
+        elif chemical == 'nitrite' and unit == 'mg/l as n':
+            return current_amount * 3.284535258, milli_per_liter
+        elif chemical == 'phosphate' and unit == 'mg/l as p':
+            return current_amount * 3.131265779, milli_per_liter
+        elif chemical == 'bicarbonate as caco3' and unit == milli_per_liter:
+            return current_amount * 1.22, 'Bicarbonate'
+        elif chemical == 'bicarbonate as caco3' and unit == 'mg/l as caco3':
+            return current_amount * 1.22, milli_per_liter
+            chemical = 'Bicarbonate'
+        elif chemical == 'bicarbonate' and unit == 'mg/l as caco3':
+            return current_amount * 1.22, milli_per_liter
+        elif chemical == 'phosphate-phosphorus' and unit == 'mg/l as p':
+            return current_amount * 3.131265779, milli_per_liter
+            chemical = 'Phosphate'
+        elif chemical == 'phosphate-phosphorus' and unit == milli_per_liter:
+            return current_amount * 3.131265779, 'Phosphate'
+        elif chemical == 'sulfate as s' and unit == milli_per_liter:
+            return current_amount * 0.333792756, 'Sulfate'
+        elif chemical == 'nitrate-nitrogen' and unit == 'mg/l as n':
+            return current_amount * 4.426802887, milli_per_liter
+            chemical = 'Nitrate'
+        elif chemical == 'nitrate as n' and unit == 'mg/l as n':
+            return current_amount * 4.426802887, milli_per_liter
+            chemical = 'Nitrate'
+        elif chemical == 'nitrite as n' and unit == 'mg/l as n':
+            return current_amount * 3.284535258, milli_per_liter
+            chemical = 'Nitrite'
+        elif chemical == 'nitrate-nitrogen' and unit == milli_per_liter:
+            return current_amount * 4.426802887, 'Nitrite'
+        elif chemical == 'nitrate as n' and unit == milli_per_liter:
+            return current_amount * 4.426802887, 'Nitrate'
+        elif chemical == 'nitrite as n' and unit == milli_per_liter:
+            return current_amount * 3.284535258, milli_per_liter
+            chemical = 'Nitrite'
+        elif chemical == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == 'mg/l as n':
+            return current_amount * 4.426802887, milli_per_liter
+            chemical = 'Inorganic nitrogen (nitrate and nitrite) as no3'
+        elif chemical == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == milli_per_liter:
+            return current_amount * 4.426802887, milli_per_liter
+            chemical = 'Inorganic nitrogen (nitrate and nitrite) as no3'
+        elif chemical == 'phosphate-phosphorus as p' and unit == 'mg/l as p':
+            return current_amount * 3.131265779, 'Phosphate'
+        elif chemical == 'orthophosphate as p' and unit == 'mg/l as p':
+            return current_amount * 3.131265779, milli_per_liter
+            chemical = 'Phosphate'
+        elif chemical == 'phosphate-phosphorus as p' and unit == milli_per_liter:
+            return current_amount * 3.131265779, 'Phosphate'
+        elif chemical == 'orthophosphate as p' and unit == milli_per_liter:
+            return current_amount * 3.131265779, 'Phosphate'
+        elif chemical == 'orthophosphate' and unit == 'mg/l as p':
+            return current_amount * 3.131265779, milli_per_liter
+            chemical = 'Phosphate'
+        elif chemical == 'ammonia and ammonium' and unit == 'mg/l nh4':
+            return current_amount * 1.05918619, milli_per_liter
+            chemical = 'Ammonia'
+        elif chemical == 'ammonia-nitrogen as n' and unit == 'mg/l as n':
+            return current_amount * 1.21587526, milli_per_liter
+            chemical = 'Ammonia'
+        elif chemical == 'ammonia-nitrogen' and unit == 'mg/l as n':
+            return current_amount * 1.21587526, milli_per_liter
+            chemical = 'Ammonia'
+        elif chemical == 'ammonia-nitrogen as n' and unit == milli_per_liter:
+            return current_amount * 1.21587526, 'Ammonia'
+        elif chemical == 'ammonia-nitrogen' and unit == milli_per_liter:
+            return current_amount * 1.21587526, 'Ammonia'
+        elif chemical == 'ammonia' and unit == 'mg/l as n':
+            return current_amount * 1.21587526, milli_per_liter
+        elif chemical == 'specific conductance' and unit == 'ms/cm':
+            return current_amount * 1000, 'uS/cm'
+        elif chemical == 'specific conductance' and unit == 'umho/cm':
+            converted_unit = 'uS/cm'
+        elif chemical == 'calcium' and unit == 'ueq/l':
+            return current_amount * 20.039, milli_per_liter
+        elif chemical == 'magnesium' and unit == 'ueq/l':
+            return current_amount * 12.1525, milli_per_liter
+        elif chemical == 'potassium' and unit == 'ueq/l':
+            return current_amount * 39.0983, milli_per_liter
+        elif chemical == 'sodium' and unit == 'ueq/l':
+            return current_amount * 22.9897, milli_per_liter
+        elif chemical == 'nitrate' and unit == 'ueq/l':
+            return current_amount * 62.0049, milli_per_liter
+        elif chemical == 'chloride' and unit == 'ueq/l':
+            return current_amount * 35.453, milli_per_liter
+        elif chemical == 'hydroxide' and unit == 'ueq/l':
+            return current_amount * 17.0073, milli_per_liter
+        elif chemical == 'sulfate' and unit == 'ueq/l':
+            return current_amount * 24.01565, milli_per_liter
+        else:
+            return current_amount, unit
