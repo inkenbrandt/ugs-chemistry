@@ -112,25 +112,29 @@ class Normalizer(object):
         Fill the ParamGroup field using the table
 
         """
-        inorgmajmet = ['Calcium', 'Magnesium', 'Potassium', 'Sodium adsorption ratio [(Na)/(sq root of 1/2 Ca + Mg)]', 'Sodium adsorption ratio', 'Sodium plus potassium', 'Sodium, percent total cations', 'Sodium']
+        inorganics_major_metals = ['calcium', 'magnesium', 'potassium', 'sodium adsorption ratio [(na)/(sq root of 1/2 ca + mg)]', 'sodium adsorption ratio', 'sodium plus potassium', 'sodium, percent total cations', 'sodium']
+        inorganics_major_nonmetals = []
+        inorganics_minor_metals = []
+        inorganics_minor_nonmetals = []
+        nutrient = []
 
-        if param in inorgmajmet and unit == 'ug/l':
+        if param in inorganics_major_metals and unit == 'ug/l':
             ResultValue = ResultValue * 0.001
             unit = 'mg/l'
 
-        if paramGroup == 'inorganics, minor, metals' and unit == 'mg/l':
+        if param in inorganics_minor_metals and unit == 'mg/l':
             ResultValue = ResultValue * 1000
             unit = 'ug/l'
 
-        if paramGroup == 'inorganics, major, non-metals' and unit == 'ug/l':
+        if param in inorganics_major_nonmetals and unit == 'ug/l':
             ResultValue = ResultValue * 0.001
             unit = 'mg/l'
 
-        if paramGroup == 'inorganics, minor, non-metals' and unit == 'mg/l':
+        if param in inorganics_minor_nonmetals and unit == 'mg/l':
             ResultValue = ResultValue * 1000
             unit = 'ug/l'
 
-        if paramGroup == 'nutrient' and unit == 'ug/l':
+        if param in nutrient and unit == 'ug/l':
             ResultValue = ResultValue * 0.001
             unit = 'mg/l'
 
