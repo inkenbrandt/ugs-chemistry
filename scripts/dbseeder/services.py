@@ -112,12 +112,11 @@ class Normalizer(object):
         convert units
 
         """
-        inorganics_major_metals = ['calcium', 'magnesium', 'potassium', 'sodium adsorption ratio [(na)/(sq root of 1/2 ca + mg)]', 'sodium adsorption ratio', 'sodium plus potassium', 'sodium, percent total cations', 'sodium']
-        inorganics_major_nonmetals = []
-        inorganics_minor_metals = []
-        inorganics_minor_nonmetals = []
-        nutrient = []
-        milli_per_liter = 'mg/l'
+        inorganics_major_metals = ['Calcium', 'Magnesium', 'Potassium', 'Sodium adsorption ratio [(Na)/(sq root of 1/2 Ca + Mg)]', 'Sodium adsorption ratio', 'Sodium plus potassium', 'Sodium, percent total cations', 'Sodium']
+        inorganics_major_nonmetals = ['Alkalinity, Bicarbonate as CaCO3', 'Alkalinity, Carbonate as CaCO3', 'Alkalinity, Hydroxide as CaCO3', 'Alkalinity, Phenolphthalein (total hydroxide+1/2 carbonate)', 'Alkalinity, total as CaCO3', 'Alkalinity, total', 'Alkalinity', 'Bicarbonate', 'Bromide', 'Carbon dioxide', 'Carbonate (CO3)', 'Carbonate', 'Chloride', 'Chlorine', 'Dissolved oxygen (DO)', 'Dissolved oxygen saturation', 'Fluoride', 'Fluorine', 'Hydrogen ion', 'Hydrogen', 'Hydroxide', 'Inorganic carbon', 'Oxygen', 'Silica', 'Silicon', 'Sulfate', 'Sulfide', 'Sulfur', 'Total Carbon']
+        inorganics_minor_metals = ['Aluminum', 'Barium', 'Beryllium', 'Bismuth', 'Cadmium', 'Cerium', 'Cesium', 'Chromium(III)', 'Chromium(VI)', 'Chromium', 'Cobalt', 'Copper', 'Dysprosium', 'Erbium', 'Europium', 'Gadolinium', 'Gallium', 'Holmium', 'Iron, ion (Fe2+)', 'Iron', 'Lanthanum', 'Lead', 'Lithium', 'Lutetium', 'Manganese', 'Mercury', 'Molybdenum', 'Neodymium', 'Nickel', 'Niobium', 'Praseodymium', 'Rhenium', 'Rubidium', 'Samarium', 'Scandium', 'Silver', 'Strontium', 'Sulfate as S', 'Sulfate as SO4', 'Terbium', 'Thallium', 'Thulium', 'Tin', 'Titanium', 'Tungsten', 'Vanadium', 'Ytterbium', 'Yttrium', 'Zinc', 'Zirconium']
+        inorganics_minor_nonmetals = ['Antimony', 'Argon', 'Arsenate (AsO43-)', 'Arsenic', 'Arsenite', 'Boron', 'Bromine', 'Cyanide', 'Cyanides amenable to chlorination (HCN & CN)', 'Germanium', 'Helium', 'Iodide', 'Krypton', 'Neon', 'Perchlorate', 'Selenium', 'Sulfur hexafluoride', 'Tellurium', 'Xenon']
+        nutrient = ['Ammonia and ammonium', 'Ammonia as NH3', 'Ammonia', 'Ammonia-nitrogen as N', 'Ammonia-nitrogen', 'Ammonium as N', 'Ammonium', 'Inorganic nitrogen (nitrate and nitrite) as N', 'Inorganic nitrogen (nitrate and nitrite)', 'Kjeldahl nitrogen', 'Nitrate as N', 'Nitrate', 'Nitrate-Nitrogen', 'Nitrite as N', 'Nitrite', 'Nitrogen, ammonium/ammonia ratio', 'Nitrogen, mixed forms (NH3), (NH4), organic, (NO2) and (NO3)', 'Nitrogen', 'Organic nitrogen', 'Orthophosphate as P', 'Orthophosphate', 'Phosphate', 'Phosphate-phosphorus as P', 'Phosphate-phosphorus as PO4', 'Phosphate-phosphorus', 'Phosphorus']
 
         if chemical in inorganics_major_metals and unit == 'ug/l':
             return current_amount * 0.001, milli_per_liter
