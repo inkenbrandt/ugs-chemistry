@@ -113,11 +113,10 @@ class Normalizer(object):
 
         """
         inorganics_major_metals = ['calcium', 'magnesium', 'potassium', 'sodium adsorption ratio [(na)/(sq root of 1/2 ca + mg)]', 'sodium adsorption ratio', 'sodium plus potassium', 'sodium, percent total cations', 'sodium']
-        inorganics_major_nonmetals = []
-        inorganics_minor_metals = []
-        inorganics_minor_nonmetals = []
-        nutrient = []
-        milli_per_liter = 'mg/l'
+        inorganics_major_nonmetals = ['alkalinity, bicarbonate as caco3', 'alkalinity, carbonate as caco3', 'alkalinity, hydroxide as caco3', 'alkalinity, phenolphthalein (total hydroxide+1/2 carbonate)', 'alkalinity, total as caco3', 'alkalinity, total', 'alkalinity', 'bicarbonate', 'bromide', 'carbon dioxide', 'carbonate (co3)', 'carbonate', 'chloride', 'chlorine', 'dissolved oxygen (do)', 'dissolved oxygen saturation', 'fluoride', 'fluorine', 'hydrogen ion', 'hydrogen', 'hydroxide', 'inorganic carbon', 'oxygen', 'silica', 'silicon', 'sulfate', 'sulfide', 'sulfur', 'total carbon']
+        inorganics_minor_metals = ['aluminum', 'barium', 'beryllium', 'bismuth', 'cadmium', 'cerium', 'cesium', 'chromium(iii)', 'chromium(vi)', 'chromium', 'cobalt', 'copper', 'dysprosium', 'erbium', 'europium', 'gadolinium', 'gallium', 'holmium', 'iron, ion (fe2+)', 'iron', 'lanthanum', 'lead', 'lithium', 'lutetium', 'manganese', 'mercury', 'molybdenum', 'neodymium', 'nickel', 'niobium', 'praseodymium', 'rhenium', 'rubidium', 'samarium', 'scandium', 'silver', 'strontium', 'sulfate as s', 'sulfate as so4', 'terbium', 'thallium', 'thulium', 'tin', 'titanium', 'tungsten', 'vanadium', 'ytterbium', 'yttrium', 'zinc', 'zirconium']
+        inorganics_minor_nonmetals = ['antimony', 'argon', 'arsenate (aso43-)', 'arsenic', 'arsenite', 'boron', 'bromine', 'cyanide', 'cyanides amenable to chlorination (hcn & cn)', 'germanium', 'helium', 'iodide', 'krypton', 'neon', 'perchlorate', 'selenium', 'sulfur hexafluoride', 'tellurium', 'xenon']
+        nutrient = ['ammonia and ammonium', 'ammonia as nh3', 'ammonia', 'ammonia-nitrogen as n', 'ammonia-nitrogen', 'ammonium as n', 'ammonium', 'inorganic nitrogen (nitrate and nitrite) as n', 'inorganic nitrogen (nitrate and nitrite)', 'kjeldahl nitrogen', 'nitrate as n', 'nitrate', 'nitrate-nitrogen', 'nitrite as n', 'nitrite', 'nitrogen, ammonium/ammonia ratio', 'nitrogen, mixed forms (nh3), (nh4), organic, (no2) and (no3)', 'nitrogen', 'organic nitrogen', 'orthophosphate as p', 'orthophosphate', 'phosphate', 'phosphate-phosphorus as p', 'phosphate-phosphorus as po4', 'phosphate-phosphorus', 'phosphorus']
 
         if chemical in inorganics_major_metals and unit == 'ug/l':
             return current_amount * 0.001, milli_per_liter
