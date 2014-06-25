@@ -100,3 +100,200 @@ class Caster(object):
             return value
         except:
             return None
+
+class Normalizer(object):
+    """class for handling the normalization of units"""
+    def __init__(self):
+        super(Normalizer, self).__init__()
+
+    def normalize(self, param, unit):
+        """
+        In the units field, make all mg/L and ug/L lowercase while preserving other uppercase letters
+        Fill the ParamGroup field using the table
+
+        """
+
+
+        if paramGroup == 'inorganics, major, metals' and unit == 'ug/l':
+            ResultValue = ResultValue * 0.001
+            unit = 'mg/l'
+
+        if paramGroup == 'inorganics, minor, metals' and unit == 'mg/l':
+            ResultValue = ResultValue * 1000
+            unit = 'ug/l'
+
+        if paramGroup == 'inorganics, major, non-metals' and unit == 'ug/l':
+            ResultValue = ResultValue * 0.001
+            unit = 'mg/l'
+
+        if paramGroup == 'inorganics, minor, non-metals' and unit == 'mg/l':
+            ResultValue = ResultValue * 1000
+            unit = 'ug/l'
+
+        if paramGroup == 'nutrient' and unit == 'ug/l':
+            ResultValue = ResultValue * 0.001
+            unit = 'mg/l'
+
+        if param == 'nitrate' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 4.426802887
+            unit = 'mg/l'
+
+        if param == 'nitrite' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 3.284535258
+            unit = 'mg/l'
+
+        if param == 'phosphate' and unit == 'mg/l as p':
+            ResultValue = ResultValue * 3.131265779
+            unit = 'mg/l'
+
+        if param == 'bicarbonate as caco3' and unit == 'mg/l':
+            ResultValue = ResultValue * 1.22
+            param = 'Bicarbonate'
+
+        if param == 'bicarbonate as caco3' and unit == 'mg/l as caco3':
+            ResultValue = ResultValue * 1.22
+            unit = 'mg/l'
+            param = 'Bicarbonate'
+
+        if param == 'bicarbonate' and unit == 'mg/l as caco3':
+            ResultValue = ResultValue * 1.22
+            unit = 'mg/l'
+
+        if param == 'phosphate-phosphorus' and unit == 'mg/l as p':
+            ResultValue = ResultValue * 3.131265779
+            unit = 'mg/l'
+            param = 'Phosphate'
+
+        if param == 'phosphate-phosphorus' and unit == 'mg/l':
+            ResultValue = ResultValue * 3.131265779
+            param = 'Phosphate'
+
+        if param == 'sulfate as s' and unit == 'mg/l':
+            ResultValue = ResultValue * 0.333792756
+            param = 'Sulfate'
+
+        if param == 'nitrate-nitrogen' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 4.426802887
+            unit = 'mg/l'
+            param = 'Nitrate'
+
+        if param == 'nitrate as n' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 4.426802887
+            unit = 'mg/l'
+            param = 'Nitrate'
+
+        if param == 'nitrite as n' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 3.284535258
+            unit = 'mg/l'
+            param = 'Nitrite'
+
+        if param == 'nitrate-nitrogen' and unit == 'mg/l':
+            ResultValue = ResultValue * 4.426802887
+            param = 'Nitrite'
+
+        if param == 'nitrate as n' and unit == 'mg/l':
+            ResultValue = ResultValue * 4.426802887
+            param = 'Nitrate'
+
+        if param == 'nitrite as n' and unit == 'mg/l':
+            ResultValue = ResultValue * 3.284535258
+            unit = 'mg/l'
+            param = 'Nitrite'
+
+        if param == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 4.426802887
+            unit = 'mg/l'
+            param = 'Inorganic nitrogen (nitrate and nitrite) as no3'
+
+        if param == 'inorganic nitrogen (nitrate and nitrite) as n' and unit == 'mg/l':
+            ResultValue = ResultValue * 4.426802887
+            unit = 'mg/l'
+            param = 'Inorganic nitrogen (nitrate and nitrite) as no3'
+
+        if param == 'phosphate-phosphorus as p' and unit == 'mg/l as p':
+            ResultValue = ResultValue * 3.131265779
+            param = 'Phosphate'
+
+        if param == 'orthophosphate as p' and unit == 'mg/l as p':
+            ResultValue = ResultValue * 3.131265779
+            unit = 'mg/l'
+            param = 'Phosphate'
+
+        if param == 'phosphate-phosphorus as p' and unit == 'mg/l':
+            ResultValue = ResultValue * 3.131265779
+            param = 'Phosphate'
+
+        if param == 'orthophosphate as p' and unit == 'mg/l':
+            ResultValue = ResultValue * 3.131265779
+            param = 'Phosphate'
+
+        if param == 'orthophosphate' and unit == 'mg/l as p':
+            ResultValue = ResultValue * 3.131265779
+            unit = 'mg/l'
+            param = 'Phosphate'
+
+        if param == 'ammonia and ammonium' and unit == 'mg/l nh4':
+            ResultValue = ResultValue * 1.05918619
+            unit = 'mg/l'
+            param = 'Ammonia'
+
+        if param == 'ammonia-nitrogen as n' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 1.21587526
+            unit = 'mg/l'
+            param = 'Ammonia'
+
+        if param == 'ammonia-nitrogen' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 1.21587526
+            unit = 'mg/l'
+            param = 'Ammonia'
+
+        if param == 'ammonia-nitrogen as n' and unit == 'mg/l':
+            ResultValue = ResultValue * 1.21587526
+            param = 'Ammonia'
+
+        if param == 'ammonia-nitrogen' and unit == 'mg/l':
+            ResultValue = ResultValue * 1.21587526
+            param = 'Ammonia'
+
+        if param == 'ammonia' and unit == 'mg/l as n':
+            ResultValue = ResultValue * 1.21587526
+            unit = 'mg/l'
+
+        if param == 'specific conductance' and unit == 'ms/cm':
+            ResultValue = ResultValue * 1000
+            unit = 'uS/cm'
+
+        if param == 'specific conductance' and unit == 'umho/cm':
+            unit = 'uS/cm'
+
+        if param == 'calcium' and unit == 'ueq/l':
+            ResultValue = ResultValue * 20.039
+            unit = 'mg/l'
+
+        if param == 'magnesium' and unit == 'ueq/l':
+            ResultValue = ResultValue * 12.1525
+            unit = 'mg/l'
+
+        if param == 'potassium' and unit == 'ueq/l':
+            ResultValue = ResultValue * 39.0983
+            unit = 'mg/l'
+
+        if param == 'sodium' and unit == 'ueq/l':
+            ResultValue = ResultValue * 22.9897
+            unit = 'mg/l'
+
+        if param == 'nitrate' and unit == 'ueq/l':
+            ResultValue = ResultValue * 62.0049
+            unit = 'mg/l'
+
+        if param == 'chloride' and unit == 'ueq/l':
+            ResultValue = ResultValue * 35.453
+            unit = 'mg/l'
+
+        if param == 'hydroxide' and unit == 'ueq/l':
+            ResultValue = ResultValue * 17.0073
+            unit = 'mg/l'
+
+        if param == 'sulfate' and unit == 'ueq/l':
+            ResultValue = ResultValue * 24.01565
+            unit = 'mg/l'
