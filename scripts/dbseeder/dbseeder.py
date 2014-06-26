@@ -139,11 +139,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='seed a geodatabse.')
 
     parser.add_argument(
-        '--update', action='store_true', help='update the gdb from a web service call')
+        '--update', action='store_true', help='update the gdb')
     parser.add_argument(
-        '--seed', nargs='*', help='seed the gdb from csv\'s on disk')
+        '--seed', nargs='*', help='seed the gdb from a datasource on disk')
     parser.add_argument(
-        '--length', nargs='*', help='get the max field sizes form files on disk. --length program featureclass')
+        '--length', nargs='*', help='get the max field sizes from files on disk. --length program featureclass')
     parser.add_argument(
         '--relate', action='store_true',
         help='creates the releationship class between stations and results')
