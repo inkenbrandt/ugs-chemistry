@@ -4,7 +4,7 @@ import cx_Oracle
 import glob
 import models
 import os
-from services import Project, WebQuery
+from services import Project, WebQuery, Normalizer
 
 
 class Program(object):
@@ -12,6 +12,7 @@ class Program(object):
     def __init__(self, location, InsertCursor):
         self.location = location
         self.InsertCursor = InsertCursor
+        self.normalizer = Normalizer()
 
     def _get_default_fields(self, schema_map):
         fields = []
@@ -69,7 +70,7 @@ class Wqp(Program):
 
         with self.InsertCursor(location, fields) as curser:
             for row in data:
-                etl = Type(row)
+                etl = Type(row, self.normalizer)
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
