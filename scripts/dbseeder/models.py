@@ -14,12 +14,14 @@ class TableInfo(object):
 
 class Table(object):
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer):
         """
             this base class takes a csv row
             it then pulls all of the values out via the schema map
             and creates a row object that is ordered correctly for
             inserting into the feature class
+            row: the row from the datasource
+            normalizer: the service to normalize the goods
         """
 
         #: probably should refactor this out.
@@ -28,12 +30,18 @@ class Table(object):
             return
 
         self._row = []
+        normalize = {
+            'chemical': (None, None),
+            'unit': (None, None),
+            'amount': (None, None)
+        }
 
-        for key in self.schema_map.keys():
+        for i, key in enumerate(self.schema_map.keys()):
             #: the key index maps to the column index in the feature class
             etl_info = self.schema_map[key]
             source_field_name = etl_info['source']
-            destination_field_type = Field(etl_info).field_type
+            field = Field(etl_info)
+            destination_field_type = field.field_type
 
             #: not all of the programs have the same schema
             if source_field_name not in row:
@@ -43,7 +51,28 @@ class Table(object):
             destination_value = row[source_field_name].strip()
             value = Caster.cast(destination_value, destination_field_type)
 
+            field_name = field.field_name.lower()
+
+            #: get the unit, resultvalue and param name so we can use it later
+            #: grab the value and the index for inserting the updated values
+            if field_name == 'unit':
+                normalize['unit'] = (value.lower(), i)
+            elif field_name == 'resultvalue':
+                normalize['amount'] = (value, i)
+            elif field_name == 'param':
+                normalize['chemical'] = (value, i)
+
             self._row.append(value)
+
+        #: normalize the row
+        amount, unit, chemical = normalizer.normalize_unit(
+            normalize['chemical'][0],
+            normalize['unit'][0],
+            normalize['amount'][0])
+
+        self._row[normalize['amount'][1]] = amount
+        self._row[normalize['unit'][1]] = unit
+        self._row[normalize['chemical'][1]] = chemical
 
     def _build_schema_map(self, schema):
         results_schema = schema
@@ -63,12 +92,10 @@ class Sdwis(object):
 
     """base class for building sdwis schema map"""
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer):
         """
-            this base class takes a csv row
-            it then pulls all of the values out via the schema map
-            and creates a row object that is ordered correctly for
-            inserting into the feature class
+            row: database row from sdwis oracle db
+            normalizer: the service to normalize the goods
         """
 
         #: probably should refactor this out.
@@ -77,12 +104,18 @@ class Sdwis(object):
             return
 
         self._row = []
+        normalize = {
+            'chemical': (None, -1),
+            'unit': (None, -1),
+            'amount': (None, -1)
+        }
 
-        for key in self.schema_map.keys():
+        for i, key in enumerate(self.schema_map.keys()):
             #: the key index maps to the column index in the feature class
             etl_info = self.schema_map[key]
             destination_field_name = etl_info['destination']
-            destination_field_type = Field(etl_info).field_type
+            field = Field(etl_info)
+            destination_field_type = field.field_type
 
             #: not all of the programs have the same schema
             if destination_field_name not in self.fields:
@@ -93,7 +126,37 @@ class Sdwis(object):
 
             value = Caster.cast(destination_value, destination_field_type)
 
+            field_name = field.field_name.lower()
+
+            #: get the unit, resultvalue and param name so we can use it later
+            #: grab the value and the index for inserting the updated values
+            if field_name == 'unit':
+                normalize['unit'] = (value.lower(), i)
+            elif field_name == 'resultvalue':
+                normalize['amount'] = (value, i)
+            elif field_name == 'param':
+                normalize['chemical'] = (value, i)
+
             self._row.append(value)
+
+            #: normalize the row
+        amount, unit, chemical = normalizer.normalize_unit(
+            normalize['chemical'][0],
+            normalize['unit'][0],
+            normalize['amount'][0])
+
+        try:
+            self._row[normalize['amount'][1]] = amount
+        except:
+            pass
+        try:
+            self._row[normalize['unit'][1]] = unit
+        except:
+            pass
+        try:
+            self._row[normalize['chemical'][1]] = chemical
+        except:
+            pass
 
     def _build_schema_map(self, schema):
         results_schema = schema
@@ -110,6 +173,10 @@ class Sdwis(object):
 
 
 class GdbDatasource(object):
+
+    def __init__(self, normalizer):
+        self.normalizer = normalizer
+
     def _build_schema_map(self, schema):
         schema_index_items = OrderedDict()
 
@@ -120,11 +187,37 @@ class GdbDatasource(object):
 
     def _etl_row(self, row, schema_map, type):
         _row = []
-        for item in schema_map:
-            if item in self.fields:
-                _row.append(row[self.fields.index(item)])
+        normalize = {
+            'chemical': (None, None),
+            'unit': (None, None),
+            'amount': (None, None)
+        }
+
+        for i, field_name in enumerate(schema_map):
+            if field_name in self.fields:
+                value = row[self.fields.index(field_name)]
+
+                _row.append(value)
+
+                #: get the unit, resultvalue and param name so we can use it later
+                #: grab the value and the index for inserting the updated values
+                if field_name == 'unit':
+                    normalize['unit'] = (value.lower(), i)
+                elif field_name == 'resultvalue':
+                    normalize['amount'] = (value, i)
+                elif field_name == 'param':
+                    normalize['chemical'] = (value, i)
+
             else:
                 _row.append(None)
+
+        #: normalize the row
+        amount, unit, chemical = self.normalizer.normalize_unit(
+            normalize['chemical'][0],
+            normalize['unit'][0],
+            normalize['amount'][0])
+
+        _row = self.seriously(_row, normalize, amount, unit, chemical)
 
         if type == 'Station':
             has_utm = False
@@ -158,15 +251,30 @@ class GdbDatasource(object):
 
         return _row
 
+    def seriously(self, row, normalize, amount, unit, chemical):
+        index = normalize['amount'][1]
+        if index > -1:
+            row[index] = amount
+
+        index = normalize['unit'][1]
+        if index > -1:
+            row[index] = unit
+
+        index = normalize['chemical'][1]
+        if index > -1:
+            row[index] = chemical
+
+        return row
+
 
 class Results(Table):
 
     """ORM mapping to station schema to Results table"""
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer=None):
         self.schema_map = self._build_schema_map(Schema().result)
         if row is not None:
-            super(Results, self).__init__(row)
+            super(Results, self).__init__(row, normalizer)
 
     schema_map = None
 
@@ -206,10 +314,10 @@ class SdwisResults(Sdwis):
         ('IdNum', 17)
     ])
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer):
         self.schema_map = self._build_schema_map(Schema().result)
         if row is not None:
-            super(SdwisResults, self).__init__(row)
+            super(SdwisResults, self).__init__(row, normalizer)
 
     schema_map = None
 
@@ -235,10 +343,10 @@ class SdwisStations(Sdwis):
         ('DepthUnit', 15)
     ])
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer):
         self.schema_map = self._build_schema_map(Schema().station)
         if row is not None:
-            super(SdwisStations, self).__init__(row)
+            super(SdwisStations, self).__init__(row, normalizer)
 
     schema_map = None
 
@@ -260,8 +368,8 @@ class OgmStation(GdbDatasource):
               'UTM_X',
               'UTM_Y']
 
-    def __init__(self, row, schema):
-        super(OgmStation, self).__init__()
+    def __init__(self, row, schema, normalizer):
+        super(OgmStation, self).__init__(normalizer)
         schema_map = self._build_schema_map(schema)
         self.row = self._etl_row(row, schema_map, 'Station')
 
@@ -283,10 +391,10 @@ class OgmResult(GdbDatasource):
               'Unit',
               'SampComment']
 
-    def __init__(self, row, schema):
-            super(OgmResult, self).__init__()
-            schema_map = self._build_schema_map(schema)
-            self.row = self._etl_row(row, schema_map, 'Result')
+    def __init__(self, row, schema, normalizer):
+        super(OgmResult, self).__init__(normalizer)
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map, 'Result')
 
 
 class DwrStation(GdbDatasource):
@@ -307,8 +415,8 @@ class DwrStation(GdbDatasource):
               'X_UTM',
               'Y_UTM']
 
-    def __init__(self, row, schema):
-        super(DwrStation, self).__init__()
+    def __init__(self, row, schema, normalizer):
+        super(DwrStation, self).__init__(normalizer)
         schema_map = self._build_schema_map(schema)
         self.row = self._etl_row(row, schema_map, 'Station')
 
@@ -331,10 +439,10 @@ class DwrResult(GdbDatasource):
               'SampleId',
               'IdNum']
 
-    def __init__(self, row, schema):
-            super(DwrResult, self).__init__()
-            schema_map = self._build_schema_map(schema)
-            self.row = self._etl_row(row, schema_map, 'Result')
+    def __init__(self, row, schema, normalizer):
+        super(DwrResult, self).__init__(normalizer)
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map, 'Result')
 
 
 class UgsStation(GdbDatasource):
@@ -351,8 +459,8 @@ class UgsStation(GdbDatasource):
               'StationComment',
               'StationId']
 
-    def __init__(self, row, schema):
-        super(UgsStation, self).__init__()
+    def __init__(self, row, schema, normalizer):
+        super(UgsStation, self).__init__(normalizer)
         schema_map = self._build_schema_map(schema)
         self.row = self._etl_row(row, schema_map, 'Station')
 
@@ -380,10 +488,10 @@ class UgsResult(GdbDatasource):
               'SampComment',
               'CASReg']
 
-    def __init__(self, row, schema):
-            super(UgsResult, self).__init__()
-            schema_map = self._build_schema_map(schema)
-            self.row = self._etl_row(row, schema_map, 'Result')
+    def __init__(self, row, schema, normalizer):
+        super(UgsResult, self).__init__(normalizer)
+        schema_map = self._build_schema_map(schema)
+        self.row = self._etl_row(row, schema_map, 'Result')
 
 
 class Schema(object):
