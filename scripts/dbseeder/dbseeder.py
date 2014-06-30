@@ -117,8 +117,8 @@ class Seeder(object):
         self._seed(folder, types)
 
     def _seed(self, folder, types):
-        wqp = Wqp(self.location, arcpy.da.InsertCursor)
-        wqp.seed(folder, types)
+        # wqp = Wqp(self.location, arcpy.da.InsertCursor)
+        # wqp.seed(folder, types)
 
         # sdwis = Sdwis(self.location, arcpy.da.InsertCursor)
         # sdwis.seed(types)
@@ -131,8 +131,8 @@ class Seeder(object):
         #     self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
         # dwr.seed(folder, types)
 
-        # ugs = Ugs(self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
-        # ugs.seed(folder, types)
+        ugs = Ugs(self.location, arcpy.da.SearchCursor, arcpy.da.InsertCursor)
+        ugs.seed(folder, types)
 
 
 if __name__ == '__main__':
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    location = 'c:\\temp\\wqp'
+    location = 'c:\\temp\\ugs'
     gdb = 'master.gdb'
     seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\data'
 

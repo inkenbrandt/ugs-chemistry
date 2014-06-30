@@ -117,6 +117,10 @@ class Normalizer(object):
         normalize chemical
 
         """
+
+        if chemical is None:
+            return current_amount, chemical, unit
+
         inorganics_major_metals = [
             'calcium', 'dissolved calcium', 'dissolved magnesium',
             'dissolved potassium', 'dissolved sodium', 'magnesium',

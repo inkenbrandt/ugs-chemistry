@@ -33,8 +33,6 @@ class Program(object):
 
 class GdbBase(Program):
 
-    """docstring for GdbBase"""
-
     def __init__(self, location, InsertCursor):
         super(GdbBase, self).__init__(location, InsertCursor)
 
@@ -299,14 +297,14 @@ class Sdwis(Program):
         elif feature_class == 'Stations':
             Type = models.SdwisStations
 
-        fields = self._get_fields(Type(None).schema_map)
+        fields = self._get_fields(Type(None, None).schema_map)
 
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
         with self.InsertCursor(location, fields) as curser:
             for row in data:
-                etl = Type(row)
+                etl = Type(row, self.normalizer)
                 insert_row = etl.row
 
                 if feature_class == 'Stations':
@@ -372,7 +370,7 @@ class Dogm(GdbBase):
             print 'inserting into {} type {}'.format(location, type)
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema)
+                etl = Type(record, schema, self.normalizer)
 
                 self._insert_row(etl.row, fields, location)
 
@@ -413,7 +411,7 @@ class Udwr(GdbBase):
             print 'inserting into {} type {}'.format(location, type)
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema)
+                etl = Type(record, schema, self.normalizer)
 
                 self._insert_row(etl.row, fields, location)
 
@@ -454,6 +452,6 @@ class Ugs(GdbBase):
             print 'inserting into {} type {}'.format(location, type)
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema)
+                etl = Type(record, schema, self.normalizer)
 
                 self._insert_row(etl.row, fields, location)
