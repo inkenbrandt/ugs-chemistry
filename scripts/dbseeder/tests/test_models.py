@@ -9,8 +9,9 @@ Tests for `models` module.
 """
 
 import datetime
+import dbseeder.models as models
 import unittest
-from dbseeder.models import Results, Stations, SdwisResults, SdwisStations, OgmStation, OgmResult, Schema
+from dbseeder.services import Normalizer
 
 
 class TestWqpModels(unittest.TestCase):
@@ -21,7 +22,9 @@ class TestWqpModels(unittest.TestCase):
         sampdepth = 0
         analysisdate = datetime.datetime(2014, 02, 24, 0, 0)
         sampledate = datetime.datetime(2014, 02, 24, 0, 0)
-        sampletime = datetime.datetime.now().replace(hour=11, minute=40, second=0, microsecond=0) # time parsing gives current date
+        # time parsing gives current date
+        sampletime = (datetime.datetime.now().
+                      replace(hour=11, minute=40, second=0, microsecond=0))
 
         csv_data = {'ActivityIdentifier': 'SampleId',
                     'CharacteristicName': 'Param',
@@ -129,7 +132,7 @@ class TestWqpModels(unittest.TestCase):
                   'USGSPCode'
                   ]
 
-        expected = Results(csv_data).row
+        expected = models.Results(csv_data, Normalizer()).row
         self.assertListEqual(actual, expected)
 
     def test_model_hydration_station(self):
@@ -208,7 +211,7 @@ class TestWqpModels(unittest.TestCase):
             None,
             None
         ]
-        actual = Stations(csv_data).row
+        actual = models.Stations(csv_data, Normalizer()).row
 
         self.assertListEqual(actual, expected)
 
@@ -232,7 +235,7 @@ class TestSdwisModels(unittest.TestCase):
                   '003',
                   0,
                   None]
-        patient = SdwisStations(db_row)
+        patient = models.SdwisStations(db_row, Normalizer())
         row = patient.row
         self.assertListEqual(['750',
                               'HANNA WATER & SEWER IMPROVEMENT DISTRICT',
@@ -287,7 +290,7 @@ class TestSdwisModels(unittest.TestCase):
                   None,
                   3908822]
 
-        patient = SdwisResults(db_row)
+        patient = models.SdwisResults(db_row, Normalizer())
         self.assertListEqual(patient.row,
                              [None,
                               None,
@@ -350,7 +353,7 @@ class TestDogmModels(unittest.TestCase):
                     4397670.5318
                     ]
 
-        model = OgmStation(gdb_data, Schema().station)
+        model = models.OgmStation(gdb_data, models.Schema().station, Normalizer())
 
         expected = ['UDOGM',
                     'Utah Division Of Oil Gas And Mining',
@@ -451,7 +454,7 @@ class TestDogmModels(unittest.TestCase):
                     None  # usgspcode
                     ]
 
-        model = OgmResult(gdb_data, Schema().result)
+        model = models.OgmResult(gdb_data, models.Schema().result, Normalizer())
         actual = model.row
 
         self.assertListEqual(expected, actual)

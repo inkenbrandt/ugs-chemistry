@@ -53,7 +53,7 @@ class Wqp(Program):
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
 
-        print 'inserting into {} type {}'.format(location, feature_class)
+        print 'inserting into {} model_type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
             Type = models.Results
@@ -144,16 +144,16 @@ class Wqp(Program):
 
         return maps
 
-    def seed(self, folder, types):
-        for type in types:
+    def seed(self, folder, model_types):
+        for type in model_types:
             for csv_file in self._csvs_on_disk(folder, type):
                 with open(csv_file, 'r') as f:
                     print 'processing {}'.format(csv_file)
                     self._insert_rows(csv.DictReader(f), type)
                     print 'processing {}: done'.format(csv_file)
 
-    def update(self, types):
-        for type in types:
+    def update(self, model_types):
+        for type in model_types:
             response = self._query(type)
             csv = self._read_response(response)
 
@@ -161,6 +161,9 @@ class Wqp(Program):
 
 
 class Sdwis(Program):
+
+    #: testing variable to reduce query times
+    count = None
 
     _result_query = """SELECT
         UTV80.TSASAR.ANALYSIS_START_DT AS "AnalysisDate",
@@ -269,7 +272,7 @@ class Sdwis(Program):
         self._connection_string = '{}/{}@{}/{}'.format(
             user, password, server, instance)
 
-    def _query(self, query, count=None):
+    def _query(self, query):
         print 'querying SDWIS database'
 
         conn = cx_Oracle.connect(self._connection_string)
@@ -277,8 +280,8 @@ class Sdwis(Program):
 
         results = cursor.execute(query)
 
-        if count is not None:
-            some = results.fetchmany(count)
+        if self.count is not None:
+            some = results.fetchmany(self.count)
 
             cursor.close()
             conn.close()
@@ -289,7 +292,6 @@ class Sdwis(Program):
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
-
         print 'inserting into {} type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
@@ -321,17 +323,17 @@ class Sdwis(Program):
 
                 curser.insertRow(insert_row)
 
-    def seed(self, types):
+    def seed(self, model_types):
         query_string = None
 
-        for type in types:
-            if type == 'Stations':
+        for model_type in model_types:
+            if model_type == 'Stations':
                 query_string = self._station_query
-            elif type == 'Results':
+            elif model_type == 'Results':
                 query_string = self._result_query
 
             records = self._query(query_string)
-            self._insert_rows(records, type)
+            self._insert_rows(records, model_type)
 
 
 class Dogm(GdbBase):
@@ -346,28 +348,28 @@ class Dogm(GdbBase):
         super(Dogm, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
 
-    def seed(self, folder, types):
+    def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: types - [Staions, Results]
+        #: model_types - [Staions, Results]
 
-        for type in types:
-            if type == 'Stations':
+        for model_type in model_types:
+            if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.OgmStation
                 schema = models.Schema().station
-            elif type == 'Results':
+            elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.OgmResult
                 schema = models.Schema().result
 
             fields = self._get_default_fields(schema)
 
-            if type == 'Stations':
+            if model_type == 'Stations':
                 fields.append('SHAPE@XY')
 
-            location = os.path.join(self.location, type)
+            location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, type)
+            print 'inserting into {} type {}'.format(location, model_type)
 
             for record in self._read_gdb(table, Type.fields):
                 etl = Type(record, schema, self.normalizer)
@@ -387,28 +389,28 @@ class Udwr(GdbBase):
         super(Udwr, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
 
-    def seed(self, folder, types):
+    def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: types - [Staions, Results]
+        #: model_types - [Staions, Results]
 
-        for type in types:
-            if type == 'Stations':
+        for model_type in model_types:
+            if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.DwrStation
                 schema = models.Schema().station
-            elif type == 'Results':
+            elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.DwrResult
                 schema = models.Schema().result
 
             fields = self._get_default_fields(schema)
 
-            if type == 'Stations':
+            if model_type == 'Stations':
                 fields.append('SHAPE@XY')
 
-            location = os.path.join(self.location, type)
+            location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, type)
+            print 'inserting into {} type {}'.format(location, model_type)
 
             for record in self._read_gdb(table, Type.fields):
                 etl = Type(record, schema, self.normalizer)
@@ -428,28 +430,28 @@ class Ugs(GdbBase):
         super(Ugs, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
 
-    def seed(self, folder, types):
+    def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
         #: types - [Staions, Results]
 
-        for type in types:
-            if type == 'Stations':
+        for model_type in model_types:
+            if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.UgsStation
                 schema = models.Schema().station
-            elif type == 'Results':
+            elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.UgsResult
                 schema = models.Schema().result
 
             fields = self._get_default_fields(schema)
 
-            if type == 'Stations':
+            if model_type == 'Stations':
                 fields.append('SHAPE@XY')
 
-            location = os.path.join(self.location, type)
+            location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, type)
+            print 'inserting into {} model_type {}'.format(location, model_type)
 
             for record in self._read_gdb(table, Type.fields):
                 etl = Type(record, schema, self.normalizer)

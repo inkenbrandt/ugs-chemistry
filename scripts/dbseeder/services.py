@@ -210,47 +210,47 @@ class Normalizer(object):
         milli_per_liter = 'mg/l'
 
         if chemical in inorganics_major_metals and unit == 'ug/l':
-            return self.calculate_amount(current_amount, 0.001),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 0.001), \
+                milli_per_liter, original_chemical
         elif chemical in inorganics_minor_metals and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 1000), 'ug/l',
-            original_chemical
+            return self.calculate_amount(current_amount, 1000), 'ug/l', \
+                original_chemical
         elif (chemical in inorganics_major_nonmetals and
               unit == 'ug/l'):
-            return self.calculate_amount(current_amount, 0.001),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 0.001), \
+                milli_per_liter, original_chemical
         elif (chemical in inorganics_minor_nonmetals and
               unit == milli_per_liter):
-            return self.calculate_amount(current_amount, 1000), 'ug/l',
-            original_chemical
+            return self.calculate_amount(current_amount, 1000), 'ug/l', \
+                original_chemical
         elif chemical in nutrient and unit == 'ug/l':
-            return self.calculate_amount(current_amount, 0.001),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 0.001), \
+                milli_per_liter, original_chemical
         elif chemical == 'nitrate' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, original_chemical
         elif chemical == 'nitrite' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 3.284535258),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 3.284535258), \
+                milli_per_liter, original_chemical
         elif chemical == 'phosphate' and unit == 'mg/l as p':
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, original_chemical
         elif chemical == 'bicarbonate as caco3' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate'
         elif chemical == 'carbonate as caco3' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 0.60),
-            milli_per_liter, 'Carbonate'
+            return self.calculate_amount(current_amount, 0.60), \
+                milli_per_liter, 'Carbonate'
         elif (chemical == 'alkalinity, bicarbonate as caco3' and
               unit == milli_per_liter):
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate'
         elif chemical == 'bicarbonate as caco3' and unit == 'mg/l as caco3':
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate'
         elif chemical == 'alkalinity, carbonate' and unit == 'mg/l as caco3':
-            return self.calculate_amount(current_amount, 0.60),
-            milli_per_liter, 'Carbonate'
+            return self.calculate_amount(current_amount, 0.60), \
+                milli_per_liter, 'Carbonate'
         elif chemical == 'carbonate as co3' and unit == milli_per_liter:
             return current_amount, unit, 'Carbonate'
         elif chemical == 'carbonate (co3)' and unit == milli_per_liter:
@@ -259,121 +259,121 @@ class Normalizer(object):
             return current_amount, unit, 'Bicarbonate'
         elif (chemical == 'alkalinity, carbonate as caco3' and
               unit == 'mg/l as caco3'):
-            return self.calculate_amount(current_amount, 0.60),
-            milli_per_liter, 'Carbonate based on alkalinity'
+            return self.calculate_amount(current_amount, 0.60), \
+                milli_per_liter, 'Carbonate based on alkalinity'
         elif (chemical == 'alkalinity, bicarbonate' and
               unit == 'mg/l as caco3'):
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate based on alkalinity'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate based on alkalinity'
         elif chemical == 'alkalinity' and unit == 'mg/l as caco3':
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate based on alkalinity'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate based on alkalinity'
         elif chemical == 't.alk/caco3' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate based on alkalinity'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate based on alkalinity'
         elif chemical == 'total alkalinity as caco3' and unit == 'mg/l':
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, 'Bicarbonate based on alkalinity'
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, 'Bicarbonate based on alkalinity'
         elif chemical == 'bicarbonate' and unit == 'mg/l as caco3':
-            return self.calculate_amount(current_amount, 1.22),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 1.22), \
+                milli_per_liter, original_chemical
         elif chemical == 'phosphate-phosphorus' and unit == 'mg/l as p':
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif chemical == 'phosphate-phosphorus' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif chemical == 'sulfate as s' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 0.333792756),
-            milli_per_liter, 'Sulfate'
+            return self.calculate_amount(current_amount, 0.333792756), \
+                milli_per_liter, 'Sulfate'
         elif (chemical == 'nitrate-nitrogen' and unit == 'mg/l as n'):
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, 'Nitrate'
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, 'Nitrate'
         elif chemical == 'nitrate as n' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, 'Nitrate'
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, 'Nitrate'
         elif chemical == 'nitrite as n' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 3.284535258),
-            milli_per_liter, 'Nitrite'
+            return self.calculate_amount(current_amount, 3.284535258), \
+                milli_per_liter, 'Nitrite'
         elif chemical == 'nitrate-nitrogen' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, 'Nitrite'
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, 'Nitrite'
         elif chemical == 'nitrate as n' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, 'Nitrate'
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, 'Nitrate'
         elif chemical == 'nitrite as n' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 3.284535258),
-            milli_per_liter, 'Nitrite'
+            return self.calculate_amount(current_amount, 3.284535258), \
+                milli_per_liter, 'Nitrite'
         elif ((chemical == 'nitrate-nitrite' or
               chemical == 'inorganic nitrogen (nitrate and nitrite) as n' or
               chemical == 'nitrate + nitrate as n' or
               chemical == 'no2+no3 as n') and
              (unit == 'mg/l as n' or unit == milli_per_liter)):
-            return self.calculate_amount(current_amount, 4.426802887),
-            milli_per_liter, 'Nitrate and nitrite as no3'
+            return self.calculate_amount(current_amount, 4.426802887), \
+                milli_per_liter, 'Nitrate and nitrite as no3'
         elif chemical == 'phosphate-phosphorus as p' and unit == 'mg/l as p':
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif chemical == 'orthophosphate as p' and unit == 'mg/l as p':
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif (chemical == 'phosphate-phosphorus as p' and
               unit == milli_per_liter):
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif chemical == 'orthophosphate as p' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif (chemical == 'orthophosphate' and unit == 'mg/l as p'):
-            return self.calculate_amount(current_amount, 3.131265779),
-            milli_per_liter, 'Phosphate'
+            return self.calculate_amount(current_amount, 3.131265779), \
+                milli_per_liter, 'Phosphate'
         elif chemical == 'ammonia and ammonium' and unit == 'mg/l nh4':
-            return self.calculate_amount(current_amount, 1.05918619),
-            milli_per_liter, 'Ammonia'
+            return self.calculate_amount(current_amount, 1.05918619), \
+                milli_per_liter, 'Ammonia'
         elif chemical == 'ammonia-nitrogen as n' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 1.21587526),
-            milli_per_liter, 'Ammonia'
+            return self.calculate_amount(current_amount, 1.21587526), \
+                milli_per_liter, 'Ammonia'
         elif chemical == 'ammonia-nitrogen' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 1.21587526),
-            milli_per_liter, 'Ammonia'
+            return self.calculate_amount(current_amount, 1.21587526), \
+                milli_per_liter, 'Ammonia'
         elif chemical == 'ammonia-nitrogen as n' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 1.21587526),
-            milli_per_liter, 'Ammonia'
+            return self.calculate_amount(current_amount, 1.21587526), \
+                milli_per_liter, 'Ammonia'
         elif chemical == 'ammonia-nitrogen' and unit == milli_per_liter:
-            return self.calculate_amount(current_amount, 1.21587526),
-            milli_per_liter, 'Ammonia'
+            return self.calculate_amount(current_amount, 1.21587526), \
+                milli_per_liter, 'Ammonia'
         elif chemical == 'ammonia' and unit == 'mg/l as n':
-            return self.calculate_amount(current_amount, 1.21587526),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 1.21587526), \
+                milli_per_liter, original_chemical
         elif chemical == 'specific conductance' and unit == 'ms/cm':
-            return self.calculate_amount(current_amount, 1000), 'uS/cm',
-            original_chemical
+            return self.calculate_amount(current_amount, 1000), 'uS/cm', \
+                original_chemical
         elif chemical == 'specific conductance' and unit == 'umho/cm':
             return current_amount, 'uS/cm', original_chemical
         elif chemical == 'calcium' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 20.039),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 20.039), \
+                milli_per_liter, original_chemical
         elif chemical == 'magnesium' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 12.1525),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 12.1525), \
+                milli_per_liter, original_chemical
         elif chemical == 'potassium' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 39.0983),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 39.0983), \
+                milli_per_liter, original_chemical
         elif chemical == 'sodium' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 22.9897),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 22.9897), \
+                milli_per_liter, original_chemical
         elif chemical == 'nitrate' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 62.0049),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 62.0049), \
+                milli_per_liter, original_chemical
         elif chemical == 'chloride' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 35.453),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 35.453), \
+                milli_per_liter, original_chemical
         elif chemical == 'hydroxide' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 17.0073),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 17.0073), \
+                milli_per_liter, original_chemical
         elif chemical == 'sulfate' and unit == 'ueq/l':
-            return self.calculate_amount(current_amount, 24.01565),
-            milli_per_liter, original_chemical
+            return self.calculate_amount(current_amount, 24.01565), \
+                milli_per_liter, original_chemical
         else:
             return current_amount, unit, original_chemical
 

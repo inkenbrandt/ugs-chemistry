@@ -9,6 +9,7 @@ Tests for `programs` module.
 """
 import arcpy
 import datetime
+import dbseeder.models as models
 import os
 import unittest
 import SimpleHTTPServer
@@ -17,7 +18,7 @@ import threading
 from arcpy.da import InsertCursor, SearchCursor
 from dbseeder.dbseeder import Seeder
 from dbseeder.programs import Wqp, Sdwis, Dogm
-from dbseeder.models import Results, Stations, SdwisResults, Schema, OgmResult, OgmStation
+from dbseeder.services import Normalizer
 from shutil import rmtree
 
 
@@ -257,10 +258,11 @@ class TestSdwisProgram(unittest.TestCase):
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
 
-    def tevst_query(self):
-        data = self.patient._query(self.patient._result_query, 2)
+    def test_query(self):
+        self.patient.count = 2
+        data = self.patient._query(self.patient._result_query)
         for item in data:
-            etl = SdwisResults(item)
+            etl = models.SdwisResults(item, Normalizer())
 
             self.assertIsNotNone(etl.row)
 
@@ -370,9 +372,10 @@ class TestDogmProgram(unittest.TestCase):
                    'Unit',
                    'SampComment')
 
-        schema = Schema().result
+        schema = models.Schema().result
 
-        one_row_from_query = OgmResult(gdb_row, schema).row
+        one_row_from_query = models.OgmResult(
+            gdb_row, schema, Normalizer()).row
 
         fields = self.patient._get_default_fields(schema)
         print '{}-{}'.format(len(one_row_from_query), len(fields))
@@ -397,9 +400,10 @@ class TestDogmProgram(unittest.TestCase):
                    512329.9142,
                    4397670.5318)
 
-        schema = Schema().station
+        schema = models.Schema().station
 
-        one_row_from_query = OgmStation(gdb_row, schema).row
+        one_row_from_query = models.OgmStation(
+            gdb_row, schema, Normalizer()).row
 
         fields = self.patient._get_default_fields(schema)
         fields.append('SHAPE@XY')

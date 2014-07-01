@@ -70,9 +70,7 @@ class Table(object):
             normalize['unit'][0],
             normalize['amount'][0])
 
-        self._row[normalize['amount'][1]] = amount
-        self._row[normalize['unit'][1]] = unit
-        self._row[normalize['chemical'][1]] = chemical
+        self._row = self.update_row(self._row, normalize, amount, unit, chemical)
 
     def _build_schema_map(self, schema):
         results_schema = schema
@@ -82,6 +80,21 @@ class Table(object):
             schema_index_items.update({item['index']: item})
 
         return OrderedDict(schema_index_items)
+
+    def update_row(self, row, normalize, amount, unit, chemical):
+        index = normalize['amount'][1]
+        if index > -1:
+            row[index] = amount
+
+        index = normalize['unit'][1]
+        if index > -1:
+            row[index] = unit
+
+        index = normalize['chemical'][1]
+        if index > -1:
+            row[index] = chemical
+
+        return row
 
     @property
     def row(self):
@@ -131,7 +144,8 @@ class Sdwis(object):
             #: get the unit, resultvalue and param name so we can use it later
             #: grab the value and the index for inserting the updated values
             if field_name == 'unit':
-                normalize['unit'] = (value.lower(), i)
+                if value:
+                    normalize['unit'] = (value.lower(), i)
             elif field_name == 'resultvalue':
                 normalize['amount'] = (value, i)
             elif field_name == 'param':
@@ -139,7 +153,7 @@ class Sdwis(object):
 
             self._row.append(value)
 
-            #: normalize the row
+        #: normalize the row
         amount, unit, chemical = normalizer.normalize_unit(
             normalize['chemical'][0],
             normalize['unit'][0],
@@ -217,7 +231,7 @@ class GdbDatasource(object):
             normalize['unit'][0],
             normalize['amount'][0])
 
-        _row = self.seriously(_row, normalize, amount, unit, chemical)
+        _row = self.update_row(_row, normalize, amount, unit, chemical)
 
         if type == 'Station':
             has_utm = False
@@ -251,7 +265,7 @@ class GdbDatasource(object):
 
         return _row
 
-    def seriously(self, row, normalize, amount, unit, chemical):
+    def update_row(self, row, normalize, amount, unit, chemical):
         index = normalize['amount'][1]
         if index > -1:
             row[index] = amount
@@ -283,10 +297,10 @@ class Stations(Table):
 
     """ORM mapping from chemistry schema to Stations feature class"""
 
-    def __init__(self, row):
+    def __init__(self, row, normalizer=None):
         self.schema_map = self._build_schema_map(Schema().station)
         if row is not None:
-            super(Stations, self).__init__(row)
+            super(Stations, self).__init__(row, normalizer)
 
     schema_map = None
 
