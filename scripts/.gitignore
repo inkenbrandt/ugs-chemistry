@@ -19,6 +19,9 @@ dist
 
 # data files
 /dbseeder/data/
+/dbseeder/tests/data/DOGM
+/dbseeder/tests/data/UDWR
+/dbseeder/tests/data/UGS
 
 # secrets
 secrets.cfg

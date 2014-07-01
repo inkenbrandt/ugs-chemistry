@@ -32,6 +32,7 @@ class TestDbSeeder(unittest.TestCase):
             os.makedirs(self.location)
 
         self.patient = Seeder(self.location, self.gdb_name)
+        self.patient.count = 41
 
     def test_sanity(self):
         self.assertIsNotNone(self.patient)
@@ -59,10 +60,10 @@ class TestDbSeeder(unittest.TestCase):
 
     def _test_seed(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
-        self.patient.seed(folder)
+        self.patient.seed(folder, ['Results', 'Stations'])
 
         arcpy.env.workspace = self.patient.location
-        self.assertEqual(arcpy.GetCount_management('Stations'), 50)
+        self.assertEqual(arcpy.GetCount_management('Stations').getOutput(0), '700')
 
     def tearDown(self):
         self.patient = None

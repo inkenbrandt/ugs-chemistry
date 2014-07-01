@@ -8,14 +8,14 @@ test_services
 Tests for `services` module.
 """
 import unittest
-from dbseeder.services import Caster
+from dbseeder.services import Caster, Normalizer
 
 
 class TestCaster(unittest.TestCase):
 
     def test_empty_string_returns_none(self):
         actual = Caster.cast('', 'TEXT')
-        self.assertIsNotNone(actual, msg='text')
+        self.assertIsNone(actual, msg='text')
 
         actual = Caster.cast('', 'LONG')
         self.assertIsNone(actual, msg='long')
@@ -32,7 +32,20 @@ class TestCaster(unittest.TestCase):
         actual = Caster.cast('', 'DOUBLE')
         self.assertIsNone(actual, msg='double')
 
-    def test_empty_string_returns_empty_for_strings(self):
-        actual = Caster.cast('', 'TEXT')
 
-        self.assertEqual(actual, '')
+class TestNormalizer(unittest.TestCase):
+    def setUp(self):
+        self.patient = Normalizer()
+
+    def test_unit_is_unchanged_if_chemical_is_none(self):
+        amount, unit, chemical = self.patient.normalize_unit(None, 'unit', 0)
+        self.assertEqual(unit, 'unit')
+
+    def test_gdb_datasoure_normalization(self):
+        pass
+
+    def test_sdwis_normalization(self):
+        pass
+
+    def test_table_normalization(self):
+        pass
