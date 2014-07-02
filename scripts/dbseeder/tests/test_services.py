@@ -36,3 +36,14 @@ class TestCaster(unittest.TestCase):
         actual = Caster.cast('', 'TEXT')
 
         self.assertEqual(actual, '')
+
+
+class TestNormalizer(unittest.TestCase):
+    def test_gdb_datasoure_normalization(self):
+        pass
+
+    def test_sdwis_normalization():
+        pass
+
+    def test_table_normalization():
+        pass

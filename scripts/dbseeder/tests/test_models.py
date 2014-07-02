@@ -215,6 +215,9 @@ class TestWqpModels(unittest.TestCase):
 
         self.assertListEqual(actual, expected)
 
+    def test_table_normalization():
+        pass
+
 
 class TestSdwisModels(unittest.TestCase):
 
@@ -335,6 +338,9 @@ class TestSdwisModels(unittest.TestCase):
                               '',
                               None])
 
+    def test_sdwis_normalization():
+        pass
+
 
 class TestDogmModels(unittest.TestCase):
 
@@ -450,11 +456,74 @@ class TestDogmModels(unittest.TestCase):
                     None,  # sampmethname
                     None,  # samptype
                     'StationId',
-                    'Unit',
+                    'unit',
                     None  # usgspcode
                     ]
 
         model = models.OgmResult(gdb_data, models.Schema().result, Normalizer())
+        actual = model.row
+
+        self.assertListEqual(expected, actual)
+
+    def test_gdb_datasoure_normalization(self):
+        gdb_data = [None,
+                    '.alpha.-Endosulfan',
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None]
+        expected = [None,
+                    None,
+                    None,  # analythmethid
+                    None,  # autoqual
+                    None,  # cas reg
+                    None,  # chrg
+                    None,  # datasource
+                    None,  # detectcond
+                    None,  # idnum
+                    None,  # lab comments
+                    None,  # lab name
+                    None,  # lat y
+                    None,  # limit type
+                    None,  # lon x
+                    None,
+                    None,
+                    None,  # method descript
+                    None,  # orgid
+                    None,  # orgname
+                    '.alpha.-Endosulfan',
+                    'Organics, pesticide',  # paramgroup
+                    None,  # projectid
+                    None,  # qualcode
+                    None,  # r result comment
+                    None,  # result status
+                    None,
+                    None,
+                    None,  # sampdepth
+                    None,  # sampdepthref
+                    None,  # sampdepthu
+                    None,  # sampequp
+                    None,  # sampfrac
+                    None,
+                    None,
+                    None,  # sample id
+                    None,  # sampmedia
+                    None,  # sampmeth
+                    None,  # sampmethname
+                    None,  # samptype
+                    None,
+                    None,
+                    None  # usgspcode
+                    ]
+
+        model = models.OgmResult(gdb_data, models.Schema().
+                                 result, Normalizer())
         actual = model.row
 
         self.assertListEqual(expected, actual)

@@ -2,7 +2,7 @@
 
 import os
 from collections import OrderedDict
-from services import Caster, Project
+from services import Caster, Project, Normalizable
 
 
 class TableInfo(object):
@@ -12,7 +12,7 @@ class TableInfo(object):
         self.name = name
 
 
-class Table(object):
+class Table(Normalizable):
 
     def __init__(self, row, normalizer):
         """
@@ -30,11 +30,6 @@ class Table(object):
             return
 
         self._row = []
-        normalize = {
-            'chemical': (None, None),
-            'unit': (None, None),
-            'amount': (None, None)
-        }
 
         for i, key in enumerate(self.schema_map.keys()):
             #: the key index maps to the column index in the feature class
@@ -51,26 +46,11 @@ class Table(object):
             destination_value = row[source_field_name].strip()
             value = Caster.cast(destination_value, destination_field_type)
 
-            field_name = field.field_name.lower()
-
-            #: get the unit, resultvalue and param name so we can use it later
-            #: grab the value and the index for inserting the updated values
-            if field_name == 'unit':
-                normalize['unit'] = (value.lower(), i)
-            elif field_name == 'resultvalue':
-                normalize['amount'] = (value, i)
-            elif field_name == 'param':
-                normalize['chemical'] = (value, i)
+            self.update_normalize(field.field_name, value, i)
 
             self._row.append(value)
 
-        #: normalize the row
-        amount, unit, chemical = normalizer.normalize_unit(
-            normalize['chemical'][0],
-            normalize['unit'][0],
-            normalize['amount'][0])
-
-        self._row = self.update_row(self._row, normalize, amount, unit, chemical)
+        self._row = self.normalize(self._row)
 
     def _build_schema_map(self, schema):
         results_schema = schema
@@ -81,27 +61,12 @@ class Table(object):
 
         return OrderedDict(schema_index_items)
 
-    def update_row(self, row, normalize, amount, unit, chemical):
-        index = normalize['amount'][1]
-        if index > -1:
-            row[index] = amount
-
-        index = normalize['unit'][1]
-        if index > -1:
-            row[index] = unit
-
-        index = normalize['chemical'][1]
-        if index > -1:
-            row[index] = chemical
-
-        return row
-
     @property
     def row(self):
         return self._row
 
 
-class Sdwis(object):
+class Sdwis(Normalizable):
 
     """base class for building sdwis schema map"""
 
@@ -117,11 +82,6 @@ class Sdwis(object):
             return
 
         self._row = []
-        normalize = {
-            'chemical': (None, -1),
-            'unit': (None, -1),
-            'amount': (None, -1)
-        }
 
         for i, key in enumerate(self.schema_map.keys()):
             #: the key index maps to the column index in the feature class
@@ -139,38 +99,11 @@ class Sdwis(object):
 
             value = Caster.cast(destination_value, destination_field_type)
 
-            field_name = field.field_name.lower()
-
-            #: get the unit, resultvalue and param name so we can use it later
-            #: grab the value and the index for inserting the updated values
-            if field_name == 'unit':
-                if value:
-                    normalize['unit'] = (value.lower(), i)
-            elif field_name == 'resultvalue':
-                normalize['amount'] = (value, i)
-            elif field_name == 'param':
-                normalize['chemical'] = (value, i)
+            self.update_normalize(field.field_name, value, i)
 
             self._row.append(value)
 
-        #: normalize the row
-        amount, unit, chemical = normalizer.normalize_unit(
-            normalize['chemical'][0],
-            normalize['unit'][0],
-            normalize['amount'][0])
-
-        try:
-            self._row[normalize['amount'][1]] = amount
-        except:
-            pass
-        try:
-            self._row[normalize['unit'][1]] = unit
-        except:
-            pass
-        try:
-            self._row[normalize['chemical'][1]] = chemical
-        except:
-            pass
+        self._row = self.normalize(self._row)
 
     def _build_schema_map(self, schema):
         results_schema = schema
@@ -186,10 +119,10 @@ class Sdwis(object):
         return self._row
 
 
-class GdbDatasource(object):
+class GdbDatasource(Normalizable):
 
     def __init__(self, normalizer):
-        self.normalizer = normalizer
+        super(GdbDatasource, self).__init__(normalizer)
 
     def _build_schema_map(self, schema):
         schema_index_items = OrderedDict()
@@ -201,37 +134,21 @@ class GdbDatasource(object):
 
     def _etl_row(self, row, schema_map, type):
         _row = []
-        normalize = {
-            'chemical': (None, None),
-            'unit': (None, None),
-            'amount': (None, None)
-        }
 
         for i, field_name in enumerate(schema_map):
             if field_name in self.fields:
-                value = row[self.fields.index(field_name)]
-
+                try:
+                    value = row[self.fields.index(field_name)]
+                except IndexError:
+                    value = None
+                    
                 _row.append(value)
 
-                #: get the unit, resultvalue and param name so we can use it later
-                #: grab the value and the index for inserting the updated values
-                if field_name == 'unit':
-                    normalize['unit'] = (value.lower(), i)
-                elif field_name == 'resultvalue':
-                    normalize['amount'] = (value, i)
-                elif field_name == 'param':
-                    normalize['chemical'] = (value, i)
-
+                self.update_normalize(field_name, value, i)
             else:
                 _row.append(None)
 
-        #: normalize the row
-        amount, unit, chemical = self.normalizer.normalize_unit(
-            normalize['chemical'][0],
-            normalize['unit'][0],
-            normalize['amount'][0])
-
-        _row = self.update_row(_row, normalize, amount, unit, chemical)
+        _row = self.normalize(_row)
 
         if type == 'Station':
             has_utm = False
@@ -264,21 +181,6 @@ class GdbDatasource(object):
             _row.append((x, y))
 
         return _row
-
-    def update_row(self, row, normalize, amount, unit, chemical):
-        index = normalize['amount'][1]
-        if index > -1:
-            row[index] = amount
-
-        index = normalize['unit'][1]
-        if index > -1:
-            row[index] = unit
-
-        index = normalize['chemical'][1]
-        if index > -1:
-            row[index] = chemical
-
-        return row
 
 
 class Results(Table):
@@ -403,7 +305,8 @@ class OgmResult(GdbDatasource):
               'SampleTime',
               'MDL',
               'Unit',
-              'SampComment']
+              'SampComment',
+              'ParamGroup']
 
     def __init__(self, row, schema, normalizer):
         super(OgmResult, self).__init__(normalizer)
