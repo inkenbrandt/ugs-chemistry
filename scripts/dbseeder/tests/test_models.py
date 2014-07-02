@@ -359,7 +359,8 @@ class TestDogmModels(unittest.TestCase):
                     4397670.5318
                     ]
 
-        model = models.OgmStation(gdb_data, models.Schema().station, Normalizer())
+        model = models.OgmStation(
+            gdb_data, models.Schema().station, Normalizer())
 
         expected = ['UDOGM',
                     'Utah Division Of Oil Gas And Mining',
@@ -460,7 +461,8 @@ class TestDogmModels(unittest.TestCase):
                     None  # usgspcode
                     ]
 
-        model = models.OgmResult(gdb_data, models.Schema().result, Normalizer())
+        model = models.OgmResult(
+            gdb_data, models.Schema().result, Normalizer())
         actual = model.row
 
         self.assertListEqual(expected, actual)
@@ -527,3 +529,207 @@ class TestDogmModels(unittest.TestCase):
         actual = model.row
 
         self.assertListEqual(expected, actual)
+
+
+class TestDwrModels(unittest.TestCase):
+
+    def test_result_model_hydration(self):
+        sampledate = datetime.datetime(2008, 11, 17, 0, 0)
+        result_value = 0
+        idnum = 0
+
+        gdb_data = [sampledate,
+                    'usgspcode',
+                    result_value,
+                    'param',
+                    'unit',
+                    'sampfrac',
+                    'orgid',
+                    'orgname',
+                    'stationid',
+                    0,
+                    0,
+                    'sampmedia',
+                    'sampleid',
+                    idnum
+                    ]
+        expected = [None,  # analysisdate
+                    None,  # analytmeth
+                    None,  # analythmethid
+                    None,  # autoqual
+                    None,  # cas reg
+                    None,  # chrg
+                    None,  # datasource
+                    None,  # detectcond
+                    idnum,  # idnum
+                    None,  # lab comments
+                    None,  # lab name
+                    0,  # lat y
+                    None,  # limit type
+                    0,  # lon x
+                    None,  # mdl
+                    None,  # mdlunit
+                    None,  # method descript
+                    'orgid',  # orgid
+                    'orgname',  # orgname
+                    'param',
+                    None,  # paramgroup
+                    None,  # projectid
+                    None,  # qualcode
+                    None,  # r result comment
+                    None,  # result status
+                    result_value,
+                    None,  # sampcomment
+                    None,  # sampdepth
+                    None,  # sampdepthref
+                    None,  # sampdepthu
+                    None,  # sampequp
+                    'sampfrac',  # sampfrac
+                    sampledate,  # sample date
+                    None,  # sample time
+                    'sampleid',  # sample id
+                    'sampmedia',  # sampmedia
+                    None,  # sampmeth
+                    None,  # sampmethname
+                    None,  # samptype
+                    'stationid',
+                    'unit',
+                    'usgspcode'  # usgspcode
+                    ]
+
+        model = models.DwrResult(
+            gdb_data, models.Schema().result, Normalizer())
+        actual = model.row
+
+        self.assertListEqual(expected, actual)
+
+    def test_station_model_hydration(self):
+        county_code = 0
+        x = 1
+        y = 2
+        hole_depth = 3
+        depth = 4
+        lat = 5
+        lon = 6
+        state_code = 7
+        gdb_data = ['win',
+                    'orgid',
+                    'orgname',
+                    'stationid',
+                    lat,
+                    lon,
+                    state_code,
+                    county_code,
+                    depth,
+                    hole_depth,
+                    'huc8',
+                    'stationname',
+                    'stationtype',
+                    x,
+                    y]
+
+        model = models.DwrStation(
+            gdb_data, models.Schema().station, Normalizer())
+
+        expected = ['orgid',  # orgid
+                    'orgname',  # orgname
+                    'stationid',  # station id
+                    'stationname',  # stationname
+                    'stationtype',  # stationtype
+                    None,  # station comment
+                    'huc8',  # huc8,
+                    lon,  # lon x
+                    lat,  # lay y,
+                    None,  # horacc
+                    None,  # horaccunit
+                    None,  # horcallmeth
+                    None,  # hor ref
+                    None,  # elev
+                    None,  # elev unit
+                    None,  # elev acc
+                    None,  # elev acc unit
+                    None,  # elev meth
+                    None,  # elev ref
+                    state_code,  # state code
+                    county_code,  # county code
+                    None,  # aquifer
+                    None,  # fm type
+                    None,  # aquifer type
+                    None,  # constdate
+                    depth,  # depth
+                    None,  # depth unit
+                    hole_depth,  # hole depth
+                    None,  # hold d unit
+                    None,  # dem elev
+                    None,  # datasource
+                    'win',  # win
+                    (x, y)  # shape
+                    ]
+
+        self.assertListEqual(expected, model.row)
+
+    def test_gdb_datasoure_normalization(self):
+        gdb_result_data = [
+            None,
+            None,
+            None,
+            '.alpha.-Endosulfan',
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None
+        ]
+
+        model = models.DwrResult(
+            gdb_result_data, models.Schema().result, Normalizer())
+        expected = [None,  # analysisdate
+                    None,  # analytmeth
+                    None,  # analythmethid
+                    None,  # autoqual
+                    None,  # cas reg
+                    None,  # chrg
+                    None,  # datasource
+                    None,  # detectcond
+                    None,  # idnum
+                    None,  # lab comments
+                    None,  # lab name
+                    None,  # lat y
+                    None,  # limit type
+                    None,  # lon x
+                    None,  # mdl
+                    None,  # mdlunit
+                    None,  # method descript
+                    None,  # orgid
+                    None,  # orgname
+                    '.alpha.-Endosulfan',  # param
+                    'Organics, pesticide',  # paramgroup
+                    None,  # projectid
+                    None,  # qualcode
+                    None,  # r result comment
+                    None,  # result status
+                    None,  # result value
+                    None,  # sampcomment
+                    None,  # sampdepth
+                    None,  # sampdepthref
+                    None,  # sampdepthu
+                    None,  # sampequp
+                    None,  # sampfrac
+                    None,  # sample date
+                    None,  # sample time
+                    None,  # sample id
+                    None,  # sampmedia
+                    None,  # sampmeth
+                    None,  # sampmethname
+                    None,  # samptype
+                    None,  # station id
+                    None,  # unit
+                    None   # usgspcode
+                    ]
+
+        self.assertListEqual(model.row, expected)

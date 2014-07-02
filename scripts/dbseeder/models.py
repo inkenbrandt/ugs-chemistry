@@ -141,7 +141,7 @@ class GdbDatasource(Normalizable):
                     value = row[self.fields.index(field_name)]
                 except IndexError:
                     value = None
-                    
+
                 _row.append(value)
 
                 self.update_normalize(field_name, value, i)
@@ -340,8 +340,7 @@ class DwrStation(GdbDatasource):
 
 class DwrResult(GdbDatasource):
 
-    fields = ['WIN',
-              'SampleDate',
+    fields = ['SampleDate',
               'USGSPCode',
               'ResultValue',
               'Param',
@@ -354,7 +353,8 @@ class DwrResult(GdbDatasource):
               'Lon_X',
               'SampMedia',
               'SampleId',
-              'IdNum']
+              'IdNum',
+              'ParamGroup']
 
     def __init__(self, row, schema, normalizer):
         super(DwrResult, self).__init__(normalizer)
