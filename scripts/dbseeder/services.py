@@ -1,6 +1,7 @@
 """service classes for performing specific tasks"""
 
 import datetime
+import re
 import requests
 import sys
 from dateutil.parser import parse
@@ -936,6 +937,7 @@ class Normalizer(object):
 
 class Normalizable(object):
     normalize_fields = None
+    station_id_re = re.compile(re.escape('_WQX'), re.IGNORECASE)
 
     def __init__(self, normalizer):
         super(Normalizable, self).__init__()
@@ -944,7 +946,8 @@ class Normalizable(object):
             'chemical': (None, None),
             'unit': (None, None),
             'amount': (None, None),
-            'paramgroup': (None, None)
+            'paramgroup': (None, None),
+            'stationid': (None, None)
         }
 
         self.normalizer = normalizer
@@ -958,11 +961,19 @@ class Normalizable(object):
 
         index = self.normalize_fields['paramgroup'][1]
 
-        if (not self.normalize_fields['paramgroup'][0]):
+        if not self.normalize_fields['paramgroup'][0]:
             paramgroup = self.normalizer.calculate_paramgroup(chemical)
 
             if index > -1:
                 row[index] = paramgroup
+
+        index = self.normalize_fields['stationid'][1]
+
+        if (self.station_id_re.search(
+                str(self.normalize_fields['stationid'][0]))):
+            if index > -1:
+                row[index] = self.station_id_re.sub(
+                    '', self.normalize_fields['stationid'][0])
 
         index = self.normalize_fields['amount'][1]
         if index > -1:
@@ -996,3 +1007,9 @@ class Normalizable(object):
             self.normalize_fields['chemical'] = (value, index)
         elif field_name == 'paramgroup':
             self.normalize_fields['paramgroup'] = (value, index)
+        elif field_name == 'stationid':
+            #: do this to strip the unwanted text
+            if value:
+                value = self.station_id_re.sub('', value)
+
+            self.normalize_fields['stationid'] = (value, index)

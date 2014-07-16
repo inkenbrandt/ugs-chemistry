@@ -937,8 +937,7 @@ class TestUgsModels(unittest.TestCase):
         idnum = 1
         mdl = 2
 
-        gdb_data = ['stationid',
-                    result_value,
+        gdb_data = [result_value,
                     analysisdate,
                     'orgid',
                     'orgname',
@@ -1006,7 +1005,7 @@ class TestUgsModels(unittest.TestCase):
             gdb_data, Normalizer())
         actual = model.row
 
-        self.assertListEqual(expected, actual)
+        self.assertListEqual(actual, expected)
 
     def test_station_model_hydration(self):
         county_code = 0

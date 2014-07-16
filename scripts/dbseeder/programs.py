@@ -55,6 +55,8 @@ class Wqp(Program):
 
         print 'inserting into {} model_type {}'.format(location, feature_class)
 
+        station_ids = {}
+
         if feature_class == 'Results':
             Type = models.WqpResult
         elif feature_class == 'Stations':
@@ -70,6 +72,15 @@ class Wqp(Program):
             for row in data:
                 etl = Type(row, self.normalizer)
                 insert_row = etl.row
+
+                station_id = etl.normalize_fields['stationid'][0]
+
+                if station_id:
+                    if station_id in station_ids.keys():
+                        #: station is already inserted skip it
+                        continue
+
+                    station_ids[station_id] = True
 
                 try:
                     curser.insertRow(insert_row)
@@ -107,17 +118,17 @@ class Wqp(Program):
 
         return results
 
-    def field_lengths(self, folder, type):
+    def field_lengths(self, folder, program_type):
         schema = models.Schema()
 
-        if type.lower() == 'stations':
+        if program_type.lower() == 'stations':
             maps = self._build_field_length_structure(schema.station)
-        elif type.lower() == 'results':
+        elif program_type.lower() == 'results':
             maps = self._build_field_length_structure(schema.result)
         else:
             raise Exception('flag must be stations or results')
 
-        for csv_file in self._csvs_on_disk(folder, type):
+        for csv_file in self._csvs_on_disk(folder, program_type):
             print 'processing {}'.format(csv_file)
             with open(csv_file, 'r') as f:
                 data = csv.DictReader(f)
@@ -130,19 +141,19 @@ class Wqp(Program):
         return maps
 
     def seed(self, folder, model_types):
-        for type in model_types:
-            for csv_file in self._csvs_on_disk(folder, type):
+        for model_type in model_types:
+            for csv_file in self._csvs_on_disk(folder, model_type):
                 with open(csv_file, 'r') as f:
                     print 'processing {}'.format(csv_file)
-                    self._insert_rows(csv.DictReader(f), type)
+                    self._insert_rows(csv.DictReader(f), model_type)
                     print 'processing {}: done'.format(csv_file)
 
     def update(self, model_types):
-        for type in model_types:
-            response = self._query(type)
+        for model_type in model_types:
+            response = self._query(model_type)
             csv = self._read_response(response)
 
-            self._insert_rows(csv, type)
+            self._insert_rows(csv, model_type)
 
 
 class Sdwis(Program):

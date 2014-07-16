@@ -8,7 +8,7 @@ test_services
 Tests for `services` module.
 """
 import unittest
-from dbseeder.services import Caster, Normalizer
+from dbseeder.services import Caster, Normalizer, Normalizable
 
 
 class TestCaster(unittest.TestCase):
@@ -41,8 +41,14 @@ class TestNormalizer(unittest.TestCase):
         amount, unit, chemical = self.patient.normalize_unit(None, 'unit', 0)
         self.assertEqual(unit, 'unit')
 
-    def test_gdb_datasoure_normalization(self):
-        pass
+    def test_station_id_normalization(self):
+        self.patient = Normalizable(self.patient)
+
+        self.patient.normalize_fields['stationid'] = ('UTAHDWQ_WQX-4946750', 0)
+
+        actual = self.patient.normalize(['UTAHDWQ_WQX-4946750', 'Junk'])
+
+        self.assertListEqual(actual, ['UTAHDWQ-4946750', 'Junk'])
 
     def test_sdwis_normalization(self):
         pass

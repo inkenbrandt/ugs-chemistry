@@ -357,8 +357,7 @@ class DwrStation(Table):
 
 class UgsResult(Table):
 
-    fields = ['StationId',
-              'ResultValue',
+    fields = ['ResultValue',
               'AnalysisDate',
               'OrgId',
               'OrgName',
