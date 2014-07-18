@@ -11,11 +11,44 @@ from pyproj import Proj, transform
 class WebQuery(object):
 
     """the http query wrapper over requests for unit testing"""
+    web_api_url = 'http://api.mapserv.utah.gov/api/v1/search/{}?geometry=point:[{},{}]&attributeStyle=upper&apikey={}'
+    dev_api_key = 'AGRC-B5D62BD2151902'
 
     def results(self, url):
         r = requests.get(url)
 
         return r.text.splitlines()
+
+    def elevation(self, utm_x, utm_y):
+        pass
+
+    def state(self, utm_x, utm_y):
+        layer = 'SGID10.BOUNDARIES.USSTATES'
+        attribute = 'STATE_FIPS'
+
+        url = self.web_api_url.format(layer,
+                                      attribute,
+                                      utm_x,
+                                      utm_y,
+                                      self.dev_api_key)
+        r = requests.get(url)
+
+        pass
+
+    def county_code(self, utm_x, utm_y):
+        layer = 'SGID10.BOUNDARIES.COUNTIES'
+        attribute = 'FIPS'
+
+        url = self.web_api_url.format(layer,
+                                      attribute,
+                                      utm_x,
+                                      utm_y,
+                                      self.dev_api_key)
+        r = requests.get(url)
+
+        pass
+
+
 
 
 class ConsolePrompt(object):
