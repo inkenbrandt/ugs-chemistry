@@ -263,16 +263,19 @@ class OgmResult(Table):
               'SampleTime',
               'MDL',
               'Unit',
-              'SampComment',
-              'ParamGroup']
+              'SampComment']
 
     def __init__(self, row, normalizer):
         super(OgmResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        #: add paramgroup in ctor so `Type.fields` works for reads
+        #: since paragroup does not exist in source data
+        self.fields.append('ParamGroup')
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema = Schema().result
+
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class OgmStation(Table):
@@ -295,10 +298,10 @@ class OgmStation(Table):
     def __init__(self, row, normalizer):
         super(OgmStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class DwrResult(Table):
@@ -316,16 +319,19 @@ class DwrResult(Table):
               'Lon_X',
               'SampMedia',
               'SampleId',
-              'IdNum',
-              'ParamGroup']
+              'IdNum']
 
     def __init__(self, row, normalizer):
         super(DwrResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        #: add paramgroup in ctor so `Type.fields` works for reads
+        #: since paragroup does not exist in source data
+        self.fields.append('ParamGroup')
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema = Schema().result
+
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class DwrStation(Table):
@@ -349,10 +355,10 @@ class DwrStation(Table):
     def __init__(self, row, normalizer):
         super(DwrStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class UgsResult(Table):
@@ -380,10 +386,10 @@ class UgsResult(Table):
     def __init__(self, row, normalizer):
         super(UgsResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        self.schema = Schema().result
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class UgsStation(Table):
@@ -403,10 +409,10 @@ class UgsStation(Table):
     def __init__(self, row, normalizer):
         super(UgsStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class Schema(object):
@@ -1052,3 +1058,143 @@ class Field(object):
             return 'DATE'
         else:
             return field_type
+
+
+class Charges(object):
+
+    """the model holding the charge balance input values"""
+
+    chemical_amount = None
+
+    def __init__(self):
+        super(Charges, self).__init__()
+
+        self.chemical_amount = {'ca': None,
+                                'mg': None,
+                                'na': None,
+                                'k': None,
+                                'cl': None,
+                                'hco3': None,
+                                'co3': None,
+                                'so4': None,
+                                'no2': None,
+                                'no3': None,
+                                'na+k': None}
+
+    @property
+    def calcium(self):
+        return self._get_summed_value('ca')
+
+    @property
+    def magnesium(self):
+        return self._get_summed_value('mg')
+
+    @property
+    def chloride(self):
+        return self._get_summed_value('cl')
+
+    @property
+    def bicarbonate(self):
+        return self._get_summed_value('hco3')
+
+    @property
+    def sulfate(self):
+        return self._get_summed_value('so4')
+
+    @property
+    def carbonate(self):
+        return self._get_summed_value('co3')
+
+    @property
+    def nitrate(self):
+        return self._get_summed_value('no3')
+
+    @property
+    def nitrite(self):
+        return self._get_summed_value('no2')
+
+    @property
+    def sodium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and k is not None and na is None:
+            return na_k - k
+
+        return na
+
+    @property
+    def potassium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and na is not None and k is None:
+            return na_k - na
+
+        return k
+
+    @property
+    def sodium_plus_potassium(self):
+        nak = self._get_summed_value('na+k')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+
+        if nak is not None and na is not None or k is not None:
+            return 0
+
+        return nak
+
+    def update(self, chemical, amount, detect_cond=None):
+        #: there was a problem with the sample disregard
+        if detect_cond:
+            return
+
+        #: there is more than one sample for this chemical
+        if self.chemical_amount[chemical] is not None:
+            try:
+                self.chemical_amount[chemical].append(amount)
+            except AttributeError:
+                #: turn into a list for summing
+                self.chemical_amount[chemical] = [
+                    self.chemical_amount[chemical], amount]
+
+            return
+
+        self.chemical_amount[chemical] = amount
+
+    def has_major_params(self):
+        """this should only be called once everything
+        is complete and you want to do the charge balance
+        calculation. Otherwise your averages will be off"""
+
+        valid_chemicals = 5
+        num_of_chemicals = 0
+
+        if self.calcium is not None:
+            num_of_chemicals += 1
+        if self.magnesium is not None:
+            num_of_chemicals += 1
+        if self.chloride is not None:
+            num_of_chemicals += 1
+        if self.bicarbonate is not None:
+            num_of_chemicals += 1
+        if self.sulfate is not None:
+            num_of_chemicals += 1
+
+        valid = num_of_chemicals == valid_chemicals
+
+        return valid and (
+            self.sodium is not None or self.sodium_plus_potassium is not None)
+
+    def _get_summed_value(self, key):
+        """turn all of the arrays into numbers"""
+        value = self.chemical_amount[key]
+        try:
+            return sum(value) / float(len(value))
+        except TypeError:
+            #: value is not an array
+            pass
+
+        return value

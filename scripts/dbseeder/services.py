@@ -11,11 +11,42 @@ from pyproj import Proj, transform
 class WebQuery(object):
 
     """the http query wrapper over requests for unit testing"""
+    web_api_url = 'http://api.mapserv.utah.gov/api/v1/search/{}?geometry=point:[{},{}]&attributeStyle=upper&apikey={}'
+    dev_api_key = 'AGRC-B5D62BD2151902'
 
     def results(self, url):
         r = requests.get(url)
 
         return r.text.splitlines()
+
+    def elevation(self, utm_x, utm_y):
+        pass
+
+    def state(self, utm_x, utm_y):
+        layer = 'SGID10.BOUNDARIES.USSTATES'
+        attribute = 'STATE_FIPS'
+
+        url = self.web_api_url.format(layer,
+                                      attribute,
+                                      utm_x,
+                                      utm_y,
+                                      self.dev_api_key)
+        r = requests.get(url)
+
+        pass
+
+    def county_code(self, utm_x, utm_y):
+        layer = 'SGID10.BOUNDARIES.COUNTIES'
+        attribute = 'FIPS'
+
+        url = self.web_api_url.format(layer,
+                                      attribute,
+                                      utm_x,
+                                      utm_y,
+                                      self.dev_api_key)
+        r = requests.get(url)
+
+        pass
 
 
 class ConsolePrompt(object):
@@ -1013,3 +1044,49 @@ class Normalizable(object):
                 value = self.station_id_re.sub('', value)
 
             self.normalize_fields['stationid'] = (value, index)
+
+
+class ChargeBalancer(object):
+
+    """https://github.com/agrc/ugs-chemistry/issues/22"""
+
+    _conversions = {'ca': 0.04990269,
+                    'mg': 0.082287595,
+                    'na': 0.043497608,
+                    'na+k': 0.043497608,
+                    'k': 0.02557656,
+                    'cl': 0.028206596,
+                    'hco3': 0.016388838,
+                    'co3': 0.033328223,
+                    'so4': 0.020833333,
+                    'no2': 0.021736513,
+                    'no3': 0.016129032}
+
+    def __init__(self, dataset):
+        super(ChargeBalancer, self).__init__()
+
+        self.dataset = dataset
+
+    def _calculate_charge_balance(self, charge):
+        calcium = self._conversions['ca'] * charge.calcium
+        magnesium = self._conversions['mg'] * charge.magnesium
+        sodium = self._conversions['na'] * charge.sodium
+        potassium = self._conversions['k'] * charge.potassium
+        chloride = self._conversions['cl'] * charge.chloride
+        bicarbonate = self._conversions['hco3'] * charge.bicarbonate
+        sulfate = self._conversions['so4'] * charge.sulfate
+        carbonate = self._conversions['co3'] * charge.carbonate
+        nitrate = self._conversions['no3'] * charge.nitrate
+        nitrite = self._conversions['no2'] * charge.nitrite
+        sodium_plus_potassium = self._conversions[
+            'na+k'] * charge.sodium_plus_potassium
+
+        cation = sum(
+            [calcium, magnesium, sodium, potassium, sodium_plus_potassium])
+        anion = sum(
+            [chloride, bicarbonate, carbonate, sulfate, nitrate, nitrite])
+
+        balance = 100 * float((cation - anion) / (cation + anion))
+
+        # returns charge balance (%), cation total (meq/l), anion total (meq/l)
+        return round(balance, 2), cation, anion

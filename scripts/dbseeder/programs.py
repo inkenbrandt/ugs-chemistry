@@ -24,12 +24,6 @@ class Program(object):
     def _get_fields(self, schema_map):
         return [schema_map[item].field_name for item in schema_map]
 
-    def _find_field(self, schema_map, field):
-        for key in schema_map.keys():
-            item = schema_map[key]
-            if item['destination'] == field:
-                return item
-
 
 class GdbBase(Program):
 
@@ -53,7 +47,7 @@ class Wqp(Program):
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
 
-        print 'inserting into {} model_type {}'.format(location, feature_class)
+        print 'inserting into {} WQP type {}'.format(location, feature_class)
 
         station_ids = {}
 
@@ -288,7 +282,7 @@ class Sdwis(Program):
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
-        print 'inserting into {} type {}'.format(location, feature_class)
+        print 'inserting into {} SDWIS type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
             Type = models.SdwisResult
@@ -340,25 +334,25 @@ class Dogm(GdbBase):
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.OgmStation
-                schema = models.Schema().station
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.OgmResult
-                schema = models.Schema().result
-
-            fields = self._get_default_fields(schema)
-
-            if model_type == 'Stations':
-                fields.append('SHAPE@XY')
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, model_type)
+            print 'inserting into {} DOGM type {}'.format(location, model_type)
+
+            fields_to_insert = None
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema, self.normalizer)
+                etl = Type(record, self.normalizer)
+                if not fields_to_insert:
+                    fields_to_insert = self._get_default_fields(etl.schema_map)
 
-                self._insert_row(etl.row, fields, location)
+                    if model_type == 'Stations':
+                        fields_to_insert.append('SHAPE@XY')
+
+                self._insert_row(etl.row, fields_to_insert, location)
 
 
 class Udwr(GdbBase):
@@ -381,25 +375,25 @@ class Udwr(GdbBase):
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.DwrStation
-                schema = models.Schema().station
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.DwrResult
-                schema = models.Schema().result
-
-            fields = self._get_default_fields(schema)
-
-            if model_type == 'Stations':
-                fields.append('SHAPE@XY')
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, model_type)
+            print 'inserting into {} UDWR type {}'.format(location, model_type)
+
+            fields_to_insert = None
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema, self.normalizer)
+                etl = Type(record, self.normalizer)
+                if not fields_to_insert:
+                    fields_to_insert = self._get_default_fields(etl.schema_map)
 
-                self._insert_row(etl.row, fields, location)
+                    if model_type == 'Stations':
+                        fields_to_insert.append('SHAPE@XY')
+
+                self._insert_row(etl.row, fields_to_insert, location)
 
 
 class Ugs(GdbBase):
@@ -416,28 +410,28 @@ class Ugs(GdbBase):
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: types - [Staions, Results]
+        #: types - [Stations, Results]
 
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
                 Type = models.UgsStation
-                schema = models.Schema().station
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
                 Type = models.UgsResult
-                schema = models.Schema().result
-
-            fields = self._get_default_fields(schema)
-
-            if model_type == 'Stations':
-                fields.append('SHAPE@XY')
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} model_type {}'.format(location, model_type)
+            print 'inserting into {} UGS type {}'.format(location, model_type)
+
+            fields_to_insert = None
 
             for record in self._read_gdb(table, Type.fields):
-                etl = Type(record, schema, self.normalizer)
+                etl = Type(record, self.normalizer)
+                if not fields_to_insert:
+                    fields_to_insert = self._get_default_fields(etl.schema_map)
 
-                self._insert_row(etl.row, fields, location)
+                    if model_type == 'Stations':
+                        fields_to_insert.append('SHAPE@XY')
+
+                self._insert_row(etl.row, fields_to_insert, location)

@@ -50,8 +50,9 @@ class TestNormalizer(unittest.TestCase):
 
         self.assertListEqual(actual, ['UTAHDWQ-4946750', 'Junk'])
 
-    def test_sdwis_normalization(self):
-        pass
 
-    def test_table_normalization(self):
-        pass
+class TestChargeBalancer(unittest.TestCase):
+    """docstring for ChargeBalancer"""
+    def __init__(self, arg):
+        super(ChargeBalancer, self).__init__()
+        self.arg = arg

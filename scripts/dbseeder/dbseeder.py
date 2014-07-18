@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
     location = 'c:\\temp\\'
     gdb = 'master.gdb'
-    seed_data = 'C:\\Projects\\GitHub\\ugs-chemistry\\scripts\\dbseeder\\tests\\data'
+    seed_data = r'C:\Projects\GitHub\ugs-chemistry\scripts\dbseeder\data'
 
     try:
         if args.update:
