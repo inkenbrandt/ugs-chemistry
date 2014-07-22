@@ -9,7 +9,8 @@ Tests for `programs` module.
 """
 import arcpy
 import datetime
-import dbseeder.models as models
+import dbseeder.resultmodels as resultmodel
+import dbseeder.stationmodels as stationmodel
 import os
 import unittest
 import SimpleHTTPServer
@@ -222,130 +223,130 @@ class TestWqpProgram(unittest.TestCase):
 
     def test_insert_duplicate_stations(self):
         duplicate = {'ActivityIdentifier': '1119USBR_WQX-14-A317',
-                             'CharacteristicName': 'Conductivity',
-                             'PrecisionValue': '',
-                             'ResultAnalyticalMethod/MethodIdentifierContext': 'APHA',
-                             'SampleAquifer': '',
-                             'StatisticalBaseCode': '',
-                             'ResultWeightBasisText': '',
-                             'ActivityStartTime/Time': '11:40:00',
-                             'ResultDetectionConditionText': '',
-                             'ResultSampleFractionText': 'Dissolved',
-                             'ActivityStartTime/TimeZoneCode': 'MST',
-                             'ActivityStartDate': '2014-02-24',
-                             'ActivityEndTime/Time': '',
-                             'ActivityConductingOrganizationText': '',
-                             'OrganizationIdentifier': '1119USBR_WQX',
-                             'ActivityBottomDepthHeightMeasure/MeasureUnitCode': '',
-                             'AnalysisStartDate': '2014-02-24',
-                             'DetectionQuantitationLimitTypeName': 'Method Detection Level',
-                             'MethodDescriptionText': '',
-                             'ResultAnalyticalMethod/MethodIdentifier': '2510',
-                             'SampleCollectionMethod/MethodName': '1119USBR_WQX~GRAB',
-                             'ResultTemperatureBasisText': '',
-                             'ResultDepthHeightMeasure/MeasureValue': '',
-                             'ResultStatusIdentifier': 'Final',
-                             'PreparationStartDate': '',
-                             'USGSPCode': '',
-                             'ResultMeasureValue': '141',
-                             'ActivityTypeCode': 'Sample-Routine',
-                             'SampleCollectionMethod/MethodIdentifierContext': '1119USBR_WQX~GRAB',
-                             'MeasureQualifierCode': '',
-                             'ActivityDepthHeightMeasure/MeasureValue': '',
-                             'ResultParticleSizeBasisText': '',
-                             'ResultAnalyticalMethod/MethodName': '',
-                             'ResultDepthAltitudeReferencePointText': '',
-                             'ActivityDepthAltitudeReferencePointText': '',
-                             'ResultCommentText': '',
-                             'SampleTissueAnatomyName': '',
-                             'SubjectTaxonomicName': '',
-                             'ActivityTopDepthHeightMeasure/MeasureUnitCode': '',
-                             'ActivityMediaName': 'Water',
-                             'DetectionQuantitationLimitMeasure/MeasureUnitCode': 'uS/cm     ',
-                             'ResultValueTypeName': 'Actual',
-                             'OrganizationFormalName': 'Bureau of Reclamation',
-                             'ActivityCommentText': '',
-                             'MonitoringLocationIdentifier': '1119USBR_WQX-RCK101',
-                             'ProjectIdentifier': 'WQDATA',
-                             'ResultLaboratoryCommentText': '',
-                             'ActivityEndTime/TimeZoneCode': '',
-                             'HydrologicCondition': '',
-                             'ResultMeasure/MeasureUnitCode': 'uS/cm',
-                             'ActivityTopDepthHeightMeasure/MeasureValue': '',
-                             'ResultDepthHeightMeasure/MeasureUnitCode': '',
-                             'DetectionQuantitationLimitMeasure/MeasureValue': '2',
-                             'ActivityEndDate': '',
-                             'LaboratoryName': '',
-                             'HydrologicEvent': '',
-                             'ResultTimeBasisText': '',
-                             'ActivityBottomDepthHeightMeasure/MeasureValue': '',
-                             'SampleCollectionMethod/MethodIdentifier': '1119USBR_WQX~GRAB',
-                             'ActivityMediaSubdivisionName': '',
-                             'SampleCollectionEquipmentName': 'Water Bottle',
-                             'ActivityDepthHeightMeasure/MeasureUnitCode': ''}
+                     'CharacteristicName': 'Conductivity',
+                     'PrecisionValue': '',
+                     'ResultAnalyticalMethod/MethodIdentifierContext': 'APHA',
+                     'SampleAquifer': '',
+                     'StatisticalBaseCode': '',
+                     'ResultWeightBasisText': '',
+                     'ActivityStartTime/Time': '11:40:00',
+                     'ResultDetectionConditionText': '',
+                     'ResultSampleFractionText': 'Dissolved',
+                     'ActivityStartTime/TimeZoneCode': 'MST',
+                     'ActivityStartDate': '2014-02-24',
+                     'ActivityEndTime/Time': '',
+                     'ActivityConductingOrganizationText': '',
+                     'OrganizationIdentifier': '1119USBR_WQX',
+                     'ActivityBottomDepthHeightMeasure/MeasureUnitCode': '',
+                     'AnalysisStartDate': '2014-02-24',
+                     'DetectionQuantitationLimitTypeName': 'Method Detection Level',
+                     'MethodDescriptionText': '',
+                     'ResultAnalyticalMethod/MethodIdentifier': '2510',
+                     'SampleCollectionMethod/MethodName': '1119USBR_WQX~GRAB',
+                     'ResultTemperatureBasisText': '',
+                     'ResultDepthHeightMeasure/MeasureValue': '',
+                     'ResultStatusIdentifier': 'Final',
+                     'PreparationStartDate': '',
+                     'USGSPCode': '',
+                     'ResultMeasureValue': '141',
+                     'ActivityTypeCode': 'Sample-Routine',
+                     'SampleCollectionMethod/MethodIdentifierContext': '1119USBR_WQX~GRAB',
+                     'MeasureQualifierCode': '',
+                     'ActivityDepthHeightMeasure/MeasureValue': '',
+                     'ResultParticleSizeBasisText': '',
+                     'ResultAnalyticalMethod/MethodName': '',
+                     'ResultDepthAltitudeReferencePointText': '',
+                     'ActivityDepthAltitudeReferencePointText': '',
+                     'ResultCommentText': '',
+                     'SampleTissueAnatomyName': '',
+                     'SubjectTaxonomicName': '',
+                     'ActivityTopDepthHeightMeasure/MeasureUnitCode': '',
+                     'ActivityMediaName': 'Water',
+                     'DetectionQuantitationLimitMeasure/MeasureUnitCode': 'uS/cm     ',
+                     'ResultValueTypeName': 'Actual',
+                     'OrganizationFormalName': 'Bureau of Reclamation',
+                     'ActivityCommentText': '',
+                     'MonitoringLocationIdentifier': '1119USBR_WQX-RCK101',
+                     'ProjectIdentifier': 'WQDATA',
+                     'ResultLaboratoryCommentText': '',
+                     'ActivityEndTime/TimeZoneCode': '',
+                     'HydrologicCondition': '',
+                     'ResultMeasure/MeasureUnitCode': 'uS/cm',
+                     'ActivityTopDepthHeightMeasure/MeasureValue': '',
+                     'ResultDepthHeightMeasure/MeasureUnitCode': '',
+                     'DetectionQuantitationLimitMeasure/MeasureValue': '2',
+                     'ActivityEndDate': '',
+                     'LaboratoryName': '',
+                     'HydrologicEvent': '',
+                     'ResultTimeBasisText': '',
+                     'ActivityBottomDepthHeightMeasure/MeasureValue': '',
+                     'SampleCollectionMethod/MethodIdentifier': '1119USBR_WQX~GRAB',
+                     'ActivityMediaSubdivisionName': '',
+                     'SampleCollectionEquipmentName': 'Water Bottle',
+                     'ActivityDepthHeightMeasure/MeasureUnitCode': ''}
 
         duplicate2 = {'ActivityIdentifier': '1119USBR_WQX-14-A317',
-                             'CharacteristicName': 'Conductivity',
-                             'PrecisionValue': '',
-                             'ResultAnalyticalMethod/MethodIdentifierContext': 'APHA',
-                             'SampleAquifer': '',
-                             'StatisticalBaseCode': '',
-                             'ResultWeightBasisText': '',
-                             'ActivityStartTime/Time': '11:40:00',
-                             'ResultDetectionConditionText': '',
-                             'ResultSampleFractionText': 'Dissolved',
-                             'ActivityStartTime/TimeZoneCode': 'MST',
-                             'ActivityStartDate': '2014-02-24',
-                             'ActivityEndTime/Time': '',
-                             'ActivityConductingOrganizationText': '',
-                             'OrganizationIdentifier': '1119USBR_WQX',
-                             'ActivityBottomDepthHeightMeasure/MeasureUnitCode': '',
-                             'AnalysisStartDate': '2014-02-24',
-                             'DetectionQuantitationLimitTypeName': 'Method Detection Level',
-                             'MethodDescriptionText': '',
-                             'ResultAnalyticalMethod/MethodIdentifier': '2510',
-                             'SampleCollectionMethod/MethodName': '1119USBR_WQX~GRAB',
-                             'ResultTemperatureBasisText': '',
-                             'ResultDepthHeightMeasure/MeasureValue': '',
-                             'ResultStatusIdentifier': 'Final',
-                             'PreparationStartDate': '',
-                             'USGSPCode': '',
-                             'ResultMeasureValue': '141',
-                             'ActivityTypeCode': 'Sample-Routine',
-                             'SampleCollectionMethod/MethodIdentifierContext': '1119USBR_WQX~GRAB',
-                             'MeasureQualifierCode': '',
-                             'ActivityDepthHeightMeasure/MeasureValue': '',
-                             'ResultParticleSizeBasisText': '',
-                             'ResultAnalyticalMethod/MethodName': '',
-                             'ResultDepthAltitudeReferencePointText': '',
-                             'ActivityDepthAltitudeReferencePointText': '',
-                             'ResultCommentText': '',
-                             'SampleTissueAnatomyName': '',
-                             'SubjectTaxonomicName': '',
-                             'ActivityTopDepthHeightMeasure/MeasureUnitCode': '',
-                             'ActivityMediaName': 'Water',
-                             'DetectionQuantitationLimitMeasure/MeasureUnitCode': 'uS/cm     ',
-                             'ResultValueTypeName': 'Actual',
-                             'OrganizationFormalName': 'Bureau of Reclamation',
-                             'ActivityCommentText': '',
-                             'MonitoringLocationIdentifier': '1119USBR-RCK101',
-                             'ProjectIdentifier': 'WQDATA',
-                             'ResultLaboratoryCommentText': '',
-                             'ActivityEndTime/TimeZoneCode': '',
-                             'HydrologicCondition': '',
-                             'ResultMeasure/MeasureUnitCode': 'uS/cm',
-                             'ActivityTopDepthHeightMeasure/MeasureValue': '',
-                             'ResultDepthHeightMeasure/MeasureUnitCode': '',
-                             'DetectionQuantitationLimitMeasure/MeasureValue': '2',
-                             'ActivityEndDate': '',
-                             'LaboratoryName': '',
-                             'HydrologicEvent': '',
-                             'ResultTimeBasisText': '',
-                             'ActivityBottomDepthHeightMeasure/MeasureValue': '',
-                             'SampleCollectionMethod/MethodIdentifier': '1119USBR_WQX~GRAB',
-                             'ActivityMediaSubdivisionName': '',
-                             'SampleCollectionEquipmentName': 'Water Bottle',
-                             'ActivityDepthHeightMeasure/MeasureUnitCode': ''}
+                      'CharacteristicName': 'Conductivity',
+                      'PrecisionValue': '',
+                      'ResultAnalyticalMethod/MethodIdentifierContext': 'APHA',
+                      'SampleAquifer': '',
+                      'StatisticalBaseCode': '',
+                      'ResultWeightBasisText': '',
+                      'ActivityStartTime/Time': '11:40:00',
+                      'ResultDetectionConditionText': '',
+                      'ResultSampleFractionText': 'Dissolved',
+                      'ActivityStartTime/TimeZoneCode': 'MST',
+                      'ActivityStartDate': '2014-02-24',
+                      'ActivityEndTime/Time': '',
+                      'ActivityConductingOrganizationText': '',
+                      'OrganizationIdentifier': '1119USBR_WQX',
+                      'ActivityBottomDepthHeightMeasure/MeasureUnitCode': '',
+                      'AnalysisStartDate': '2014-02-24',
+                      'DetectionQuantitationLimitTypeName': 'Method Detection Level',
+                      'MethodDescriptionText': '',
+                      'ResultAnalyticalMethod/MethodIdentifier': '2510',
+                      'SampleCollectionMethod/MethodName': '1119USBR_WQX~GRAB',
+                      'ResultTemperatureBasisText': '',
+                      'ResultDepthHeightMeasure/MeasureValue': '',
+                      'ResultStatusIdentifier': 'Final',
+                      'PreparationStartDate': '',
+                      'USGSPCode': '',
+                      'ResultMeasureValue': '141',
+                      'ActivityTypeCode': 'Sample-Routine',
+                      'SampleCollectionMethod/MethodIdentifierContext': '1119USBR_WQX~GRAB',
+                      'MeasureQualifierCode': '',
+                      'ActivityDepthHeightMeasure/MeasureValue': '',
+                      'ResultParticleSizeBasisText': '',
+                      'ResultAnalyticalMethod/MethodName': '',
+                      'ResultDepthAltitudeReferencePointText': '',
+                      'ActivityDepthAltitudeReferencePointText': '',
+                      'ResultCommentText': '',
+                      'SampleTissueAnatomyName': '',
+                      'SubjectTaxonomicName': '',
+                      'ActivityTopDepthHeightMeasure/MeasureUnitCode': '',
+                      'ActivityMediaName': 'Water',
+                      'DetectionQuantitationLimitMeasure/MeasureUnitCode': 'uS/cm     ',
+                      'ResultValueTypeName': 'Actual',
+                      'OrganizationFormalName': 'Bureau of Reclamation',
+                      'ActivityCommentText': '',
+                      'MonitoringLocationIdentifier': '1119USBR-RCK101',
+                      'ProjectIdentifier': 'WQDATA',
+                      'ResultLaboratoryCommentText': '',
+                      'ActivityEndTime/TimeZoneCode': '',
+                      'HydrologicCondition': '',
+                      'ResultMeasure/MeasureUnitCode': 'uS/cm',
+                      'ActivityTopDepthHeightMeasure/MeasureValue': '',
+                      'ResultDepthHeightMeasure/MeasureUnitCode': '',
+                      'DetectionQuantitationLimitMeasure/MeasureValue': '2',
+                      'ActivityEndDate': '',
+                      'LaboratoryName': '',
+                      'HydrologicEvent': '',
+                      'ResultTimeBasisText': '',
+                      'ActivityBottomDepthHeightMeasure/MeasureValue': '',
+                      'SampleCollectionMethod/MethodIdentifier': '1119USBR_WQX~GRAB',
+                      'ActivityMediaSubdivisionName': '',
+                      'SampleCollectionEquipmentName': 'Water Bottle',
+                      'ActivityDepthHeightMeasure/MeasureUnitCode': ''}
 
         duplicate_data = [duplicate, duplicate2]
 
@@ -396,7 +397,7 @@ class TestSdwisProgram(unittest.TestCase):
         self.patient.count = 2
         data = self.patient._query(self.patient._result_query)
         for item in data:
-            etl = models.SdwisResult(item,  Normalizer())
+            etl = resultmodel.SdwisResult(item,  Normalizer())
 
             self.assertIsNotNone(etl.row)
 
@@ -506,11 +507,11 @@ class TestDogmProgram(unittest.TestCase):
                    'Unit',
                    'SampComment')
 
-        one_row_from_query = models.OgmResult(
+        one_row_from_query = resultmodel.OgmResult(
             gdb_row, Normalizer()).row
 
         fields = self.patient._get_default_fields(
-            models.OgmResult.build_schema_map('Results'))
+            resultmodel.OgmResult.build_schema_map('Results'))
 
         location = os.path.join(self.patient.location, 'Results')
         self.patient._insert_row(one_row_from_query, fields, location)
@@ -532,7 +533,7 @@ class TestDogmProgram(unittest.TestCase):
                    512329.9142,
                    4397670.5318)
 
-        station_model = models.OgmStation(
+        station_model = stationmodel.OgmStation(
             gdb_row, Normalizer())
 
         one_row_from_query = station_model.row
@@ -549,6 +550,31 @@ class TestDogmProgram(unittest.TestCase):
 
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
+
+    def test_seed(self):
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+
+        self.patient.seed(folder, ['Stations', 'Results'])
+
+        arcpy.env.workspace = self.patient.location
+        actual = arcpy.GetCount_management('Stations').getOutput(0)
+        self.assertEqual(actual, '250')
+
+        actual = arcpy.GetCount_management('Results').getOutput(0)
+        self.assertEqual(actual, '403')
+
+    def test_seeding_with_balancing(self):
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+
+        self.patient.gdb_name = 'DOGM_Charge\DOGM_AGRC.gdb'
+        self.patient.seed(folder, ['Results'])
+
+        arcpy.env.workspace = self.patient.location
+        actual = arcpy.GetCount_management('Results').getOutput(0)
+
+        original_row_count = 17
+        balance_rows = 3
+        self.assertEqual(actual, str(original_row_count + balance_rows))
 
     def tearDown(self):
         self.patient = None

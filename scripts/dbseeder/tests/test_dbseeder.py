@@ -63,7 +63,8 @@ class TestDbSeeder(unittest.TestCase):
         self.patient.seed(folder, ['Results', 'Stations'])
 
         arcpy.env.workspace = self.patient.location
-        self.assertEqual(arcpy.GetCount_management('Stations').getOutput(0), '700')
+        self.assertEqual(
+            arcpy.GetCount_management('Stations').getOutput(0), '700')
 
     def tearDown(self):
         self.patient = None
