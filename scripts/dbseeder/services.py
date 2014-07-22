@@ -49,8 +49,6 @@ class WebQuery(object):
         pass
 
 
-
-
 class ConsolePrompt(object):
 
     def query_yes_no(self, question, default="yes"):

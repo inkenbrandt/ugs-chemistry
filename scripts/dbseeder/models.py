@@ -263,16 +263,19 @@ class OgmResult(Table):
               'SampleTime',
               'MDL',
               'Unit',
-              'SampComment',
-              'ParamGroup']
+              'SampComment']
 
     def __init__(self, row, normalizer):
         super(OgmResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        #: add paramgroup in ctor so `Type.fields` works for reads
+        #: since paragroup does not exist in source data
+        self.fields.append('ParamGroup')
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema = Schema().result
+
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class OgmStation(Table):
@@ -295,10 +298,10 @@ class OgmStation(Table):
     def __init__(self, row, normalizer):
         super(OgmStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class DwrResult(Table):
@@ -316,16 +319,19 @@ class DwrResult(Table):
               'Lon_X',
               'SampMedia',
               'SampleId',
-              'IdNum',
-              'ParamGroup']
+              'IdNum']
 
     def __init__(self, row, normalizer):
         super(DwrResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        #: add paramgroup in ctor so `Type.fields` works for reads
+        #: since paragroup does not exist in source data
+        self.fields.append('ParamGroup')
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema = Schema().result
+
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class DwrStation(Table):
@@ -349,10 +355,10 @@ class DwrStation(Table):
     def __init__(self, row, normalizer):
         super(DwrStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class UgsResult(Table):
@@ -380,10 +386,10 @@ class UgsResult(Table):
     def __init__(self, row, normalizer):
         super(UgsResult, self).__init__(normalizer)
 
-        schema = Schema().result
+        self.schema = Schema().result
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Result')
 
 
 class UgsStation(Table):
@@ -403,10 +409,10 @@ class UgsStation(Table):
     def __init__(self, row, normalizer):
         super(UgsStation, self).__init__(normalizer)
 
-        schema = Schema().station
+        self.schema = Schema().station
 
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
+        self.schema_map = Table.build_schema_map(self.schema)
+        self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
 class Schema(object):
