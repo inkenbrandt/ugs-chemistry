@@ -49,3 +49,10 @@ class TestNormalizer(unittest.TestCase):
         actual = self.patient.normalize(['UTAHDWQ_WQX-4946750', 'Junk'])
 
         self.assertListEqual(actual, ['UTAHDWQ-4946750', 'Junk'])
+
+
+class TestChargeBalancer(unittest.TestCase):
+    """docstring for ChargeBalancer"""
+    def __init__(self, arg):
+        super(ChargeBalancer, self).__init__()
+        self.arg = arg

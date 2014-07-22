@@ -53,7 +53,7 @@ class Wqp(Program):
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
 
-        print 'inserting into {} model_type {}'.format(location, feature_class)
+        print 'inserting into {} WQP type {}'.format(location, feature_class)
 
         station_ids = {}
 
@@ -288,7 +288,7 @@ class Sdwis(Program):
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
-        print 'inserting into {} type {}'.format(location, feature_class)
+        print 'inserting into {} SDWIS type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
             Type = models.SdwisResult
@@ -346,7 +346,7 @@ class Dogm(GdbBase):
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, model_type)
+            print 'inserting into {} DOGM type {}'.format(location, model_type)
 
             fields_to_insert = None
 
@@ -387,7 +387,7 @@ class Udwr(GdbBase):
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, model_type)
+            print 'inserting into {} UDWR type {}'.format(location, model_type)
 
             fields_to_insert = None
 
@@ -428,7 +428,7 @@ class Ugs(GdbBase):
 
             location = os.path.join(self.location, model_type)
 
-            print 'inserting into {} type {}'.format(location, model_type)
+            print 'inserting into {} UGS type {}'.format(location, model_type)
 
             fields_to_insert = None
 

@@ -1058,3 +1058,21 @@ class Field(object):
             return 'DATE'
         else:
             return field_type
+
+
+class Charges(object):
+
+    """the model holding the charge balance input values"""
+
+    def __init__(self,
+                 calcium=None,
+                 magnesium=None,
+                 sodium=None,
+                 potassium=None,
+                 chloride=None,
+                 bicarbonate=None,
+                 sulfate=None,
+                 carbonate=None,
+                 nitrate=None,
+                 nitrite=None):
+        super(Charges, self).__init__()
