@@ -49,9 +49,3 @@ class TestNormalizer(unittest.TestCase):
         actual = self.patient.normalize(['UTAHDWQ_WQX-4946750', 'Junk'])
 
         self.assertListEqual(actual, ['UTAHDWQ-4946750', 'Junk'])
-
-    def test_sdwis_normalization(self):
-        pass
-
-    def test_table_normalization(self):
-        pass
