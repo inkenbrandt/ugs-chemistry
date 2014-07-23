@@ -1064,15 +1064,105 @@ class Charges(object):
 
     """the model holding the charge balance input values"""
 
-    def __init__(self,
-                 calcium=None,
-                 magnesium=None,
-                 sodium=None,
-                 potassium=None,
-                 chloride=None,
-                 bicarbonate=None,
-                 sulfate=None,
-                 carbonate=None,
-                 nitrate=None,
-                 nitrite=None):
+    chemical_amount = None
+
+    def __init__(self):
         super(Charges, self).__init__()
+
+        self.chemical_amount = {'ca': None,
+                                'mg': None,
+                                'na': None,
+                                'k': None,
+                                'cl': None,
+                                'hco3': None,
+                                'co3': None,
+                                'so4': None,
+                                'no2': None,
+                                'no3': None,
+                                'na+k': None}
+
+    @property
+    def calcium(self):
+        return self.chemical_amount['ca']
+
+    @property
+    def magnesium(self):
+        return self.chemical_amount['mg']
+
+    @property
+    def sodium(self):
+        return self.chemical_amount['na']
+
+    @property
+    def potassium(self):
+        return self.chemical_amount['k']
+
+    @property
+    def chloride(self):
+        return self.chemical_amount['cl']
+
+    @property
+    def bicarbonate(self):
+        return self.chemical_amount['hco3']
+
+    @property
+    def sulfate(self):
+        return self.chemical_amount['so4']
+
+    @property
+    def carbonate(self):
+        return self.chemical_amount['co3']
+
+    @property
+    def nitrate(self):
+        return self.chemical_amount['no3']
+
+    @property
+    def nitrite(self):
+        return self.chemical_amount['no2']
+
+    @property
+    def sodium_and_potassium(self):
+        return self.chemical_amount['na+k']
+
+
+    def update(self, chemical, amount, detect_cond = None):
+        #: there was a problem with the sample disregard
+        if detect_cond:
+            return
+
+        #: there is more than one sample for this chemical
+        if self.chemical_amount[chemical] is not None:
+            try:
+                self.chemical_amount[chemical].append(amount)
+            except AttributeError:
+                #: turn into a list for summing
+                self.chemical_amount[chemical] = [
+                    self.chemical_amount[chemical], amount]
+
+            return
+
+        self.chemical_amount[chemical] = amount
+
+    def has_major_params(self):
+        valid_chemicals = 7
+        num_of_chemicals = 0
+
+        if self.sodium_and_potassium is not None:
+            num_of_chemicals += 2
+        if self.calcium is not None:
+            num_of_chemicals += 1
+        if self.magnesium is not None:
+            num_of_chemicals += 1
+        if self.sodium is not None:
+            num_of_chemicals += 1
+        if self.potassium is not None:
+            num_of_chemicals += 1
+        if self.chloride is not None:
+            num_of_chemicals += 1
+        if self.bicarbonate is not None:
+            num_of_chemicals += 1
+        if self.sulfate is not None:
+            num_of_chemicals += 1
+
+        return num_of_chemicals >= valid_chemicals
