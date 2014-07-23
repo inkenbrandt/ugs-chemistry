@@ -1125,8 +1125,7 @@ class Charges(object):
     def sodium_and_potassium(self):
         return self.chemical_amount['na+k']
 
-
-    def update(self, chemical, amount, detect_cond = None):
+    def update(self, chemical, amount, detect_cond=None):
         #: there was a problem with the sample disregard
         if detect_cond:
             return
@@ -1145,6 +1144,10 @@ class Charges(object):
         self.chemical_amount[chemical] = amount
 
     def has_major_params(self):
+        """this should only be called once everything
+        is complete and you want to do the charge balance
+        calculation. Otherwise your averages will be off"""
+
         valid_chemicals = 7
         num_of_chemicals = 0
 
@@ -1165,4 +1168,17 @@ class Charges(object):
         if self.sulfate is not None:
             num_of_chemicals += 1
 
-        return num_of_chemicals >= valid_chemicals
+        valid = num_of_chemicals >= valid_chemicals
+        self._update_values()
+
+        return valid
+
+    def _update_values(self):
+        """turn all of the arrays into numbers"""
+        for key in self.chemical_amount.keys():
+            value = self.chemical_amount[key]
+            try:
+                self.chemical_amount[key] = sum(value) / float(len(value))
+            except TypeError:
+                #: value is not an array
+                pass

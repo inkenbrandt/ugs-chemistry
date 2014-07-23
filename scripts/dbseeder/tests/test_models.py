@@ -1086,6 +1086,16 @@ class TestCharges(unittest.TestCase):
         self.assertItemsEqual(
             expected, self.patient.chemical_amount['ca'])
 
+    def test_arrays_become_numbers_after_validity_check(self):
+        self.patient.update('ca', 0, None)
+        self.patient.update('ca', 1, None)
+        self.patient.update('ca', 2, None)
+
+        expected = 1
+
+        self.patient.has_major_params()
+        self.assertEqual(expected, self.patient.calcium)
+
     def test_false_if_not_all_majors_present(self):
         majors = ['ca',
                   'mg',
