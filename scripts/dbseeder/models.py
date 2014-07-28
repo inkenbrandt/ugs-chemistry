@@ -1083,47 +1083,47 @@ class Charges(object):
 
     @property
     def calcium(self):
-        return self.chemical_amount['ca']
+        return self._get_summed_value('ca')
 
     @property
     def magnesium(self):
-        return self.chemical_amount['mg']
+        return self._get_summed_value('mg')
 
     @property
     def sodium(self):
-        return self.chemical_amount['na']
+        return self._get_summed_value('na')
 
     @property
     def potassium(self):
-        return self.chemical_amount['k']
+        return self._get_summed_value('k')
 
     @property
     def chloride(self):
-        return self.chemical_amount['cl']
+        return self._get_summed_value('cl')
 
     @property
     def bicarbonate(self):
-        return self.chemical_amount['hco3']
+        return self._get_summed_value('hco3')
 
     @property
     def sulfate(self):
-        return self.chemical_amount['so4']
+        return self._get_summed_value('so4')
 
     @property
     def carbonate(self):
-        return self.chemical_amount['co3']
+        return self._get_summed_value('co3')
 
     @property
     def nitrate(self):
-        return self.chemical_amount['no3']
+        return self._get_summed_value('no3')
 
     @property
     def nitrite(self):
-        return self.chemical_amount['no2']
+        return self._get_summed_value('no2')
 
     @property
     def sodium_plus_potassium(self):
-        return self.chemical_amount['na+k']
+        return self._get_summed_value('na+k')
 
     def update(self, chemical, amount, detect_cond=None):
         #: there was a problem with the sample disregard
@@ -1150,7 +1150,6 @@ class Charges(object):
 
         valid_chemicals = 5
         num_of_chemicals = 0
-        sodium = False
 
         if self.calcium is not None:
             num_of_chemicals += 1
@@ -1168,12 +1167,11 @@ class Charges(object):
         return valid and (
             self.sodium is not None or self.sodium_plus_potassium is not None)
 
-    def _update_values(self):
+    def _get_summed_value(self, key):
         """turn all of the arrays into numbers"""
-        for key in self.chemical_amount.keys():
-            value = self.chemical_amount[key]
-            try:
-                self.chemical_amount[key] = sum(value) / float(len(value))
-            except TypeError:
-                #: value is not an array
-                pass
+        value = self.chemical_amount[key]
+        try:
+            return sum(value) / float(len(value))
+        except TypeError:
+            #: value is not an array
+            return value
