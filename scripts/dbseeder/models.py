@@ -1122,7 +1122,7 @@ class Charges(object):
         return self.chemical_amount['no2']
 
     @property
-    def sodium_and_potassium(self):
+    def sodium_plus_potassium(self):
         return self.chemical_amount['na+k']
 
     def update(self, chemical, amount, detect_cond=None):
@@ -1148,18 +1148,13 @@ class Charges(object):
         is complete and you want to do the charge balance
         calculation. Otherwise your averages will be off"""
 
-        valid_chemicals = 7
+        valid_chemicals = 5
         num_of_chemicals = 0
+        sodium = False
 
-        if self.sodium_and_potassium is not None:
-            num_of_chemicals += 2
         if self.calcium is not None:
             num_of_chemicals += 1
         if self.magnesium is not None:
-            num_of_chemicals += 1
-        if self.sodium is not None:
-            num_of_chemicals += 1
-        if self.potassium is not None:
             num_of_chemicals += 1
         if self.chloride is not None:
             num_of_chemicals += 1
@@ -1168,10 +1163,10 @@ class Charges(object):
         if self.sulfate is not None:
             num_of_chemicals += 1
 
-        valid = num_of_chemicals >= valid_chemicals
-        self._update_values()
+        valid = num_of_chemicals == valid_chemicals
 
-        return valid
+        return valid and (
+            self.sodium is not None or self.sodium_plus_potassium is not None)
 
     def _update_values(self):
         """turn all of the arrays into numbers"""

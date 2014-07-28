@@ -1100,7 +1100,6 @@ class TestCharges(unittest.TestCase):
         majors = ['ca',
                   'mg',
                   'na',
-                  'k',
                   'cl',
                   'hco3',
                   'so4']
@@ -1120,7 +1119,20 @@ class TestCharges(unittest.TestCase):
         majors = ['ca',
                   'mg',
                   'na',
-                  'k',
+                  'cl',
+                  'hco3',
+                  'so4']
+
+        # put everything in
+        for i in xrange(0, len(majors)):
+            self.patient.update(majors[i], 1)
+
+        self.assertTrue(self.patient.has_major_params())
+
+    def test_true_if_majors_plus_k_present(self):
+        majors = ['ca',
+                  'mg',
+                  'na+k',
                   'cl',
                   'hco3',
                   'so4']
