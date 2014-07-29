@@ -24,12 +24,6 @@ class Program(object):
     def _get_fields(self, schema_map):
         return [schema_map[item].field_name for item in schema_map]
 
-    def _find_field(self, schema_map, field):
-        for key in schema_map.keys():
-            item = schema_map[key]
-            if item['destination'] == field:
-                return item
-
 
 class GdbBase(Program):
 
@@ -416,7 +410,7 @@ class Ugs(GdbBase):
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: types - [Staions, Results]
+        #: types - [Stations, Results]
 
         for model_type in model_types:
             if model_type == 'Stations':
