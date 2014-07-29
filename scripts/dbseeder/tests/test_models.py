@@ -1143,19 +1143,26 @@ class TestCharges(unittest.TestCase):
 
         self.assertTrue(self.patient.has_major_params())
 
-    def test_true_if_majors_present(self):
-        majors = ['ca',
-                  'mg',
-                  'na+k',
-                  'cl',
-                  'hco3',
-                  'so4']
+    def test_gets_correct_potassium_with_sodium_plus_potasium(self):
+        self.patient.update('na', 2, None)
+        self.patient.update('na+k', 5, None)
 
-        # put everything in
-        for i in xrange(0, len(majors)):
-            self.patient.update(majors[i], 1)
+        self.assertEqual(3, self.patient.potassium)
 
-        self.assertTrue(self.patient.has_major_params())
+    def test_gets_correct_sodium_with_sodium_plus_potasium(self):
+        self.patient.update('k', 2, None)
+        self.patient.update('na+k', 5, None)
+
+        self.assertEqual(3, self.patient.sodium)
+
+    def test_gets_correct_sodium_and_potasium_when_all_three(self):
+        self.patient.update('k', 1, None)
+        self.patient.update('na', 2, None)
+        self.patient.update('na+k', 3, None)
+
+        self.assertEqual(1, self.patient.potassium)
+        self.assertEqual(2, self.patient.sodium)
+        self.assertIsNone(self.patient.sodium_plus_potassium)
 
     def tearDown(self):
         self.patient = None

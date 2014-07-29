@@ -1091,11 +1091,25 @@ class Charges(object):
 
     @property
     def sodium(self):
-        return self._get_summed_value('na')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self.sodium_plus_potassium
+
+        if na_k is not None and k is not None and na is None:
+            return na_k - k
+
+        return na
 
     @property
     def potassium(self):
-        return self._get_summed_value('k')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self.sodium_plus_potassium
+
+        if na_k is not None and na is not None and k is None:
+            return na_k - na
+
+        return k
 
     @property
     def chloride(self):
@@ -1174,4 +1188,6 @@ class Charges(object):
             return sum(value) / float(len(value))
         except TypeError:
             #: value is not an array
-            return value
+            pass
+
+        return value
