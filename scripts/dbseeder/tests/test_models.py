@@ -1148,12 +1148,16 @@ class TestCharges(unittest.TestCase):
         self.patient.update('na+k', 5, None)
 
         self.assertEqual(3, self.patient.potassium)
+        self.assertEqual(2, self.patient.sodium)
+        self.assertEqual(0, self.patient.sodium_plus_potassium)
 
     def test_gets_correct_sodium_with_sodium_plus_potasium(self):
         self.patient.update('k', 2, None)
         self.patient.update('na+k', 5, None)
 
         self.assertEqual(3, self.patient.sodium)
+        self.assertEqual(2, self.patient.potassium)
+        self.assertEqual(0, self.patient.sodium_plus_potassium)
 
     def test_gets_correct_sodium_and_potasium_when_all_three(self):
         self.patient.update('k', 1, None)
@@ -1162,7 +1166,7 @@ class TestCharges(unittest.TestCase):
 
         self.assertEqual(1, self.patient.potassium)
         self.assertEqual(2, self.patient.sodium)
-        self.assertIsNone(self.patient.sodium_plus_potassium)
+        self.assertEqual(0, self.patient.sodium_plus_potassium)
 
     def tearDown(self):
         self.patient = None

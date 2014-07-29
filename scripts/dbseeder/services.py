@@ -1078,8 +1078,11 @@ class ChargeBalancer(object):
         carbonate = self._conversions['co3'] * charge.carbonate
         nitrate = self._conversions['no3'] * charge.nitrate
         nitrite = self._conversions['no2'] * charge.nitrite
+        sodium_plus_potassium = self._conversions[
+            'na+k'] * charge.sodium_plus_potassium
 
-        cation = sum([calcium, magnesium, sodium, potassium])
+        cation = sum(
+            [calcium, magnesium, sodium, potassium, sodium_plus_potassium])
         anion = sum(
             [chloride, bicarbonate, carbonate, sulfate, nitrate, nitrite])
 

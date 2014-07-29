@@ -1090,28 +1090,6 @@ class Charges(object):
         return self._get_summed_value('mg')
 
     @property
-    def sodium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self.sodium_plus_potassium
-
-        if na_k is not None and k is not None and na is None:
-            return na_k - k
-
-        return na
-
-    @property
-    def potassium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self.sodium_plus_potassium
-
-        if na_k is not None and na is not None and k is None:
-            return na_k - na
-
-        return k
-
-    @property
     def chloride(self):
         return self._get_summed_value('cl')
 
@@ -1136,8 +1114,37 @@ class Charges(object):
         return self._get_summed_value('no2')
 
     @property
+    def sodium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and k is not None and na is None:
+            return na_k - k
+
+        return na
+
+    @property
+    def potassium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and na is not None and k is None:
+            return na_k - na
+
+        return k
+
+    @property
     def sodium_plus_potassium(self):
-        return self._get_summed_value('na+k')
+        nak = self._get_summed_value('na+k')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+
+        if nak is not None and na is not None or k is not None:
+            return 0
+
+        return nak
 
     def update(self, chemical, amount, detect_cond=None):
         #: there was a problem with the sample disregard
