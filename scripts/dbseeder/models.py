@@ -1,6 +1,7 @@
 """module containing project models"""
 
 import os
+import re
 import services
 from collections import OrderedDict
 
@@ -12,7 +13,87 @@ class TableInfo(object):
         self.name = name
 
 
-class WqpTable(services.Normalizable):
+class Normalizable(object):
+    normalize_fields = None
+    station_id_re = re.compile(re.escape('_WQX'), re.IGNORECASE)
+
+    def __init__(self, normalizer):
+        super(Normalizable, self).__init__()
+
+        self.normalize_fields = {
+            'chemical': (None, None),
+            'unit': (None, None),
+            'amount': (None, None),
+            'paramgroup': (None, None),
+            'stationid': (None, None)
+        }
+
+        self.normalizer = normalizer
+
+    def normalize(self, row):
+        #: normalize the row
+        amount, unit, chemical = self.normalizer.normalize_unit(
+            self.normalize_fields['chemical'][0],
+            self.normalize_fields['unit'][0],
+            self.normalize_fields['amount'][0])
+
+        index = self.normalize_fields['paramgroup'][1]
+
+        if not self.normalize_fields['paramgroup'][0]:
+            paramgroup = self.normalizer.calculate_paramgroup(chemical)
+
+            if index > -1:
+                row[index] = paramgroup
+
+        index = self.normalize_fields['stationid'][1]
+
+        if (self.station_id_re.search(
+                str(self.normalize_fields['stationid'][0]))):
+            if index > -1:
+                row[index] = self.station_id_re.sub(
+                    '', self.normalize_fields['stationid'][0])
+
+        index = self.normalize_fields['amount'][1]
+        if index > -1:
+            row[index] = amount
+
+        index = self.normalize_fields['unit'][1]
+        if index > -1:
+            row[index] = unit
+
+        index = self.normalize_fields['chemical'][1]
+        if index > -1:
+            row[index] = chemical
+
+        return row
+
+    def update_normalize(self, field_name, value, index):
+        #: get the unit, resultvalue and param name so we
+        #:    can use it later
+        #: grab the value and the index for inserting the
+        #:    updated values
+        field_name = field_name.lower()
+
+        if field_name == 'unit':
+            if value:
+                value = value.lower()
+
+            self.normalize_fields['unit'] = (value, index)
+        elif field_name == 'resultvalue':
+            self.normalize_fields['amount'] = (value, index)
+        elif field_name == 'param':
+            self.normalize_fields['chemical'] = (value, index)
+        elif field_name == 'paramgroup':
+            self.normalize_fields['paramgroup'] = (value, index)
+        elif field_name == 'stationid':
+            #: do this to strip the unwanted text
+            if value:
+                value = self.station_id_re.sub('', value)
+
+            self.normalize_fields['stationid'] = (value, index)
+
+
+class WqpTable(Normalizable):
 
     def __init__(self, normalizer):
         """
@@ -86,7 +167,7 @@ class WqpTable(services.Normalizable):
         return _row
 
 
-class Table(services.Normalizable):
+class Table(Normalizable):
 
     def __init__(self, normalizer):
         super(Table, self).__init__(normalizer)
@@ -170,18 +251,53 @@ class Table(services.Normalizable):
             _row.append((x, y))
         else:
             # model type is result and needs charge balance
-            if not balanceable or not self.charge.has_major_params:
-                pass
+            if balanceable and self.charge.has_major_params:
+                balance, cation, anion = balancer.calculate_charge_balance(
+                    self.charge)
 
-            balance, cation, anion = balancer.calculate_charge_balance(
-                self.charge)
-
-            _row = {'row': _row,
-                    'balance': balance,
-                    'cation': cation,
-                    'anion': anion}
+                _row = {'row': _row,
+                        'balance': balance,
+                        'cation': cation,
+                        'anion': anion}
 
         return _row
+
+
+class Balanceable(object):
+
+    """holds the values of the fields required to to charge balances"""
+    charge = None
+    fields = {
+        'detectcond': None,
+        'resultvalue': None,
+        'param': None
+    }
+
+    def __init__(self):
+        super(Balanceable, self).__init__()
+
+        self.charge = Charge()
+
+    def update_balance(self, field_name, value):
+        if not field_name and field_name.lower() not in self.fields.keys():
+            return
+
+        self.fields[field_name] = value
+
+    def balance(self):
+        self.charge.set(self.chemical, self.amount, self.detect_cond)
+
+    @property
+    def chemical(self):
+        return self.fields['param']
+
+    @property
+    def amount(self):
+        return self.fields['resultvalue']
+
+    @property
+    def detect_cond(self):
+        return self.fields['detectcond']
 
 
 class WqpResult(WqpTable):
@@ -271,7 +387,7 @@ class SdwisStation(Table):
         self.row = self._etl_row(row, schema_map, 'Station')
 
 
-class OgmResult(Table, services.Balanceable):
+class OgmResult(Table, Balanceable):
 
     """docstring for OgmResult"""
 
@@ -327,7 +443,7 @@ class OgmStation(Table):
         self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
-class DwrResult(Table, services.Balanceable):
+class DwrResult(Table, Balanceable):
 
     fields = ['SampleDate',
               'USGSPCode',
@@ -384,7 +500,7 @@ class DwrStation(Table):
         self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
-class UgsResult(Table, services.Balanceable):
+class UgsResult(Table, Balanceable):
 
     fields = ['ResultValue',
               'AnalysisDate',
