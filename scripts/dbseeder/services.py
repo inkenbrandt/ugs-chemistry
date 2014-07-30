@@ -5,6 +5,7 @@ import re
 import requests
 import sys
 from dateutil.parser import parse
+from models import Charge
 from pyproj import Proj, transform
 
 
@@ -1046,6 +1047,42 @@ class Normalizable(object):
             self.normalize_fields['stationid'] = (value, index)
 
 
+class Balanceable(object):
+    """holds the values of the fields required to to charge balances"""
+    charge = None
+    fields = {
+        'detectcond': None,
+        'resultvalue': None,
+        'param': None
+    }
+
+    def __init__(self):
+        super(Balanceable, self).__init__()
+
+        self.charge = Charge()
+
+    def update_balance(self, field_name, value):
+        if not field_name and field_name.lower() not in self.fields.keys():
+            return
+
+        self.fields[field_name] = value
+
+    def balance(self):
+        self.charge.set(self.chemical, self.amount, self.detect_cond)
+
+    @property
+    def chemical(self):
+        return self.fields['param']
+
+    @property
+    def amount(self):
+        return self.fields['resultvalue']
+
+    @property
+    def detect_cond(self):
+        return self.fields['detectcond']
+
+
 class ChargeBalancer(object):
 
     """https://github.com/agrc/ugs-chemistry/issues/22"""
@@ -1067,7 +1104,7 @@ class ChargeBalancer(object):
 
         self.dataset = dataset
 
-    def _calculate_charge_balance(self, charge):
+    def calculate_charge_balance(self, charge):
         calcium = self._conversions['ca'] * charge.calcium
         magnesium = self._conversions['mg'] * charge.magnesium
         sodium = self._conversions['na'] * charge.sodium

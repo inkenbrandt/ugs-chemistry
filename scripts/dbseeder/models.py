@@ -1,8 +1,8 @@
 """module containing project models"""
 
 import os
+import services
 from collections import OrderedDict
-from services import Caster, Project, Normalizable
 
 
 class TableInfo(object):
@@ -12,7 +12,7 @@ class TableInfo(object):
         self.name = name
 
 
-class WqpTable(Normalizable):
+class WqpTable(services.Normalizable):
 
     def __init__(self, normalizer):
         """
@@ -61,7 +61,7 @@ class WqpTable(Normalizable):
             except IndexError:
                 value = None
 
-            value = Caster.cast(value, destination_field_type)
+            value = services.Caster.cast(value, destination_field_type)
 
             if field.field_name == 'Lon_X':
                 lon = value
@@ -76,7 +76,7 @@ class WqpTable(Normalizable):
 
         if model_type == 'Station':
             try:
-                x, y = Project().to_utm(lon, lat)
+                x, y = services.Project().to_utm(lon, lat)
 
                 if x and y:
                     _row.append((x, y))
@@ -86,7 +86,7 @@ class WqpTable(Normalizable):
         return _row
 
 
-class Table(Normalizable):
+class Table(services.Normalizable):
 
     def __init__(self, normalizer):
         super(Table, self).__init__(normalizer)
@@ -108,6 +108,8 @@ class Table(Normalizable):
 
     def _etl_row(self, row, schema_map, model_type):
         _row = []
+        balanceable = True
+        balancer = services.ChargeBalancer()
 
         for i, field_name in enumerate(schema_map):
             if field_name not in self.fields:
@@ -120,13 +122,21 @@ class Table(Normalizable):
                 value = None
 
             field = schema_map[field_name]
-            value = Caster.cast(value, field.field_type)
+            value = services.Caster.cast(value, field.field_type)
 
             self.update_normalize(field_name, value, i)
+            try:
+                self.update_balance(field_name, value)
+            except:
+                #: not of type balanceable
+                balanceable = False
 
             _row.append(value)
 
         _row = self.normalize(_row)
+
+        if balanceable:
+            self.balance()
 
         if model_type == 'Station':
             has_utm = False
@@ -152,11 +162,24 @@ class Table(Normalizable):
                     x_index = self.fields.index('Lon_X')
                     y_index = self.fields.index('Lat_Y')
 
-                    x, y = Project().to_utm(row[x_index], row[y_index])
+                    x, y = services.Project().to_utm(
+                        row[x_index], row[y_index])
                 except Exception as detail:
                     print 'Handling projection error:', detail
 
             _row.append((x, y))
+        else:
+            # model type is result and needs charge balance
+            if not balanceable or not self.charge.has_major_params:
+                pass
+
+            balance, cation, anion = balancer.calculate_charge_balance(
+                self.charge)
+
+            _row = {'row': _row,
+                    'balance': balance,
+                    'cation': cation,
+                    'anion': anion}
 
         return _row
 
@@ -248,7 +271,7 @@ class SdwisStation(Table):
         self.row = self._etl_row(row, schema_map, 'Station')
 
 
-class OgmResult(Table):
+class OgmResult(Table, services.Balanceable):
 
     """docstring for OgmResult"""
 
@@ -304,7 +327,7 @@ class OgmStation(Table):
         self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
-class DwrResult(Table):
+class DwrResult(Table, services.Balanceable):
 
     fields = ['SampleDate',
               'USGSPCode',
@@ -361,7 +384,7 @@ class DwrStation(Table):
         self.row = self._etl_row(row, self.schema_map, 'Station')
 
 
-class UgsResult(Table):
+class UgsResult(Table, services.Balanceable):
 
     fields = ['ResultValue',
               'AnalysisDate',
@@ -1060,14 +1083,14 @@ class Field(object):
             return field_type
 
 
-class Charges(object):
+class Charge(object):
 
     """the model holding the charge balance input values"""
 
     chemical_amount = None
 
     def __init__(self):
-        super(Charges, self).__init__()
+        super(Charge, self).__init__()
 
         self.chemical_amount = {'ca': None,
                                 'mg': None,
@@ -1146,7 +1169,7 @@ class Charges(object):
 
         return nak
 
-    def update(self, chemical, amount, detect_cond=None):
+    def set(self, chemical, amount, detect_cond=None):
         #: there was a problem with the sample disregard
         if detect_cond:
             return
@@ -1164,6 +1187,7 @@ class Charges(object):
 
         self.chemical_amount[chemical] = amount
 
+    @property
     def has_major_params(self):
         """this should only be called once everything
         is complete and you want to do the charge balance
