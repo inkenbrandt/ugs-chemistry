@@ -451,19 +451,19 @@ class ChargeBalancer(object):
     def __init__(self):
         super(ChargeBalancer, self).__init__()
 
-    def calculate_charge_balance(self, charge):
-        calcium = self._conversions['ca'] * charge.calcium
-        magnesium = self._conversions['mg'] * charge.magnesium
-        sodium = self._conversions['na'] * charge.sodium
-        potassium = self._conversions['k'] * charge.potassium
-        chloride = self._conversions['cl'] * charge.chloride
-        bicarbonate = self._conversions['hco3'] * charge.bicarbonate
-        sulfate = self._conversions['so4'] * charge.sulfate
-        carbonate = self._conversions['co3'] * charge.carbonate
-        nitrate = self._conversions['no3'] * charge.nitrate
-        nitrite = self._conversions['no2'] * charge.nitrite
+    def calculate_charge_balance(self, concentration):
+        calcium = self._conversions['ca'] * concentration.calcium
+        magnesium = self._conversions['mg'] * concentration.magnesium
+        sodium = self._conversions['na'] * concentration.sodium
+        potassium = self._conversions['k'] * concentration.potassium
+        chloride = self._conversions['cl'] * concentration.chloride
+        bicarbonate = self._conversions['hco3'] * concentration.bicarbonate
+        sulfate = self._conversions['so4'] * concentration.sulfate
+        carbonate = self._conversions['co3'] * concentration.carbonate
+        nitrate = self._conversions['no3'] * concentration.nitrate
+        nitrite = self._conversions['no2'] * concentration.nitrite
         sodium_plus_potassium = self._conversions[
-            'na+k'] * charge.sodium_plus_potassium
+            'na+k'] * concentration.sodium_plus_potassium
 
         cation = sum(
             [calcium, magnesium, sodium, potassium, sodium_plus_potassium])

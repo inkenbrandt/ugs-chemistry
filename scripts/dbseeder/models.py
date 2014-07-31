@@ -96,10 +96,13 @@ class Normalizable(object):
 class Balanceable(object):
 
     """holds the values of the fields required to to charge balances"""
+
     #: model that holds charge information for the balancer
-    charge = None
+    concentration = None
+
     #: a reference to the normalized chemical row values
     row = None
+
     #: the index of the array where the fields are
     field_index = {
         'detectcond': None,
@@ -110,7 +113,7 @@ class Balanceable(object):
     def __init__(self):
         super(Balanceable, self).__init__()
 
-        self.charge = Charge()
+        self.concentration = Concentration()
 
     def set_row_index(self, field_name, index):
         if (field_name is None or
@@ -122,7 +125,7 @@ class Balanceable(object):
     def balance(self, row):
         self.row = row
 
-        self.charge.set(self.chemical, self.amount, self.detect_cond)
+        self.concentration.set(self.chemical, self.amount, self.detect_cond)
 
     @property
     def chemical(self):
@@ -304,9 +307,9 @@ class Table(Normalizable):
             _row.append((x, y))
         else:
             # model type is result and needs charge balance
-            if balanceable and self.charge.has_major_params:
+            if balanceable and self.concentration.has_major_params:
                 balance, cation, anion = balancer.calculate_charge_balance(
-                    self.charge)
+                    self.concentration)
 
                 _row = {'row': _row,
                         'balance': balance,
@@ -1215,14 +1218,14 @@ class Field(object):
             return field_type
 
 
-class Charge(object):
+class Concentration(object):
 
     """the model holding the charge balance input values"""
 
     chemical_amount = None
 
     def __init__(self):
-        super(Charge, self).__init__()
+        super(Concentration, self).__init__()
 
         self.chemical_amount = {'ca': None,
                                 'mg': None,

@@ -1065,12 +1065,12 @@ class TestUgsModels(unittest.TestCase):
         self.assertListEqual(expected, model.row)
 
 
-class TestCharge(unittest.TestCase):
+class TestConcentration(unittest.TestCase):
 
     patient = None
 
     def setUp(self):
-        self.patient = models.Charge()
+        self.patient = models.Concentration()
 
     def test_update_noop_if_detect_cond(self):
         self.patient.set('ca', 1, 'Bad Test')
