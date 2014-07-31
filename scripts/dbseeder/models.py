@@ -93,6 +93,59 @@ class Normalizable(object):
             self.normalize_fields['stationid'] = (value, index)
 
 
+class Balanceable(object):
+
+    """holds the values of the fields required to to charge balances"""
+    #: model that holds charge information for the balancer
+    charge = None
+    #: a reference to the normalized chemical row values
+    row = None
+    #: the index of the array where the fields are
+    field_index = {
+        'detectcond': None,
+        'resultvalue': None,
+        'param': None
+    }
+
+    def __init__(self):
+        super(Balanceable, self).__init__()
+
+        self.charge = Charge()
+
+    def set_row_index(self, field_name, index):
+        if (field_name is None or
+                field_name.lower() not in self.field_index.keys()):
+            return
+
+        self.field_index[field_name.lower()] = index
+
+    def balance(self, row):
+        self.row = row
+
+        self.charge.set(self.chemical, self.amount, self.detect_cond)
+
+    @property
+    def chemical(self):
+        if self.row is None:
+            return None
+
+        return self.row[self.field_index['param']]
+
+    @property
+    def amount(self):
+        if self.row is None:
+            return None
+
+        return self.row[self.field_index['resultvalue']]
+
+    @property
+    def detect_cond(self):
+        if self.row is None:
+            return None
+
+        return self.row[self.field_index['detectcond']]
+
+
 class WqpTable(Normalizable):
 
     def __init__(self, normalizer):
@@ -207,7 +260,7 @@ class Table(Normalizable):
 
             self.update_normalize(field_name, value, i)
             try:
-                self.update_balance(field_name, value)
+                self.set_row_index(field_name, i)
             except:
                 #: not of type balanceable
                 balanceable = False
@@ -217,7 +270,7 @@ class Table(Normalizable):
         _row = self.normalize(_row)
 
         if balanceable:
-            self.balance()
+            self.balance(_row)
 
         if model_type == 'Station':
             has_utm = False
@@ -261,43 +314,6 @@ class Table(Normalizable):
                         'anion': anion}
 
         return _row
-
-
-class Balanceable(object):
-
-    """holds the values of the fields required to to charge balances"""
-    charge = None
-    fields = {
-        'detectcond': None,
-        'resultvalue': None,
-        'param': None
-    }
-
-    def __init__(self):
-        super(Balanceable, self).__init__()
-
-        self.charge = Charge()
-
-    def update_balance(self, field_name, value):
-        if not field_name and field_name.lower() not in self.fields.keys():
-            return
-
-        self.fields[field_name] = value
-
-    def balance(self):
-        self.charge.set(self.chemical, self.amount, self.detect_cond)
-
-    @property
-    def chemical(self):
-        return self.fields['param']
-
-    @property
-    def amount(self):
-        return self.fields['resultvalue']
-
-    @property
-    def detect_cond(self):
-        return self.fields['detectcond']
 
 
 class WqpResult(WqpTable):

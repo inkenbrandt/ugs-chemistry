@@ -1170,3 +1170,33 @@ class TestCharge(unittest.TestCase):
     def tearDown(self):
         self.patient = None
         del self.patient
+
+
+class TestBalanceable(unittest.TestCase):
+    """tests the balanceable baseclass"""
+
+    def setUp(self):
+        self.patient = models.Balanceable()
+
+    def test_row_access(self):
+        row = [None, 'detectcond', None, 'resultvalue', None, 'param']
+
+        self.patient.set_row_index('detectcond', 1)
+        self.patient.set_row_index('resultvalue', 3)
+        self.patient.set_row_index('param', 5)
+        self.patient.set_row_index('nothing', 5)
+        self.patient.set_row_index(None, 5)
+
+        expected = {
+            'detectcond': 1,
+            'resultvalue': 3,
+            'param': 5
+        }
+
+        self.assertDictEqual(expected, self.patient.field_index)
+
+        self.patient.balance(row)
+
+        self.assertEqual('detectcond', self.patient.detect_cond)
+        self.assertEqual('resultvalue', self.patient.amount)
+        self.assertEqual('param', self.patient.chemical)
