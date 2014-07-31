@@ -1302,6 +1302,10 @@ class Charge(object):
         return nak
 
     def set(self, chemical, amount, detect_cond=None):
+        #: chemical
+        if chemical not in self.chemical_amount:
+            return
+
         #: there was a problem with the sample disregard
         if detect_cond:
             return
