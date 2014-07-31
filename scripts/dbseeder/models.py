@@ -1325,10 +1325,6 @@ class Charge(object):
 
     @property
     def has_major_params(self):
-        """this should only be called once everything
-        is complete and you want to do the charge balance
-        calculation. Otherwise your averages will be off"""
-
         valid_chemicals = 5
         num_of_chemicals = 0
 
