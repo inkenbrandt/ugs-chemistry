@@ -104,16 +104,19 @@ class Balanceable(object):
     row = None
 
     #: the index of the array where the fields are
-    field_index = {
-        'detectcond': None,
-        'resultvalue': None,
-        'param': None
-    }
+    field_index = None
 
     def __init__(self):
         super(Balanceable, self).__init__()
 
         self.concentration = Concentration()
+
+        self.field_index = {
+            'detectcond': None,
+            'resultvalue': None,
+            'param': None,
+            'sampleid': None
+        }
 
     def set_row_index(self, field_name, index):
         if (field_name is None or
@@ -132,21 +135,44 @@ class Balanceable(object):
         if self.row is None:
             return None
 
-        return self.row[self.field_index['param']]
+        index = self.field_index['param']
+        if index is None:
+            return None
+
+        return self.row[index]
 
     @property
     def amount(self):
         if self.row is None:
             return None
 
-        return self.row[self.field_index['resultvalue']]
+        index = self.field_index['resultvalue']
+        if index is None:
+            return None
+
+        return self.row[index]
 
     @property
     def detect_cond(self):
         if self.row is None:
             return None
 
-        return self.row[self.field_index['detectcond']]
+        index = self.field_index['detectcond']
+        if index is None:
+            return None
+
+        return self.row[index]
+
+    @property
+    def sample_id(self):
+        if self.row is None:
+            return None
+
+        index = self.field_index['sampleid']
+        if index is None:
+            return None
+
+        return self.row[index]
 
 
 class WqpTable(Normalizable):
@@ -224,9 +250,12 @@ class WqpTable(Normalizable):
 
 
 class Table(Normalizable):
+    balanceable = None
 
     def __init__(self, normalizer):
         super(Table, self).__init__(normalizer)
+
+        self.balanceable = False
 
     @staticmethod
     def build_schema_map(schema):
@@ -245,7 +274,7 @@ class Table(Normalizable):
 
     def _etl_row(self, row, schema_map, model_type):
         _row = []
-        balanceable = True
+        self.balanceable = True
         balancer = services.ChargeBalancer()
 
         for i, field_name in enumerate(schema_map):
@@ -266,13 +295,13 @@ class Table(Normalizable):
                 self.set_row_index(field_name, i)
             except:
                 #: not of type balanceable
-                balanceable = False
+                self.balanceable = False
 
             _row.append(value)
 
         _row = self.normalize(_row)
 
-        if balanceable:
+        if self.balanceable:
             self.balance(_row)
 
         if model_type == 'Station':
@@ -307,7 +336,7 @@ class Table(Normalizable):
             _row.append((x, y))
         else:
             # model type is result and needs charge balance
-            if balanceable and self.concentration.has_major_params:
+            if self.balanceable and self.concentration.has_major_params:
                 balance, cation, anion = balancer.calculate_charge_balance(
                     self.concentration)
 

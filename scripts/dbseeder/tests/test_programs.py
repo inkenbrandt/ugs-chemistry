@@ -550,6 +550,28 @@ class TestDogmProgram(unittest.TestCase):
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
 
+    def test_seed(self):
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+
+        self.patient.seed(folder, ['Stations'])
+
+        arcpy.env.workspace = self.patient.location
+        actual = arcpy.GetCount_management('Stations').getOutput(0)
+        self.assertEqual(actual, '250')
+
+    def test_seeding_with_balancing(self):
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+
+        self.patient.gdb_name = 'DOGM_Charge\DOGM_AGRC.gdb'
+        self.patient.seed(folder, ['Results'])
+
+        arcpy.env.workspace = self.patient.location
+        actual = arcpy.GetCount_management('Results').getOutput(0)
+
+        original_row_count = 17
+        balance_rows = 3
+        self.assertEqual(actual, str(original_row_count + balance_rows))
+
     def tearDown(self):
         self.patient = None
         del self.patient

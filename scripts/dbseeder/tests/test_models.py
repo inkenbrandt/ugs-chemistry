@@ -1065,7 +1065,7 @@ class TestUgsModels(unittest.TestCase):
         self.assertListEqual(expected, model.row)
 
 
-class TestConcentration(unittest.TestCase):
+class TestConcentrationModel(unittest.TestCase):
 
     patient = None
 
@@ -1172,7 +1172,7 @@ class TestConcentration(unittest.TestCase):
         del self.patient
 
 
-class TestBalanceable(unittest.TestCase):
+class TestBalanceableBaseClass(unittest.TestCase):
     """tests the balanceable baseclass"""
 
     def setUp(self):
@@ -1200,3 +1200,12 @@ class TestBalanceable(unittest.TestCase):
         self.assertEqual('detectcond', self.patient.detect_cond)
         self.assertEqual('resultvalue', self.patient.amount)
         self.assertEqual('param', self.patient.chemical)
+
+    def test_row_access_with_nones(self):
+        row = []
+
+        self.patient.balance(row)
+
+        self.assertEqual(None, self.patient.detect_cond)
+        self.assertEqual(None, self.patient.amount)
+        self.assertEqual(None, self.patient.chemical)
