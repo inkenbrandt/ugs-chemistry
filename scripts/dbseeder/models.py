@@ -10,11 +10,203 @@ The basic models
 import os
 
 
-class TableInfo(object):
+class Concentration(object):
 
-    def __init__(self, location, name):
-        self.location = os.path.join(location, name)
-        self.name = name
+    """the model holding the charge balance input values"""
+
+    chemical_amount = None
+
+    def __init__(self):
+        super(Concentration, self).__init__()
+
+        self.chemical_amount = {'ca': None,
+                                'mg': None,
+                                'na': None,
+                                'k': None,
+                                'cl': None,
+                                'hco3': None,
+                                'co3': None,
+                                'so4': None,
+                                'no2': None,
+                                'no3': None,
+                                'na+k': None}
+
+    @property
+    def calcium(self):
+        return self._get_summed_value('ca')
+
+    @property
+    def magnesium(self):
+        return self._get_summed_value('mg')
+
+    @property
+    def chloride(self):
+        return self._get_summed_value('cl')
+
+    @property
+    def bicarbonate(self):
+        return self._get_summed_value('hco3')
+
+    @property
+    def sulfate(self):
+        return self._get_summed_value('so4')
+
+    @property
+    def carbonate(self):
+        return self._get_summed_value('co3')
+
+    @property
+    def nitrate(self):
+        return self._get_summed_value('no3')
+
+    @property
+    def nitrite(self):
+        return self._get_summed_value('no2')
+
+    @property
+    def sodium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and k is not None and na is None:
+            return na_k - k
+
+        return na
+
+    @property
+    def potassium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and na is not None and k is None:
+            return na_k - na
+
+        return k
+
+    @property
+    def sodium_plus_potassium(self):
+        nak = self._get_summed_value('na+k')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+
+        if nak is not None and na is not None or k is not None:
+            return 0
+
+        return nak
+
+    def set(self, chemical, amount, detect_cond=None):
+        #: chemical
+        if chemical not in self.chemical_amount:
+            return
+
+        #: there was a problem with the sample disregard
+        if detect_cond:
+            return
+
+        #: there is more than one sample for this chemical
+        if self.chemical_amount[chemical] is not None:
+            try:
+                self.chemical_amount[chemical].append(amount)
+            except AttributeError:
+                #: turn into a list for summing
+                self.chemical_amount[chemical] = [
+                    self.chemical_amount[chemical], amount]
+
+            return
+
+        self.chemical_amount[chemical] = amount
+
+    @property
+    def has_major_params(self):
+        valid_chemicals = 5
+        num_of_chemicals = 0
+
+        if self.calcium is not None:
+            num_of_chemicals += 1
+        if self.magnesium is not None:
+            num_of_chemicals += 1
+        if self.chloride is not None:
+            num_of_chemicals += 1
+        if self.bicarbonate is not None:
+            num_of_chemicals += 1
+        if self.sulfate is not None:
+            num_of_chemicals += 1
+
+        valid = num_of_chemicals == valid_chemicals
+
+        return valid and (
+            self.sodium is not None or self.sodium_plus_potassium is not None)
+
+    def _get_summed_value(self, key):
+        """turn all of the arrays into numbers"""
+        value = self.chemical_amount[key]
+        try:
+            return sum(value) / float(len(value))
+        except TypeError:
+            #: value is not an array
+            pass
+
+        return value
+
+
+class Field(object):
+
+    """a field model for taking the data in gdoc
+    and transform it into the data for the addfield gp tool"""
+
+    #: the field name to add to the feature class
+    field_name = None
+
+    #: the fields alias name
+    field_alias = None
+
+    #: the field type
+    field_type = None
+
+    #: the length of the field. Only useful for type String
+    field_length = None
+
+    #: the source of the field mapping
+    field_source = None
+
+    #: the field length default if none is set
+    length_default = 50
+
+    def __init__(self, arg):
+        """ args should be a set of field options
+        (column, alias, type, ?length)"""
+
+        self.field_name = arg['destination']
+        self.field_alias = arg['alias']
+        self.field_type = self._etl_type(arg['type'])
+        self.field_source = arg['source']
+
+        if self.field_type == 'TEXT':
+            try:
+                self.field_length = arg['length']
+            except KeyError:
+                pass
+                # print ('{} is of type text and '.format(self.field_name) +
+                #        'has no limit set.' +
+                #        ' Defaulting to {}'.format(self.length_default))
+
+    def _etl_type(self, field_type):
+        """Turn schema types into acpy fields types"""
+
+        # arcpy wants field types upper case
+        field_type = field_type.upper()
+
+        # fields names are pretty similar if you remove int
+        field_type = field_type.replace('INT', '').strip()
+
+        if field_type == 'STRING':
+            return 'TEXT'
+        elif field_type == 'TIME':
+            return 'DATE'
+        else:
+            return field_type
 
 
 class Schema(object):
@@ -604,200 +796,8 @@ class Schema(object):
         return self.result_gdoc_schema
 
 
-class Field(object):
+class TableInfo(object):
 
-    """a field model for taking the data in gdoc
-    and transform it into the data for the addfield gp tool"""
-
-    #: the field name to add to the feature class
-    field_name = None
-
-    #: the fields alias name
-    field_alias = None
-
-    #: the field type
-    field_type = None
-
-    #: the length of the field. Only useful for type String
-    field_length = None
-
-    #: the source of the field mapping
-    field_source = None
-
-    #: the field length default if none is set
-    length_default = 50
-
-    def __init__(self, arg):
-        """ args should be a set of field options
-        (column, alias, type, ?length)"""
-
-        self.field_name = arg['destination']
-        self.field_alias = arg['alias']
-        self.field_type = self._etl_type(arg['type'])
-        self.field_source = arg['source']
-
-        if self.field_type == 'TEXT':
-            try:
-                self.field_length = arg['length']
-            except KeyError:
-                pass
-                # print ('{} is of type text and '.format(self.field_name) +
-                #        'has no limit set.' +
-                #        ' Defaulting to {}'.format(self.length_default))
-
-    def _etl_type(self, field_type):
-        """Turn schema types into acpy fields types"""
-
-        # arcpy wants field types upper case
-        field_type = field_type.upper()
-
-        # fields names are pretty similar if you remove int
-        field_type = field_type.replace('INT', '').strip()
-
-        if field_type == 'STRING':
-            return 'TEXT'
-        elif field_type == 'TIME':
-            return 'DATE'
-        else:
-            return field_type
-
-
-class Concentration(object):
-
-    """the model holding the charge balance input values"""
-
-    chemical_amount = None
-
-    def __init__(self):
-        super(Concentration, self).__init__()
-
-        self.chemical_amount = {'ca': None,
-                                'mg': None,
-                                'na': None,
-                                'k': None,
-                                'cl': None,
-                                'hco3': None,
-                                'co3': None,
-                                'so4': None,
-                                'no2': None,
-                                'no3': None,
-                                'na+k': None}
-
-    @property
-    def calcium(self):
-        return self._get_summed_value('ca')
-
-    @property
-    def magnesium(self):
-        return self._get_summed_value('mg')
-
-    @property
-    def chloride(self):
-        return self._get_summed_value('cl')
-
-    @property
-    def bicarbonate(self):
-        return self._get_summed_value('hco3')
-
-    @property
-    def sulfate(self):
-        return self._get_summed_value('so4')
-
-    @property
-    def carbonate(self):
-        return self._get_summed_value('co3')
-
-    @property
-    def nitrate(self):
-        return self._get_summed_value('no3')
-
-    @property
-    def nitrite(self):
-        return self._get_summed_value('no2')
-
-    @property
-    def sodium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self._get_summed_value('na+k')
-
-        if na_k is not None and k is not None and na is None:
-            return na_k - k
-
-        return na
-
-    @property
-    def potassium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self._get_summed_value('na+k')
-
-        if na_k is not None and na is not None and k is None:
-            return na_k - na
-
-        return k
-
-    @property
-    def sodium_plus_potassium(self):
-        nak = self._get_summed_value('na+k')
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-
-        if nak is not None and na is not None or k is not None:
-            return 0
-
-        return nak
-
-    def set(self, chemical, amount, detect_cond=None):
-        #: chemical
-        if chemical not in self.chemical_amount:
-            return
-
-        #: there was a problem with the sample disregard
-        if detect_cond:
-            return
-
-        #: there is more than one sample for this chemical
-        if self.chemical_amount[chemical] is not None:
-            try:
-                self.chemical_amount[chemical].append(amount)
-            except AttributeError:
-                #: turn into a list for summing
-                self.chemical_amount[chemical] = [
-                    self.chemical_amount[chemical], amount]
-
-            return
-
-        self.chemical_amount[chemical] = amount
-
-    @property
-    def has_major_params(self):
-        valid_chemicals = 5
-        num_of_chemicals = 0
-
-        if self.calcium is not None:
-            num_of_chemicals += 1
-        if self.magnesium is not None:
-            num_of_chemicals += 1
-        if self.chloride is not None:
-            num_of_chemicals += 1
-        if self.bicarbonate is not None:
-            num_of_chemicals += 1
-        if self.sulfate is not None:
-            num_of_chemicals += 1
-
-        valid = num_of_chemicals == valid_chemicals
-
-        return valid and (
-            self.sodium is not None or self.sodium_plus_potassium is not None)
-
-    def _get_summed_value(self, key):
-        """turn all of the arrays into numbers"""
-        value = self.chemical_amount[key]
-        try:
-            return sum(value) / float(len(value))
-        except TypeError:
-            #: value is not an array
-            pass
-
-        return value
+    def __init__(self, location, name):
+        self.location = os.path.join(location, name)
+        self.name = name
