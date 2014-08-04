@@ -1,8 +1,21 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+programs
+----------------------------------
+
+The different programs feeding into the UGS
+service. They handle seeding, updating the different
+data sources.
+"""
 import ConfigParser
 import csv
 import cx_Oracle
 import glob
 import models
+import resultmodels as resultmodel
+import stationmodels as stationmodel
 import os
 from services import WebQuery, Normalizer
 
@@ -52,9 +65,9 @@ class Wqp(Program):
         station_ids = {}
 
         if feature_class == 'Results':
-            Type = models.WqpResult
+            Type = resultmodel.WqpResult
         elif feature_class == 'Stations':
-            Type = models.WqpStation
+            Type = stationmodel.WqpStation
 
         schema_map = Type.build_schema_map(feature_class)
         fields = self._get_fields(schema_map)
@@ -285,9 +298,9 @@ class Sdwis(Program):
         print 'inserting into {} SDWIS type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
-            Type = models.SdwisResult
+            Type = resultmodel.SdwisResult
         elif feature_class == 'Stations':
-            Type = models.SdwisStation
+            Type = stationmodel.SdwisStation
 
         fields = self._get_fields(Type.build_schema_map(feature_class))
 
@@ -321,10 +334,13 @@ class Dogm(GdbBase):
     results = 'DOGM_RESULT'
     #: stations feature class name
     stations = 'DOGM_STATION'
+    #: the concentrations grouped with their sampleid
+    samples = None
 
     def __init__(self, location, SearchCursor, InsertCursor):
         super(Dogm, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
+        self.samples = {}
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
@@ -333,10 +349,10 @@ class Dogm(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.OgmStation
+                Type = stationmodel.OgmStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.OgmResult
+                Type = resultmodel.OgmResult
 
             location = os.path.join(self.location, model_type)
 
@@ -353,6 +369,15 @@ class Dogm(GdbBase):
                         fields_to_insert.append('SHAPE@XY')
 
                 self._insert_row(etl.row, fields_to_insert, location)
+
+                if etl.balanceable and etl.sample_id is not None:
+                    etl.balance(etl.row)
+
+                    if etl.sample_id in self.samples.keys:
+                        self.samples[etl.sample_id].append(etl.concentration)
+                        continue
+
+                    self.samples[etl.sample_id] = etl.concentration
 
 
 class Udwr(GdbBase):
@@ -374,10 +399,10 @@ class Udwr(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.DwrStation
+                Type = stationmodel.DwrStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.DwrResult
+                Type = resultmodel.DwrResult
 
             location = os.path.join(self.location, model_type)
 
@@ -415,10 +440,10 @@ class Ugs(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.UgsStation
+                Type = stationmodel.UgsStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.UgsResult
+                Type = resultmodel.UgsResult
 
             location = os.path.join(self.location, model_type)
 

@@ -9,7 +9,8 @@ Tests for `programs` module.
 """
 import arcpy
 import datetime
-import dbseeder.models as models
+import dbseeder.resultmodels as resultmodel
+import dbseeder.stationmodels as stationmodel
 import os
 import unittest
 import SimpleHTTPServer
@@ -396,7 +397,7 @@ class TestSdwisProgram(unittest.TestCase):
         self.patient.count = 2
         data = self.patient._query(self.patient._result_query)
         for item in data:
-            etl = models.SdwisResult(item,  Normalizer())
+            etl = resultmodel.SdwisResult(item,  Normalizer())
 
             self.assertIsNotNone(etl.row)
 
@@ -506,11 +507,11 @@ class TestDogmProgram(unittest.TestCase):
                    'Unit',
                    'SampComment')
 
-        one_row_from_query = models.OgmResult(
+        one_row_from_query = resultmodel.OgmResult(
             gdb_row, Normalizer()).row
 
         fields = self.patient._get_default_fields(
-            models.OgmResult.build_schema_map('Results'))
+            resultmodel.OgmResult.build_schema_map('Results'))
 
         location = os.path.join(self.patient.location, 'Results')
         self.patient._insert_row(one_row_from_query, fields, location)
@@ -532,7 +533,7 @@ class TestDogmProgram(unittest.TestCase):
                    512329.9142,
                    4397670.5318)
 
-        station_model = models.OgmStation(
+        station_model = stationmodel.OgmStation(
             gdb_row, Normalizer())
 
         one_row_from_query = station_model.row

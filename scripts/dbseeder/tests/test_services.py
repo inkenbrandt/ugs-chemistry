@@ -8,8 +8,8 @@ test_services
 Tests for `services` module.
 """
 import unittest
-from dbseeder.services import Caster, Normalizer
-from dbseeder.models import Normalizable
+from dbseeder.services import Caster, Normalizer, ChargeBalancer
+from dbseeder.modelextensions import Normalizable
 
 
 class TestCaster(unittest.TestCase):

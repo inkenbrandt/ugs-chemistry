@@ -1,4 +1,14 @@
-"""DbSeeder creates and seeds esri file geodatabases"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+dbseeder
+----------------------------------
+
+The main entry point for the package. Handles command line
+operations for seeding/updating packages.
+"""
+
 
 import arcpy
 import argparse
