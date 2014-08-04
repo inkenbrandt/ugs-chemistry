@@ -8,8 +8,6 @@ modelbases
 Base classes use for inheritence. These handle the common
 operations for ETL'ing the programs data
 """
-
-
 import services
 from collections import OrderedDict
 from models import Field, Schema

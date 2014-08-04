@@ -8,8 +8,6 @@ modelextensions
 Extensions to the program models. They add additional
 functionality
 """
-
-
 import re
 from models import Concentration
 

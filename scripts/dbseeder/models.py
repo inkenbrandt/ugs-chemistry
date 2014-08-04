@@ -7,8 +7,6 @@ models
 
 The basic models
 """
-
-
 import os
 
 

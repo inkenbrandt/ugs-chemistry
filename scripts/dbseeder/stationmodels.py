@@ -8,7 +8,6 @@ stationmodels
 The different program station models. They represent the data
 to be inserted into the station table
 """
-
 from models import Schema
 from modelbases import Table, WqpTable
 

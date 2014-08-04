@@ -8,8 +8,6 @@ dbseeder
 The main entry point for the package. Handles command line
 operations for seeding/updating packages.
 """
-
-
 import arcpy
 import argparse
 import os
