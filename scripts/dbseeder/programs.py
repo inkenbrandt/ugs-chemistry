@@ -46,9 +46,22 @@ class GdbBase(Program):
     def _read_gdb(self, location, fields):
         #: location - the path to the table data
         #: fields - the fields form the data to pull
-        with self.SearchCursor(location, fields) as cursor:
-            for row in cursor:
-                yield row
+        try:
+            with self.SearchCursor(location, fields) as cursor:
+                for row in cursor:
+                    yield row
+        except RuntimeError as e:
+            #: the fields in the feature class
+            import arcpy
+            actual = set([str(x.name) for x in arcpy.ListFields(location)])
+
+            #: the fields you are trying to use
+            my_silly_input = set(fields)
+
+            missing = my_silly_input - actual
+            print 'the fouled up columns are {}'.format(missing)
+
+            raise e
 
     def _insert_row(self, row, fields, location):
         with self.InsertCursor(location, fields) as cursor:
@@ -370,14 +383,14 @@ class Dogm(GdbBase):
 
                 self._insert_row(etl.row, fields_to_insert, location)
 
-                if etl.balanceable and etl.sample_id is not None:
-                    etl.balance(etl.row)
+                # if etl.balanceable and etl.sample_id is not None:
+                #     etl.balance(etl.row)
 
-                    if etl.sample_id in self.samples.keys:
-                        self.samples[etl.sample_id].append(etl.concentration)
-                        continue
+                #     if etl.sample_id in self.samples.keys:
+                #         self.samples[etl.sample_id].append(etl.concentration)
+                #         continue
 
-                    self.samples[etl.sample_id] = etl.concentration
+                #     self.samples[etl.sample_id] = etl.concentration
 
 
 class Udwr(GdbBase):

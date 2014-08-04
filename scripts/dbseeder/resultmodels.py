@@ -8,8 +8,6 @@ resultmodels
 The different program result models. They represent the data
 to be inserted into the result table
 """
-
-
 from models import Schema
 from modelbases import Table, WqpTable
 from modelextensions import Balanceable
@@ -82,7 +80,7 @@ class OgmResult(Table, Balanceable):
 
         #: add paramgroup in ctor so `Type.fields` works for reads
         #: since paragroup does not exist in source data
-        self.fields.append('ParamGroup')
+        self.fields = self.fields + ['ParamGroup']
 
         self.schema = Schema().result
 
@@ -112,7 +110,8 @@ class DwrResult(Table, Balanceable):
 
         #: add paramgroup in ctor so `Type.fields` works for reads
         #: since paragroup does not exist in source data
-        self.fields.append('ParamGroup')
+        self.fields = self.fields + ['ParamGroup']
+
 
         self.schema = Schema().result
 
