@@ -554,11 +554,14 @@ class TestDogmProgram(unittest.TestCase):
     def test_seed(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
 
-        self.patient.seed(folder, ['Stations'])
+        self.patient.seed(folder, ['Stations', 'Results'])
 
         arcpy.env.workspace = self.patient.location
         actual = arcpy.GetCount_management('Stations').getOutput(0)
         self.assertEqual(actual, '250')
+
+        actual = arcpy.GetCount_management('Results').getOutput(0)
+        self.assertEqual(actual, '403')
 
     def test_seeding_with_balancing(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')

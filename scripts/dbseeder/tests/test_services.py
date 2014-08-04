@@ -35,6 +35,7 @@ class TestCaster(unittest.TestCase):
 
 
 class TestNormalizer(unittest.TestCase):
+
     def setUp(self):
         self.patient = Normalizer()
 
@@ -53,7 +54,9 @@ class TestNormalizer(unittest.TestCase):
 
 
 class TestChargeBalancer(unittest.TestCase):
+
     """docstring for ChargeBalancer"""
+
     def __init__(self, arg):
         super(ChargeBalancer, self).__init__()
         self.arg = arg

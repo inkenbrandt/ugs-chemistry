@@ -112,7 +112,6 @@ class DwrResult(Table, Balanceable):
         #: since paragroup does not exist in source data
         self.fields = self.fields + ['ParamGroup']
 
-
         self.schema = Schema().result
 
         self.schema_map = Table.build_schema_map(self.schema)

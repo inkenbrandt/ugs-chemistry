@@ -7,30 +7,33 @@ test_model_extensions
 
 Tests for the `modelextensions` module.
 """
-
 import dbseeder.modelextensions as modelextensions
 import unittest
 
 
 class TestBalanceableBaseClass(unittest.TestCase):
+
     """tests the balanceable baseclass"""
 
     def setUp(self):
         self.patient = modelextensions.Balanceable()
 
     def test_row_access(self):
-        row = [None, 'detectcond', None, 'resultvalue', None, 'param']
+        row = [None, 'detectcond', None,
+               'resultvalue', None, 'param', 'sampleid']
 
         self.patient.set_row_index('detectcond', 1)
         self.patient.set_row_index('resultvalue', 3)
         self.patient.set_row_index('param', 5)
+        self.patient.set_row_index('sampleid', 6)
         self.patient.set_row_index('nothing', 5)
         self.patient.set_row_index(None, 5)
 
         expected = {
             'detectcond': 1,
             'resultvalue': 3,
-            'param': 5
+            'param': 5,
+            'sampleid': 6
         }
 
         self.assertDictEqual(expected, self.patient.field_index)
@@ -40,6 +43,7 @@ class TestBalanceableBaseClass(unittest.TestCase):
         self.assertEqual('detectcond', self.patient.detect_cond)
         self.assertEqual('resultvalue', self.patient.amount)
         self.assertEqual('param', self.patient.chemical)
+        self.assertEqual('sampleid', self.patient.sample_id)
 
     def test_row_access_with_nones(self):
         row = []
