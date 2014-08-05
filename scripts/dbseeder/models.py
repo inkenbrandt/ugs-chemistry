@@ -96,28 +96,6 @@ class Concentration(object):
 
         return nak
 
-    def set(self, chemical, amount, detect_cond=None):
-        #: chemical
-        if chemical not in self.chemical_amount:
-            return
-
-        #: there was a problem with the sample disregard
-        if detect_cond:
-            return
-
-        #: there is more than one sample for this chemical
-        if self.chemical_amount[chemical] is not None:
-            try:
-                self.chemical_amount[chemical].append(amount)
-            except AttributeError:
-                #: turn into a list for summing
-                self.chemical_amount[chemical] = [
-                    self.chemical_amount[chemical], amount]
-
-            return
-
-        self.chemical_amount[chemical] = amount
-
     @property
     def has_major_params(self):
         valid_chemicals = 5
@@ -139,9 +117,45 @@ class Concentration(object):
         return valid and (
             self.sodium is not None or self.sodium_plus_potassium is not None)
 
+    def append(self, concentration, detect_cond=None):
+        if not concentration.chemical_amount:
+            return
+
+        new = concentration.chemical_amount
+
+        for key in new.keys():
+            self._set(key, new[key], detect_cond)
+
+    def _set(self, chemical, amount, detect_cond=None):
+        #: chemical
+        if chemical not in self.chemical_amount:
+            return
+
+        #: there was a problem with the sample disregard
+        if detect_cond:
+            return
+
+        # return if amount is None
+        if amount is None:
+            return
+
+        #: there is more than one sample for this chemical
+        if self.chemical_amount[chemical] is not None:
+            try:
+                self.chemical_amount[chemical].append(amount)
+            except AttributeError:
+                #: turn into a list for summing
+                self.chemical_amount[chemical] = [
+                    self.chemical_amount[chemical], amount]
+
+            return
+
+        self.chemical_amount[chemical] = amount
+
     def _get_summed_value(self, key):
         """turn all of the arrays into numbers"""
         value = self.chemical_amount[key]
+
         try:
             return sum(value) / float(len(value))
         except TypeError:

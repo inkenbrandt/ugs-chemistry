@@ -388,16 +388,17 @@ class ChargeBalancer(object):
         super(ChargeBalancer, self).__init__()
 
     def calculate_charge_balance(self, concentration):
-        calcium = self._conversions['ca'] * concentration.calcium
-        magnesium = self._conversions['mg'] * concentration.magnesium
-        sodium = self._conversions['na'] * concentration.sodium
-        potassium = self._conversions['k'] * concentration.potassium
-        chloride = self._conversions['cl'] * concentration.chloride
-        bicarbonate = self._conversions['hco3'] * concentration.bicarbonate
-        sulfate = self._conversions['so4'] * concentration.sulfate
-        carbonate = self._conversions['co3'] * concentration.carbonate
-        nitrate = self._conversions['no3'] * concentration.nitrate
-        nitrite = self._conversions['no2'] * concentration.nitrite
+        calcium = self._conversions['ca'] * (concentration.calcium or 0)
+        magnesium = self._conversions['mg'] * (concentration.magnesium or 0)
+        sodium = self._conversions['na'] * (concentration.sodium or 0)
+        potassium = self._conversions['k'] * (concentration.potassium or 0)
+        chloride = self._conversions['cl'] * (concentration.chloride or 0)
+        bicarbonate = self._conversions[
+            'hco3'] * (concentration.bicarbonate or 0)
+        sulfate = self._conversions['so4'] * (concentration.sulfate or 0)
+        carbonate = self._conversions['co3'] * (concentration.carbonate or 0)
+        nitrate = self._conversions['no3'] * (concentration.nitrate or 0)
+        nitrite = self._conversions['no2'] * (concentration.nitrite or 0)
         sodium_plus_potassium = self._conversions[
             'na+k'] * concentration.sodium_plus_potassium
 

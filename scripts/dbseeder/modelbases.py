@@ -40,7 +40,6 @@ class Table(Normalizable):
     def _etl_row(self, row, schema_map, model_type):
         _row = []
         self.balanceable = True
-        balancer = services.ChargeBalancer()
 
         for i, field_name in enumerate(schema_map):
             if field_name not in self.fields:
@@ -65,9 +64,6 @@ class Table(Normalizable):
             _row.append(value)
 
         _row = self.normalize(_row)
-
-        if self.balanceable:
-            self.balance(_row)
 
         if model_type == 'Station':
             has_utm = False
@@ -99,16 +95,6 @@ class Table(Normalizable):
                     print 'Handling projection error:', detail
 
             _row.append((x, y))
-        else:
-            # model type is result and needs charge balance
-            if self.balanceable and self.concentration.has_major_params:
-                balance, cation, anion = balancer.calculate_charge_balance(
-                    self.concentration)
-
-                _row = {'row': _row,
-                        'balance': balance,
-                        'cation': cation,
-                        'anion': anion}
 
         return _row
 

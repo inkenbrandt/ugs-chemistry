@@ -127,7 +127,7 @@ class Balanceable(object):
     def balance(self, row):
         self.row = row
 
-        self.concentration.set(self.chemical, self.amount, self.detect_cond)
+        self.concentration._set(self.chemical, self.amount, self.detect_cond)
 
     @property
     def chemical(self):

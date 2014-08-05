@@ -17,7 +17,7 @@ import models
 import resultmodels as resultmodel
 import stationmodels as stationmodel
 import os
-from services import WebQuery, Normalizer
+from services import WebQuery, Normalizer, ChargeBalancer
 
 
 class Program(object):
@@ -354,6 +354,7 @@ class Dogm(GdbBase):
         super(Dogm, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
         self.samples = {}
+        self.balancer = ChargeBalancer()
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
@@ -383,14 +384,27 @@ class Dogm(GdbBase):
 
                 self._insert_row(etl.row, fields_to_insert, location)
 
-                # if etl.balanceable and etl.sample_id is not None:
-                #     etl.balance(etl.row)
+                if etl.balanceable and etl.sample_id is not None:
+                    etl.balance(etl.row)
 
-                #     if etl.sample_id in self.samples.keys:
-                #         self.samples[etl.sample_id].append(etl.concentration)
-                #         continue
+                    if etl.sample_id in self.samples.keys():
+                        self.samples[etl.sample_id].append(etl.concentration)
+                        continue
 
-                #     self.samples[etl.sample_id] = etl.concentration
+                    self.samples[etl.sample_id] = etl.concentration
+
+            for sample_id in self.samples.keys():
+                concentration = self.samples[sample_id]
+
+                if concentration.has_major_params:
+                    balance, cation, anion = (
+                        self.balancer.calculate_charge_balance(concentration))
+
+                    balance = {'balance': balance,
+                            'cation': cation,
+                            'anion': anion}
+
+                    etl.create_rows_from_balance(balance)
 
 
 class Udwr(GdbBase):
