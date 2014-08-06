@@ -105,6 +105,14 @@ class Balanceable(object):
     #: the index of the array where the fields are
     field_index = None
 
+    #: the alias lookup for balance param values
+    param_alias = {'balance': 'Charge Balance',
+                   'anion': 'Anions Total',
+                   'cation': 'Cation Total'}
+
+    #: the fields to insert into
+    balance_fields = ['SampleId', 'Param', 'Unit']
+
     def __init__(self):
         super(Balanceable, self).__init__()
 
@@ -116,18 +124,6 @@ class Balanceable(object):
             'param': None,
             'sampleid': None
         }
-
-    def set_row_index(self, field_name, index):
-        if (field_name is None or
-                field_name.lower() not in self.field_index.keys()):
-            return
-
-        self.field_index[field_name.lower()] = index
-
-    def balance(self, row):
-        self.row = row
-
-        self.concentration._set(self.chemical, self.amount, self.detect_cond)
 
     @property
     def chemical(self):
@@ -172,3 +168,26 @@ class Balanceable(object):
             return None
 
         return self.row[index]
+
+    def set_row_index(self, field_name, index):
+        if (field_name is None or
+                field_name.lower() not in self.field_index.keys()):
+            return
+
+        self.field_index[field_name.lower()] = index
+
+    def balance(self, row):
+        self.row = row
+
+        self.concentration._set(self.chemical, self.amount, self.detect_cond)
+
+    def create_rows_from_balance(self, sample_id, balance):
+        rows = []
+
+        for key in balance.keys():
+            if key not in self.param_alias.keys():
+                continue
+
+            rows.append([sample_id, self.param_alias[key], balance[key]])
+
+        return rows

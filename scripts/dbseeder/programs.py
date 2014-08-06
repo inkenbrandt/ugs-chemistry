@@ -56,9 +56,9 @@ class GdbBase(Program):
             actual = set([str(x.name) for x in arcpy.ListFields(location)])
 
             #: the fields you are trying to use
-            my_silly_input = set(fields)
+            input_fields = set(fields)
 
-            missing = my_silly_input - actual
+            missing = input_fields - actual
             print 'the fouled up columns are {}'.format(missing)
 
             raise e
@@ -396,15 +396,20 @@ class Dogm(GdbBase):
             for sample_id in self.samples.keys():
                 concentration = self.samples[sample_id]
 
-                if concentration.has_major_params:
-                    balance, cation, anion = (
-                        self.balancer.calculate_charge_balance(concentration))
+                if not concentration.has_major_params:
+                    continue
 
-                    balance = {'balance': balance,
-                            'cation': cation,
-                            'anion': anion}
+                balance, cation, anion = (
+                    self.balancer.calculate_charge_balance(concentration))
 
-                    etl.create_rows_from_balance(balance)
+                balance = {'balance': balance,
+                           'cation': cation,
+                           'anion': anion}
+
+                balance_rows = etl.create_rows_from_balance(sample_id, balance)
+
+                for row in balance_rows:
+                    self._insert_row(row, etl.balance_fields, location)
 
 
 class Udwr(GdbBase):

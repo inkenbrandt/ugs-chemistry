@@ -53,3 +53,23 @@ class TestBalanceableBaseClass(unittest.TestCase):
         self.assertEqual(None, self.patient.detect_cond)
         self.assertEqual(None, self.patient.amount)
         self.assertEqual(None, self.patient.chemical)
+
+    def test_row_creation_from_balance(self):
+        balance = {'balance': 0,
+                   'anion': 1,
+                   'cation': 2}
+
+        sample_id = 'sample_id'
+
+       #  fields = ['SampleId', 'Param', 'Unit']
+
+        actual = self.patient.create_rows_from_balance(sample_id, balance)
+
+        expected = [
+            [sample_id, 'Charge Balance', balance['balance']],
+            [sample_id, 'Anions Total', balance['anion']],
+            [sample_id, 'Cation Total', balance['cation']]
+        ]
+
+        self.assertEqual(len(actual), 3)
+        self.assertItemsEqual(actual, expected)
