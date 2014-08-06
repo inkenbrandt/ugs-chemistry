@@ -400,7 +400,7 @@ class ChargeBalancer(object):
         nitrate = self._conversions['no3'] * (concentration.nitrate or 0)
         nitrite = self._conversions['no2'] * (concentration.nitrite or 0)
         sodium_plus_potassium = self._conversions[
-            'na+k'] * concentration.sodium_plus_potassium
+            'na+k'] * (concentration.sodium_plus_potassium or 0)
 
         cation = sum(
             [calcium, magnesium, sodium, potassium, sodium_plus_potassium])
@@ -410,4 +410,4 @@ class ChargeBalancer(object):
         balance = 100 * float((cation - anion) / (cation + anion))
 
         # returns charge balance (%), cation total (meq/l), anion total (meq/l)
-        return round(balance, 2), cation, anion
+        return round(balance, 2), round(cation, 2), round(anion, 2)

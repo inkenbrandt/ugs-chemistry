@@ -11,7 +11,7 @@ import dbseeder.modelextensions as modelextensions
 import unittest
 
 
-class TestBalanceableBaseClass(unittest.TestCase):
+class TestBalanceableable(unittest.TestCase):
 
     """tests the balanceable baseclass"""
 
