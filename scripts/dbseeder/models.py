@@ -19,7 +19,35 @@ class Concentration(object):
     def __init__(self):
         super(Concentration, self).__init__()
 
-        self.chemical_map = {}
+        self.chemical_map = {'calcium':'ca', 
+                             'dissolved calcium':'ca', 
+                             'dissolved magnesium':'mg', 
+                             'dissolved potassium':'k', 
+                             'dissolved sodium':'na', 
+                             'magnesium':'mg', 
+                             'potassium':'k', 
+                             'sodium':'na', 
+                             'sodium plus potassium':'na+k', 
+                             'total calcium':'ca', 
+                             'total magnesium':'mg', 
+                             'total potassium':'k', 
+                             'total sodium':'na', 
+                             'bicarbonate':'hco3', 
+                             'bicarbonate as hco3':'hco3', 
+                             'carbonate':'co3', 
+                             'carbonate (co3)':'co3', 
+                             'carbonate as co3':'co3', 
+                             'chloride':'cl', 
+                             'sulfate':'so4', 
+                             'nitrate':'no3', 
+                             'dissolved nitrate: no3':'no3', 
+                             'nitrite':'no2', 
+                             'dissolved nitrite: no2':'no2', 
+                             'sulfate as so4':'so4', 
+                             'bicarbonate based on alkalinity':'hco3', 
+                             'carbonate based on alkalinity':'co3', 
+                             'nitrate and nitrite as no3':'no3', 
+                             'sulphate':'so4'} 
 
         self.chemical_amount = {'ca': None,
                                 'mg': None,
