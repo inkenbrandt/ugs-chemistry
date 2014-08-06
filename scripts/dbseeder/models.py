@@ -19,6 +19,8 @@ class Concentration(object):
     def __init__(self):
         super(Concentration, self).__init__()
 
+        self.chemical_map = {}
+
         self.chemical_amount = {'ca': None,
                                 'mg': None,
                                 'na': None,
