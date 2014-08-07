@@ -47,8 +47,8 @@ class Balanceable(object):
         self.samples[etl.sample_id] = etl.concentration
 
     def write_balance_rows(self, etl, location):
-        for sample_id in super.samples.keys():
-            concentration = super.samples[sample_id]
+        for sample_id in self.samples.keys():
+            concentration = self.samples[sample_id]
 
             if not concentration.has_major_params:
                 continue
@@ -63,12 +63,14 @@ class Balanceable(object):
             balance_rows = etl.create_rows_from_balance(sample_id, balance)
 
             for row in balance_rows:
-                super._insert_row(row, etl.balance_fields, location)
+                self._insert_row(row, etl.balance_fields, location)
 
 
 class Program(object):
 
     def __init__(self, location, InsertCursor):
+        super(Program, self).__init__()
+
         self.location = location
         self.InsertCursor = InsertCursor
         self.normalizer = Normalizer()
