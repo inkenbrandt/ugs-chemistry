@@ -5,11 +5,16 @@
 1. Add location to windows path
 1. Install [cx_Oracle](https://pypi.python.org/pypi/cx_Oracle/5.1.3)
 
-this package will take ugs csv data and import it into a gdb.  
+This package will take UGS, SDWIS, DOGM, WQP, and UDWR data and import it into a gdb.  
+
+1. [Download the data](https://drive.google.com/a/utah.gov/file/d/0BzQ5lAz8kBCAMkZPZ1c3S21mUHc/edit?usp=sharing)
+1. Place it in `dbseeder\data`
 
 `dbseeder.py --seed` will create the **gdb**, the **stations** point feature class and the **results** table.
 
-The seed will look for `data\Results` and `data\Stations` and import all the child *.csv's. 
+For **WQP**, the module will look for all `*.csv's` in `data\Result` and `data\Station` folders.
+For **GDB** based programs, the module will look for `data\**Program Type**` and import from the tables.
+For **SDWIS** the module will query the database and import the rows. 
 
 Once that is done you can create the relationship feature class by running
 
@@ -18,6 +23,9 @@ Once that is done you can create the relationship feature class by running
 `dbseeder --update` is still a work in progress but all the plumbing is there. We just need to figure out how to get the query to the program and what that query should be.
 
 ## Tests
+
+1. [Download the test data](). 
+1. Place it in `dbseeder\tests\data`
 
 `setup.py test`
 
