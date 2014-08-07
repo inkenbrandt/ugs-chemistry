@@ -14,8 +14,9 @@ This package will take UGS, SDWIS, DOGM, WQP, and UDWR data and import it into a
 
 ### Usage
 
+1. Fill out `secrets.cfg` and use `secrets.sample.cfg` as an example
 1. [Download the data](https://drive.google.com/a/utah.gov/file/d/0BzQ5lAz8kBCAMkZPZ1c3S21mUHc/edit?usp=sharing)
-1. Place it in `dbseeder\data`
+1. Place it in `dbseeder\data`  
 
 `dbseeder.py --seed` will create the **gdb**, the **stations** point feature class and the **results** table.
 

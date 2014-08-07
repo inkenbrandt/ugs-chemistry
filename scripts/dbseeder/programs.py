@@ -400,7 +400,7 @@ class Dogm(GdbProgram, Balanceable):
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: model_types - [Staions, Results]
+        #: model_types - [Stations, Results]
 
         for model_type in model_types:
             if model_type == 'Stations':
