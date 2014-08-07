@@ -1,423 +1,285 @@
-"""module containing project models"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+"""
+models
+----------------------------------
+
+The basic models
+"""
 import os
-from collections import OrderedDict
-from services import Caster, Project, Normalizable
 
 
-class TableInfo(object):
+class Concentration(object):
 
-    def __init__(self, location, name):
-        self.location = os.path.join(location, name)
-        self.name = name
+    """
+    the model holding the charge balance input values
+    """
 
+    chemical_amount = None
 
-class WqpTable(Normalizable):
+    def __init__(self):
+        super(Concentration, self).__init__()
 
-    def __init__(self, normalizer):
+        #: the chemical map from normalized values to chemical representation
+        self.chemical_map = {'calcium': 'ca',
+                             'dissolved calcium': 'ca',
+                             'dissolved magnesium': 'mg',
+                             'dissolved potassium': 'k',
+                             'dissolved sodium': 'na',
+                             'magnesium': 'mg',
+                             'potassium': 'k',
+                             'sodium': 'na',
+                             'sodium plus potassium': 'na+k',
+                             'total calcium': 'ca',
+                             'total magnesium': 'mg',
+                             'total potassium': 'k',
+                             'total sodium': 'na',
+                             'bicarbonate': 'hco3',
+                             'bicarbonate as hco3': 'hco3',
+                             'carbonate': 'co3',
+                             'carbonate (co3)': 'co3',
+                             'carbonate as co3': 'co3',
+                             'chloride': 'cl',
+                             'sulfate': 'so4',
+                             'nitrate': 'no3',
+                             'dissolved nitrate: no3': 'no3',
+                             'nitrite': 'no2',
+                             'dissolved nitrite: no2': 'no2',
+                             'sulfate as so4': 'so4',
+                             'bicarbonate based on alkalinity': 'hco3',
+                             'carbonate based on alkalinity': 'co3',
+                             'nitrate and nitrite as no3': 'no3',
+                             'sulphate': 'so4'}
+
+        #: the tracked chemicals for a charge balance and their concentration
+        self.chemical_amount = {'ca': None,
+                                'mg': None,
+                                'na': None,
+                                'k': None,
+                                'cl': None,
+                                'hco3': None,
+                                'co3': None,
+                                'so4': None,
+                                'no2': None,
+                                'no3': None,
+                                'na+k': None}
+
+    @property
+    def calcium(self):
+        return self._get_summed_value('ca')
+
+    @property
+    def magnesium(self):
+        return self._get_summed_value('mg')
+
+    @property
+    def chloride(self):
+        return self._get_summed_value('cl')
+
+    @property
+    def bicarbonate(self):
+        return self._get_summed_value('hco3')
+
+    @property
+    def sulfate(self):
+        return self._get_summed_value('so4')
+
+    @property
+    def carbonate(self):
+        return self._get_summed_value('co3')
+
+    @property
+    def nitrate(self):
+        return self._get_summed_value('no3')
+
+    @property
+    def nitrite(self):
+        return self._get_summed_value('no2')
+
+    @property
+    def sodium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and k is not None and na is None:
+            return na_k - k
+
+        return na
+
+    @property
+    def potassium(self):
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+        na_k = self._get_summed_value('na+k')
+
+        if na_k is not None and na is not None and k is None:
+            return na_k - na
+
+        return k
+
+    @property
+    def sodium_plus_potassium(self):
+        nak = self._get_summed_value('na+k')
+        k = self._get_summed_value('k')
+        na = self._get_summed_value('na')
+
+        if nak is not None and na is not None or k is not None:
+            return 0
+
+        return nak
+
+    @property
+    def has_major_params(self):
         """
-            this base class takes a csv row
-            it then pulls all of the values out via the schema map
-            and creates a row object that is ordered correctly for
-            inserting into the feature class
-            normalizer: the service to normalize the goods
+        determines if the concentration can be used in a charge balance
         """
+        valid_chemicals = 5
+        num_of_chemicals = 0
 
-        super(WqpTable, self).__init__(normalizer)
+        if self.calcium is not None:
+            num_of_chemicals += 1
+        if self.magnesium is not None:
+            num_of_chemicals += 1
+        if self.chloride is not None:
+            num_of_chemicals += 1
+        if self.bicarbonate is not None:
+            num_of_chemicals += 1
+        if self.sulfate is not None:
+            num_of_chemicals += 1
 
-    @staticmethod
-    def build_schema_map(schema):
-        schema_index_items = OrderedDict()
+        valid = num_of_chemicals == valid_chemicals
 
-        if isinstance(schema, basestring):
-            if schema == 'Stations':
-                schema = Schema().station
-            elif schema == 'Results':
-                schema = Schema().result
+        return valid and (
+            self.sodium is not None or self.sodium_plus_potassium is not None)
 
-        for item in schema:
-            schema_index_items.update({item['index']: Field(item)})
+    def append(self, concentration, detect_cond=None):
+        """
+        merges the values of two concentrations into one
+        """
+        if not concentration.chemical_amount:
+            return
 
-        return OrderedDict(schema_index_items)
+        new = concentration.chemical_amount
 
-    def _etl_row(self, row, schema_map, model_type):
-        _row = []
-        lat = lon = None
+        for key in new.keys():
+            self._set(key, new[key], detect_cond)
 
-        for i, key in enumerate(schema_map):
-            #: the key index maps to the column index in the feature class
-            field = schema_map[key]
-            source_field_name = field.field_source
-            destination_field_type = field.field_type
+    def _set(self, chemical, amount, detect_cond=None):
+        """
+        sets the chemical value. Handles duplicate chemicals
+        """
+        # there was a problem with the sample disregard
+        if detect_cond:
+            return
 
-            #: not all of the programs have the same schema
-            if source_field_name not in row:
-                _row.append(None)
-                self.update_normalize(field.field_name, None, i)
-                continue
+        # return if amount or chemical is None
+        if amount is None or chemical is None:
+            return
 
+        chemical = chemical.lower()
+
+        # do we care about this chemical?
+        if chemical in self.chemical_map.keys():
+            chemical = self.chemical_map[chemical]
+
+        if chemical not in self.chemical_amount.keys():
+            return
+
+        # there is more than one sample for this chemical
+        if self.chemical_amount[chemical] is not None:
             try:
-                value = row[source_field_name].strip()
-            except IndexError:
-                value = None
+                self.chemical_amount[chemical].append(amount)
+            except AttributeError:
+                # turn into a list for summing
+                self.chemical_amount[chemical] = [
+                    self.chemical_amount[chemical], amount]
 
-            value = Caster.cast(value, destination_field_type)
+            return
 
-            if field.field_name == 'Lon_X':
-                lon = value
-            elif field.field_name == 'Lat_Y':
-                lat = value
+        self.chemical_amount[chemical] = amount
 
-            self.update_normalize(field.field_name, value, i)
+    def _get_summed_value(self, key):
+        """
+        gets value from number or the sum of a list of numbers
+        """
+        value = self.chemical_amount[key]
 
-            _row.append(value)
+        try:
+            return sum(value) / float(len(value))
+        except TypeError:
+            # value is not an array
+            pass
 
-        _row = self.normalize(_row)
+        return value
 
-        if model_type == 'Station':
+
+class Field(object):
+
+    """
+    a field model for taking the data in gdoc
+    and transform it into the data for the addfield gp tool
+    """
+
+    #: the field name to add to the feature class
+    field_name = None
+
+    #: the fields alias name
+    field_alias = None
+
+    #: the field type
+    field_type = None
+
+    #: the length of the field. Only useful for type String
+    field_length = None
+
+    #: the source of the field mapping
+    field_source = None
+
+    #: the field length default if none is set
+    length_default = 50
+
+    def __init__(self, arg):
+        """ args should be a set of field options
+        (column, alias, type, ?length)"""
+
+        self.field_name = arg['destination']
+        self.field_alias = arg['alias']
+        self.field_type = self._etl_type(arg['type'])
+        self.field_source = arg['source']
+
+        if self.field_type == 'TEXT':
             try:
-                x, y = Project().to_utm(lon, lat)
-
-                if x and y:
-                    _row.append((x, y))
-            except Exception as detail:
-                print 'Handling projection error:', detail
-
-        return _row
-
-
-class Table(Normalizable):
-
-    def __init__(self, normalizer):
-        super(Table, self).__init__(normalizer)
-
-    @staticmethod
-    def build_schema_map(schema):
-        schema_index_items = OrderedDict()
-
-        if isinstance(schema, basestring):
-            if schema == 'Stations':
-                schema = Schema().station
-            elif schema == 'Results':
-                schema = Schema().result
-
-        for item in schema:
-            schema_index_items.update({item['destination']: Field(item)})
-
-        return OrderedDict(schema_index_items)
-
-    def _etl_row(self, row, schema_map, model_type):
-        _row = []
-
-        for i, field_name in enumerate(schema_map):
-            if field_name not in self.fields:
-                _row.append(None)
-                continue
-
-            try:
-                value = row[self.fields.index(field_name)]
-            except IndexError:
-                value = None
-
-            field = schema_map[field_name]
-            value = Caster.cast(value, field.field_type)
-
-            self.update_normalize(field_name, value, i)
-
-            _row.append(value)
-
-        _row = self.normalize(_row)
-
-        if model_type == 'Station':
-            has_utm = False
-            try:
-                utmx_index = self.fields.index('UTM_X')
-                utmy_index = self.fields.index('UTM_Y')
-                has_utm = True
-            except ValueError:
+                self.field_length = arg['length']
+            except KeyError:
                 pass
-
-            try:
-                utmx_index = self.fields.index('X_UTM')
-                utmy_index = self.fields.index('Y_UTM')
-                has_utm = True
-            except ValueError:
-                pass
-
-            if has_utm:
-                x = row[utmx_index]
-                y = row[utmy_index]
-            else:
-                try:
-                    x_index = self.fields.index('Lon_X')
-                    y_index = self.fields.index('Lat_Y')
-
-                    x, y = Project().to_utm(row[x_index], row[y_index])
-                except Exception as detail:
-                    print 'Handling projection error:', detail
-
-            _row.append((x, y))
-
-        return _row
-
-
-class WqpResult(WqpTable):
-
-    """ORM mapping to station schema to WqpResult table"""
-
-    def __init__(self, row,  normalizer):
-        super(WqpResult, self).__init__(normalizer)
-
-        schema = Schema().result
-        self.fields = range(0, len(schema))
-
-        schema_map = WqpTable.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
-
-
-class WqpStation(WqpTable):
-
-    """ORM mapping from chemistry schema to WqpStation feature class"""
-
-    def __init__(self, row, normalizer):
-        super(WqpStation, self).__init__(normalizer)
-
-        schema = Schema().station
-        self.fields = range(0, len(schema))
-
-        schema_map = WqpTable.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
-
-
-class SdwisResult(Table):
-
-    fields = ['AnalysisDate',
-              'LabName',
-              'MDL',
-              'MDLUnit',
-              'OrgId',
-              'OrgName',
-              'Param',
-              'ResultValue',
-              'SampleDate',
-              'SampleTime',
-              'SampleId',
-              'SampType',
-              'StationId',
-              'Unit',
-              'Lat_Y',
-              'Lon_X',
-              'CAS_Reg',
-              'IdNum',
-              'ParamGroup']
-
-    def __init__(self, row, normalizer):
-        super(SdwisResult, self).__init__(normalizer)
-
-        schema = Schema().result
-
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Result')
-
-
-class SdwisStation(Table):
-
-    fields = ['OrgId',
-              'OrgName',
-              'StationId',
-              'StationName',
-              'StationType',
-              'Lat_Y',
-              'Lon_X',
-              'HorAcc',
-              'HorCollMeth',
-              'HorRef',
-              'Elev',
-              'ElevAcc',
-              'ElevMeth',
-              'ElevRef',
-              'Depth',
-              'DepthUnit']
-
-    def __init__(self, row, normalizer):
-        super(SdwisStation, self).__init__(normalizer)
-
-        schema = Schema().station
-
-        schema_map = Table.build_schema_map(schema)
-        self.row = self._etl_row(row, schema_map, 'Station')
-
-
-class OgmResult(Table):
-
-    """docstring for OgmResult"""
-
-    fields = ['StationId',
-              'Param',
-              'SampleId',
-              'SampleDate',
-              'AnalysisDate',
-              'AnalytMeth',
-              'MDLUnit',
-              'ResultValue',
-              'SampleTime',
-              'MDL',
-              'Unit',
-              'SampComment']
-
-    def __init__(self, row, normalizer):
-        super(OgmResult, self).__init__(normalizer)
-
-        #: add paramgroup in ctor so `Type.fields` works for reads
-        #: since paragroup does not exist in source data
-        self.fields.append('ParamGroup')
-
-        self.schema = Schema().result
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Result')
-
-
-class OgmStation(Table):
-
-    """docstring for OgmStation"""
-
-    fields = ['OrgId',
-              'OrgName',
-              'StationId',
-              'StationName',
-              'Elev',
-              'ElevUnit',
-              'StationType',
-              'StationComment',
-              'Lat_Y',
-              'Lon_X',
-              'UTM_X',
-              'UTM_Y']
-
-    def __init__(self, row, normalizer):
-        super(OgmStation, self).__init__(normalizer)
-
-        self.schema = Schema().station
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Station')
-
-
-class DwrResult(Table):
-
-    fields = ['SampleDate',
-              'USGSPCode',
-              'ResultValue',
-              'Param',
-              'Unit',
-              'SampFrac',
-              'OrgId',
-              'OrgName',
-              'StationId',
-              'Lat_Y',
-              'Lon_X',
-              'SampMedia',
-              'SampleId',
-              'IdNum']
-
-    def __init__(self, row, normalizer):
-        super(DwrResult, self).__init__(normalizer)
-
-        #: add paramgroup in ctor so `Type.fields` works for reads
-        #: since paragroup does not exist in source data
-        self.fields.append('ParamGroup')
-
-        self.schema = Schema().result
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Result')
-
-
-class DwrStation(Table):
-
-    fields = ['WIN',
-              'OrgId',
-              'OrgName',
-              'StationId',
-              'Lat_Y',
-              'Lon_X',
-              'StateCode',
-              'CountyCode',
-              'Depth',
-              'HoleDepth',
-              'HUC8',
-              'StationName',
-              'StationType',
-              'X_UTM',
-              'Y_UTM']
-
-    def __init__(self, row, normalizer):
-        super(DwrStation, self).__init__(normalizer)
-
-        self.schema = Schema().station
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Station')
-
-
-class UgsResult(Table):
-
-    fields = ['ResultValue',
-              'AnalysisDate',
-              'OrgId',
-              'OrgName',
-              'SampleDate',
-              'SampleTime',
-              'DetectCond',
-              'Unit',
-              'MDLUnit',
-              'AnalytMethId',
-              'AnalytMeth',
-              'SampMedia',
-              'SampFrac',
-              'StationId',
-              'MDL',
-              'IdNum',
-              'LabName',
-              'SampComment',
-              'CAS_Reg']
-
-    def __init__(self, row, normalizer):
-        super(UgsResult, self).__init__(normalizer)
-
-        self.schema = Schema().result
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Result')
-
-
-class UgsStation(Table):
-
-    fields = ['OrgId',
-              'DataSource',
-              'HUC8',
-              'StateCode',
-              'CountyCode',
-              'OrgName',
-              'Lat_Y',
-              'Lon_X',
-              'StationName',
-              'StationComment',
-              'StationId']
-
-    def __init__(self, row, normalizer):
-        super(UgsStation, self).__init__(normalizer)
-
-        self.schema = Schema().station
-
-        self.schema_map = Table.build_schema_map(self.schema)
-        self.row = self._etl_row(row, self.schema_map, 'Station')
+                # print ('{} is of type text and '.format(self.field_name) +
+                #        'has no limit set.' +
+                #        ' Defaulting to {}'.format(self.length_default))
+
+    def _etl_type(self, field_type):
+        """Turn schema types into acpy fields types"""
+
+        # arcpy wants field types upper case
+        field_type = field_type.upper()
+
+        # fields names are pretty similar if you remove int
+        field_type = field_type.replace('INT', '').strip()
+
+        if field_type == 'STRING':
+            return 'TEXT'
+        elif field_type == 'TIME':
+            return 'DATE'
+        else:
+            return field_type
 
 
 class Schema(object):
 
-    """a class defining the schema for the gdb and also checks for validity"""
+    """
+    The schema for the gdb as well as the ETL mapping
+    """
 
     station_gdoc_schema = [
         {
@@ -1002,199 +864,8 @@ class Schema(object):
         return self.result_gdoc_schema
 
 
-class Field(object):
+class TableInfo(object):
 
-    """a field model for taking the data in gdoc
-    and transform it into the data for the addfield gp tool"""
-
-    #: the field name to add to the feature class
-    field_name = None
-
-    #: the fields alias name
-    field_alias = None
-
-    #: the field type
-    field_type = None
-
-    #: the length of the field. Only useful for type String
-    field_length = None
-
-    #: the source of the field mapping
-    field_source = None
-
-    #: the field length default if none is set
-    length_default = 50
-
-    def __init__(self, arg):
-        """ args should be a set of field options
-        (column, alias, type, ?length)"""
-
-        self.field_name = arg['destination']
-        self.field_alias = arg['alias']
-        self.field_type = self._etl_type(arg['type'])
-        self.field_source = arg['source']
-
-        if self.field_type == 'TEXT':
-            try:
-                self.field_length = arg['length']
-            except KeyError:
-                pass
-                # print ('{} is of type text and '.format(self.field_name) +
-                #        'has no limit set.' +
-                #        ' Defaulting to {}'.format(self.length_default))
-
-    def _etl_type(self, field_type):
-        """Turn schema types into acpy fields types"""
-
-        # arcpy wants field types upper case
-        field_type = field_type.upper()
-
-        # fields names are pretty similar if you remove int
-        field_type = field_type.replace('INT', '').strip()
-
-        if field_type == 'STRING':
-            return 'TEXT'
-        elif field_type == 'TIME':
-            return 'DATE'
-        else:
-            return field_type
-
-
-class Charges(object):
-
-    """the model holding the charge balance input values"""
-
-    chemical_amount = None
-
-    def __init__(self):
-        super(Charges, self).__init__()
-
-        self.chemical_amount = {'ca': None,
-                                'mg': None,
-                                'na': None,
-                                'k': None,
-                                'cl': None,
-                                'hco3': None,
-                                'co3': None,
-                                'so4': None,
-                                'no2': None,
-                                'no3': None,
-                                'na+k': None}
-
-    @property
-    def calcium(self):
-        return self._get_summed_value('ca')
-
-    @property
-    def magnesium(self):
-        return self._get_summed_value('mg')
-
-    @property
-    def chloride(self):
-        return self._get_summed_value('cl')
-
-    @property
-    def bicarbonate(self):
-        return self._get_summed_value('hco3')
-
-    @property
-    def sulfate(self):
-        return self._get_summed_value('so4')
-
-    @property
-    def carbonate(self):
-        return self._get_summed_value('co3')
-
-    @property
-    def nitrate(self):
-        return self._get_summed_value('no3')
-
-    @property
-    def nitrite(self):
-        return self._get_summed_value('no2')
-
-    @property
-    def sodium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self._get_summed_value('na+k')
-
-        if na_k is not None and k is not None and na is None:
-            return na_k - k
-
-        return na
-
-    @property
-    def potassium(self):
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-        na_k = self._get_summed_value('na+k')
-
-        if na_k is not None and na is not None and k is None:
-            return na_k - na
-
-        return k
-
-    @property
-    def sodium_plus_potassium(self):
-        nak = self._get_summed_value('na+k')
-        k = self._get_summed_value('k')
-        na = self._get_summed_value('na')
-
-        if nak is not None and na is not None or k is not None:
-            return 0
-
-        return nak
-
-    def update(self, chemical, amount, detect_cond=None):
-        #: there was a problem with the sample disregard
-        if detect_cond:
-            return
-
-        #: there is more than one sample for this chemical
-        if self.chemical_amount[chemical] is not None:
-            try:
-                self.chemical_amount[chemical].append(amount)
-            except AttributeError:
-                #: turn into a list for summing
-                self.chemical_amount[chemical] = [
-                    self.chemical_amount[chemical], amount]
-
-            return
-
-        self.chemical_amount[chemical] = amount
-
-    def has_major_params(self):
-        """this should only be called once everything
-        is complete and you want to do the charge balance
-        calculation. Otherwise your averages will be off"""
-
-        valid_chemicals = 5
-        num_of_chemicals = 0
-
-        if self.calcium is not None:
-            num_of_chemicals += 1
-        if self.magnesium is not None:
-            num_of_chemicals += 1
-        if self.chloride is not None:
-            num_of_chemicals += 1
-        if self.bicarbonate is not None:
-            num_of_chemicals += 1
-        if self.sulfate is not None:
-            num_of_chemicals += 1
-
-        valid = num_of_chemicals == valid_chemicals
-
-        return valid and (
-            self.sodium is not None or self.sodium_plus_potassium is not None)
-
-    def _get_summed_value(self, key):
-        """turn all of the arrays into numbers"""
-        value = self.chemical_amount[key]
-        try:
-            return sum(value) / float(len(value))
-        except TypeError:
-            #: value is not an array
-            pass
-
-        return value
+    def __init__(self, location, name):
+        self.location = os.path.join(location, name)
+        self.name = name

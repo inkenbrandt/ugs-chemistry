@@ -1,15 +1,74 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+programs
+----------------------------------
+
+The different programs feeding into the UGS
+service. They handle seeding, updating the different
+data sources.
+"""
 import ConfigParser
 import csv
 import cx_Oracle
 import glob
 import models
+import resultmodels as resultmodel
+import stationmodels as stationmodel
 import os
-from services import WebQuery, Normalizer
+from services import WebQuery, Normalizer, ChargeBalancer
+
+
+class Balanceable(object):
+
+    """
+    common balanceable things for programs
+    """
+    #: the concentrations grouped with their sampleid
+    samples = None
+
+    def __init__(self):
+        super(Balanceable, self).__init__()
+
+        self.samples = {}
+        self.balancer = ChargeBalancer()
+
+    def track_concentration(self, etl):
+        etl.balance(etl.row)
+
+        if etl.sample_id in self.samples.keys():
+            self.samples[etl.sample_id].append(etl.concentration)
+
+            return
+
+        self.samples[etl.sample_id] = etl.concentration
+
+    def write_balance_rows(self, etl, location):
+        for sample_id in self.samples.keys():
+            concentration = self.samples[sample_id]
+
+            if not concentration.has_major_params:
+                continue
+
+            balance, cation, anion = (
+                self.balancer.calculate_charge_balance(concentration))
+
+            balance = {'balance': balance,
+                       'cation': cation,
+                       'anion': anion}
+
+            balance_rows = etl.create_rows_from_balance(sample_id, balance)
+
+            for row in balance_rows:
+                self._insert_row(row, etl.balance_fields, location)
 
 
 class Program(object):
 
     def __init__(self, location, InsertCursor):
+        super(Program, self).__init__()
+
         self.location = location
         self.InsertCursor = InsertCursor
         self.normalizer = Normalizer()
@@ -25,17 +84,30 @@ class Program(object):
         return [schema_map[item].field_name for item in schema_map]
 
 
-class GdbBase(Program):
+class GdbProgram(Program):
 
     def __init__(self, location, InsertCursor):
-        super(GdbBase, self).__init__(location, InsertCursor)
+        super(GdbProgram, self).__init__(location, InsertCursor)
 
     def _read_gdb(self, location, fields):
         #: location - the path to the table data
         #: fields - the fields form the data to pull
-        with self.SearchCursor(location, fields) as cursor:
-            for row in cursor:
-                yield row
+        try:
+            with self.SearchCursor(location, fields) as cursor:
+                for row in cursor:
+                    yield row
+        except RuntimeError as e:
+            #: the fields in the feature class
+            import arcpy
+            actual = set([str(x.name) for x in arcpy.ListFields(location)])
+
+            #: the fields you are trying to use
+            input_fields = set(fields)
+
+            missing = input_fields - actual
+            print 'the fouled up columns are {}'.format(missing)
+
+            raise e
 
     def _insert_row(self, row, fields, location):
         with self.InsertCursor(location, fields) as cursor:
@@ -52,9 +124,9 @@ class Wqp(Program):
         station_ids = {}
 
         if feature_class == 'Results':
-            Type = models.WqpResult
+            Type = resultmodel.WqpResult
         elif feature_class == 'Stations':
-            Type = models.WqpStation
+            Type = stationmodel.WqpStation
 
         schema_map = Type.build_schema_map(feature_class)
         fields = self._get_fields(schema_map)
@@ -285,9 +357,9 @@ class Sdwis(Program):
         print 'inserting into {} SDWIS type {}'.format(location, feature_class)
 
         if feature_class == 'Results':
-            Type = models.SdwisResult
+            Type = resultmodel.SdwisResult
         elif feature_class == 'Stations':
-            Type = models.SdwisStation
+            Type = stationmodel.SdwisStation
 
         fields = self._get_fields(Type.build_schema_map(feature_class))
 
@@ -314,7 +386,7 @@ class Sdwis(Program):
             self._insert_rows(records, model_type)
 
 
-class Dogm(GdbBase):
+class Dogm(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'DOGM\DOGM_AGRC.gdb'
     #: results table name
@@ -333,10 +405,10 @@ class Dogm(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.OgmStation
+                Type = stationmodel.OgmStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.OgmResult
+                Type = resultmodel.OgmResult
 
             location = os.path.join(self.location, model_type)
 
@@ -354,8 +426,13 @@ class Dogm(GdbBase):
 
                 self._insert_row(etl.row, fields_to_insert, location)
 
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
 
-class Udwr(GdbBase):
+            self.write_balance_rows(etl, location)
+
+
+class Udwr(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'UDWR\UDWR_AGRC.gdb'
     #: results table name
@@ -374,10 +451,10 @@ class Udwr(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.DwrStation
+                Type = stationmodel.DwrStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.DwrResult
+                Type = resultmodel.DwrResult
 
             location = os.path.join(self.location, model_type)
 
@@ -395,8 +472,13 @@ class Udwr(GdbBase):
 
                 self._insert_row(etl.row, fields_to_insert, location)
 
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
 
-class Ugs(GdbBase):
+            self.write_balance_rows(etl, location)
+
+
+class Ugs(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'UGS\UGS_AGRC.gdb'
     #: results table name
@@ -415,10 +497,10 @@ class Ugs(GdbBase):
         for model_type in model_types:
             if model_type == 'Stations':
                 table = os.path.join(folder, self.gdb_name, self.stations)
-                Type = models.UgsStation
+                Type = stationmodel.UgsStation
             elif model_type == 'Results':
                 table = os.path.join(folder, self.gdb_name, self.results)
-                Type = models.UgsResult
+                Type = resultmodel.UgsResult
 
             location = os.path.join(self.location, model_type)
 
@@ -435,3 +517,8 @@ class Ugs(GdbBase):
                         fields_to_insert.append('SHAPE@XY')
 
                 self._insert_row(etl.row, fields_to_insert, location)
+
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
+
+            self.write_balance_rows(etl, location)
