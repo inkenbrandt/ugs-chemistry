@@ -20,12 +20,60 @@ import os
 from services import WebQuery, Normalizer, ChargeBalancer
 
 
+class Balanceable(object):
+
+    """
+    common balanceable things for programs
+    """
+    #: the concentrations grouped with their sampleid
+    samples = None
+
+    def __init__(self):
+        super(Balanceable, self).__init__()
+
+        self.samples = {}
+        self.balancer = ChargeBalancer()
+
+        print 'balanceable ctor'
+
+    def track_concentration(self, etl):
+        etl.balance(etl.row)
+
+        if etl.sample_id in self.samples.keys():
+            self.samples[etl.sample_id].append(etl.concentration)
+
+            return
+
+        self.samples[etl.sample_id] = etl.concentration
+
+    def write_balance_rows(self, etl, location):
+        for sample_id in super.samples.keys():
+            concentration = super.samples[sample_id]
+
+            if not concentration.has_major_params:
+                continue
+
+            balance, cation, anion = (
+                self.balancer.calculate_charge_balance(concentration))
+
+            balance = {'balance': balance,
+                       'cation': cation,
+                       'anion': anion}
+
+            balance_rows = etl.create_rows_from_balance(sample_id, balance)
+
+            for row in balance_rows:
+                super._insert_row(row, etl.balance_fields, location)
+
+
 class Program(object):
 
     def __init__(self, location, InsertCursor):
         self.location = location
         self.InsertCursor = InsertCursor
         self.normalizer = Normalizer()
+
+        print 'Program ctor'
 
     def _get_default_fields(self, schema_map):
         fields = []
@@ -42,6 +90,8 @@ class GdbBase(Program):
 
     def __init__(self, location, InsertCursor):
         super(GdbBase, self).__init__(location, InsertCursor)
+
+        print 'GdbBase ctor'
 
     def _read_gdb(self, location, fields):
         #: location - the path to the table data
@@ -340,21 +390,19 @@ class Sdwis(Program):
             self._insert_rows(records, model_type)
 
 
-class Dogm(GdbBase):
+class Dogm(GdbBase, Balanceable):
     #: location to dogm gdb
     gdb_name = 'DOGM\DOGM_AGRC.gdb'
     #: results table name
     results = 'DOGM_RESULT'
     #: stations feature class name
     stations = 'DOGM_STATION'
-    #: the concentrations grouped with their sampleid
-    samples = None
 
     def __init__(self, location, SearchCursor, InsertCursor):
         super(Dogm, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
-        self.samples = {}
-        self.balancer = ChargeBalancer()
+
+        print 'dogm ctor'
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
@@ -385,31 +433,9 @@ class Dogm(GdbBase):
                 self._insert_row(etl.row, fields_to_insert, location)
 
                 if etl.balanceable and etl.sample_id is not None:
-                    etl.balance(etl.row)
+                    self.track_concentration(etl)
 
-                    if etl.sample_id in self.samples.keys():
-                        self.samples[etl.sample_id].append(etl.concentration)
-                        continue
-
-                    self.samples[etl.sample_id] = etl.concentration
-
-            for sample_id in self.samples.keys():
-                concentration = self.samples[sample_id]
-
-                if not concentration.has_major_params:
-                    continue
-
-                balance, cation, anion = (
-                    self.balancer.calculate_charge_balance(concentration))
-
-                balance = {'balance': balance,
-                           'cation': cation,
-                           'anion': anion}
-
-                balance_rows = etl.create_rows_from_balance(sample_id, balance)
-
-                for row in balance_rows:
-                    self._insert_row(row, etl.balance_fields, location)
+            self.write_balance_rows(etl, location)
 
 
 class Udwr(GdbBase):

@@ -102,4 +102,3 @@ class TestChargeBalancer(unittest.TestCase):
         self.assertEqual(balance, expected_balance)
         self.assertEqual(cations, expected_cations)
         self.assertEqual(anions, expected_anions)
-
