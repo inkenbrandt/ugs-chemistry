@@ -34,8 +34,6 @@ class Balanceable(object):
         self.samples = {}
         self.balancer = ChargeBalancer()
 
-        print 'balanceable ctor'
-
     def track_concentration(self, etl):
         etl.balance(etl.row)
 
@@ -75,8 +73,6 @@ class Program(object):
         self.InsertCursor = InsertCursor
         self.normalizer = Normalizer()
 
-        print 'Program ctor'
-
     def _get_default_fields(self, schema_map):
         fields = []
         for item in schema_map:
@@ -88,12 +84,10 @@ class Program(object):
         return [schema_map[item].field_name for item in schema_map]
 
 
-class GdbBase(Program):
+class GdbProgram(Program):
 
     def __init__(self, location, InsertCursor):
-        super(GdbBase, self).__init__(location, InsertCursor)
-
-        print 'GdbBase ctor'
+        super(GdbProgram, self).__init__(location, InsertCursor)
 
     def _read_gdb(self, location, fields):
         #: location - the path to the table data
@@ -392,7 +386,7 @@ class Sdwis(Program):
             self._insert_rows(records, model_type)
 
 
-class Dogm(GdbBase, Balanceable):
+class Dogm(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'DOGM\DOGM_AGRC.gdb'
     #: results table name
@@ -403,8 +397,6 @@ class Dogm(GdbBase, Balanceable):
     def __init__(self, location, SearchCursor, InsertCursor):
         super(Dogm, self).__init__(location, InsertCursor)
         self.SearchCursor = SearchCursor
-
-        print 'dogm ctor'
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
@@ -440,7 +432,7 @@ class Dogm(GdbBase, Balanceable):
             self.write_balance_rows(etl, location)
 
 
-class Udwr(GdbBase):
+class Udwr(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'UDWR\UDWR_AGRC.gdb'
     #: results table name
@@ -480,8 +472,13 @@ class Udwr(GdbBase):
 
                 self._insert_row(etl.row, fields_to_insert, location)
 
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
 
-class Ugs(GdbBase):
+            self.write_balance_rows(etl, location)
+
+
+class Ugs(GdbProgram, Balanceable):
     #: location to dogm gdb
     gdb_name = 'UGS\UGS_AGRC.gdb'
     #: results table name
@@ -520,3 +517,8 @@ class Ugs(GdbBase):
                         fields_to_insert.append('SHAPE@XY')
 
                 self._insert_row(etl.row, fields_to_insert, location)
+
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
+
+            self.write_balance_rows(etl, location)
