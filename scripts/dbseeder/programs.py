@@ -44,7 +44,7 @@ class Balanceable(object):
 
         self.samples[etl.sample_id] = etl.concentration
 
-    def write_balance_rows(self, etl, location):
+    def write_balance_rows(self, etl, location, curser=None):
         for sample_id in self.samples.keys():
             concentration = self.samples[sample_id]
 
@@ -61,6 +61,13 @@ class Balanceable(object):
             balance_rows = etl.create_rows_from_balance(sample_id, balance)
 
             for row in balance_rows:
+                if curser:
+                    try:
+                        curser.insertRow(row)
+                        continue
+                    except Exception as e:
+                        raise e
+
                 self._insert_row(row, etl.balance_fields, location)
 
 
@@ -114,7 +121,9 @@ class GdbProgram(Program):
             cursor.insertRow(row)
 
 
-class Wqp(Program):
+class Wqp(Program, Balanceable):
+
+    csv_location = 'WQP'
 
     def _insert_rows(self, data, feature_class):
         location = os.path.join(self.location, feature_class)
@@ -134,7 +143,7 @@ class Wqp(Program):
         if feature_class == 'Stations':
             fields.append('SHAPE@XY')
 
-        with self.InsertCursor(location, fields) as curser:
+        with self.InsertCursor(location, fields) as cursor:
             for row in data:
                 etl = Type(row, self.normalizer)
                 insert_row = etl.row
@@ -149,14 +158,34 @@ class Wqp(Program):
                     station_ids[station_id] = True
 
                 try:
-                    curser.insertRow(insert_row)
+                    cursor.insertRow(insert_row)
                 except Exception as e:
                     raise e
 
-    def _csvs_on_disk(self, parent_folder, type):
-        folder = os.path.join(parent_folder, type, '*.csv')
-        for file in glob.glob(folder):
-            yield file
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
+
+        with self.InsertCursor(location, etl.balance_fields) as cursor:
+            self.write_balance_rows(etl, location, cursor)
+
+    def _csvs_on_disk(self, parent_folder, model_type):
+        """
+        searches the parent folder for all csv files and returns
+        them as a list
+
+        #: parent_folder - the parent folder to the data directory
+            this can be a file as well
+        #: model_types - [Stations, Results]
+        """
+
+        if os.path.isfile(parent_folder):
+            # this is mainly for testing purposes
+            # or the need to seed from a specific file
+            yield parent_folder
+
+        folder = os.path.join(parent_folder, model_type, '*.csv')
+        for csv_file in glob.glob(folder):
+            yield csv_file
 
     def _query(self, url):
         data = WebQuery().results(url)
@@ -207,8 +236,17 @@ class Wqp(Program):
         return maps
 
     def seed(self, folder, model_types):
+        """
+        seeds the geodata base with the WQP data
+
+        #: folder - the parent folder to the data directory
+        #: model_types - [Stations, Results]
+        """
+
+        location = os.path.join(folder, self.csv_location)
+
         for model_type in model_types:
-            for csv_file in self._csvs_on_disk(folder, model_type):
+            for csv_file in self._csvs_on_disk(location, model_type):
                 with open(csv_file, 'r') as f:
                     print 'processing {}'.format(csv_file)
                     self._insert_rows(csv.DictReader(f), model_type)
@@ -399,8 +437,12 @@ class Dogm(GdbProgram, Balanceable):
         self.SearchCursor = SearchCursor
 
     def seed(self, folder, model_types):
+        """
+        seeds the geodata base with the Dogm data
+
         #: folder - the parent folder to the data directory
         #: model_types - [Stations, Results]
+        """
 
         for model_type in model_types:
             if model_type == 'Stations':
@@ -446,7 +488,7 @@ class Udwr(GdbProgram, Balanceable):
 
     def seed(self, folder, model_types):
         #: folder - the parent folder to the data directory
-        #: model_types - [Staions, Results]
+        #: model_types - [Stations, Results]
 
         for model_type in model_types:
             if model_type == 'Stations':

@@ -57,7 +57,7 @@ class TestWqpProgram(unittest.TestCase):
         httpd_thread.start()
 
         host = 'http://localhost:8001'
-        path = '/dbseeder/tests/data/Results/'
+        path = '/dbseeder/tests/data/WQP/Results/'
 
         url = '{}{}sample_chemistry.csv'.format(host, path)
 
@@ -70,8 +70,11 @@ class TestWqpProgram(unittest.TestCase):
         self.assertEqual(values['OrganizationIdentifier'], '1119USBR_WQX')
 
     def test_csv_reader(self):
-        test_data = 'dbseeder\\tests\\data\\Results\\sample_chemistry.csv'
-        f = open(os.path.join(os.getcwd(), test_data))
+        test_file = 'sample_chemistry.csv'
+        folder = os.path.join(
+            os.getcwd(), 'dbseeder', 'tests', 'data', 'WQP', 'Results')
+
+        f = open(os.path.join(folder, test_file))
         data = f.readlines(2)
         f.close()
 
@@ -83,31 +86,34 @@ class TestWqpProgram(unittest.TestCase):
         self.assertEqual(values['OrganizationIdentifier'], '1119USBR_WQX')
 
     def test_csv_on_disk(self):
-        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data', 'WQP')
         gen = self.patient._csvs_on_disk(data, 'Stations')
         csv = gen.next()
 
         self.assertIsNotNone(csv)
         self.assertRegexpMatches('Stations.csv', 'Stations.csv$')
 
-    def test_chemistry_csv_on_disk(self):
-        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+    def test_result_csv_on_disk(self):
+        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data', 'WQP')
         gen = self.patient._csvs_on_disk(data, 'Results')
         count = 0
+
+        row_count = 2
+        balance_rows = 3
 
         for file in gen:
             count += 1
             self.assertIsNotNone(file)
             self.assertRegexpMatches(file, 'Result.*.csv$')
 
-        self.assertEqual(count, 2)
+        self.assertEqual(count, row_count + balance_rows)
 
     def test_field_lengths(self):
-        data = os.path.join(os.getcwd(), 'dbseeder', 'data')
+        data = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data', 'WQP')
         maps = self.patient.field_lengths(data, 'Stations')
 
-        self.assertEqual(maps['MonitoringLocationTypeName'][1], 47)
-        self.assertEqual(maps['OrganizationFormalName'][1], 70)
+        self.assertEqual(maps['MonitoringLocationTypeName'][1], 21)
+        self.assertEqual(maps['OrganizationFormalName'][1], 34)
 
     def test_insert_rows_result(self):
         one_row_from_csv = [{'ActivityIdentifier': '1119USBR_WQX-14-A317',
@@ -355,6 +361,21 @@ class TestWqpProgram(unittest.TestCase):
         table = os.path.join(self.folder, 'Results')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
 
+    def test_seeding_with_balancing(self):
+        folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
+
+        self.patient.csv_location = os.path.join(
+            'WQP_Charge', 'Results', 'sample_balance.csv')
+        self.patient.seed(folder, ['Results'])
+
+        arcpy.env.workspace = self.patient.location
+        print self.patient.location
+        actual = arcpy.GetCount_management('Results').getOutput(0)
+
+        original_row_count = 20
+        balance_rows = 3
+        self.assertEqual(actual, str(original_row_count + balance_rows))
+
     def tearDown(self):
         self.patient = None
         del self.patient
@@ -561,12 +582,14 @@ class TestDogmProgram(unittest.TestCase):
         self.assertEqual(actual, '250')
 
         actual = arcpy.GetCount_management('Results').getOutput(0)
-        self.assertEqual(actual, '403')
+        rows = 403
+        charges = 36
+        self.assertEqual(actual, str(rows + charges))
 
     def test_seeding_with_balancing(self):
         folder = os.path.join(os.getcwd(), 'dbseeder', 'tests', 'data')
 
-        self.patient.gdb_name = 'DOGM_Charge\DOGM_AGRC.gdb'
+        self.patient.gdb_name = os.path.join('DOGM_Charge', 'DOGM_AGRC.gdb')
         self.patient.seed(folder, ['Results'])
 
         arcpy.env.workspace = self.patient.location

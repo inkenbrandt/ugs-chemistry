@@ -167,9 +167,22 @@ class Balanceable(object):
         if index is None:
             return None
 
-        return self.row[index]
+        value = self.row[index]
+        if value is None:
+            return None
+
+        if value.lower() == 'n/a':
+            return None
+
+        return value
 
     def set_row_index(self, field_name, index):
+        """
+        sets the index of the field name
+        this is necessary so we can find the fields we are
+        looking for later to get the concentrations
+        """
+
         if (field_name is None or
                 field_name.lower() not in self.field_index.keys()):
             return

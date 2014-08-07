@@ -13,7 +13,7 @@ from modelbases import Table, WqpTable
 from modelextensions import Balanceable
 
 
-class WqpResult(WqpTable):
+class WqpResult(WqpTable, Balanceable):
 
     """ORM mapping to result schema to WqpResult table"""
 
