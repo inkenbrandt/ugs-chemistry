@@ -15,6 +15,11 @@ from modelextensions import Normalizable
 
 
 class Table(Normalizable):
+    """
+    The base class for all of the program models whose
+    schema does not need to be translated.
+    """
+
     balanceable = None
 
     def __init__(self, normalizer):
@@ -55,11 +60,13 @@ class Table(Normalizable):
             value = services.Caster.cast(value, field.field_type)
 
             self.update_normalize(field_name, value, i)
-            try:
-                self.set_row_index(field_name, i)
-            except:
-                #: not of type balanceable
-                self.balanceable = False
+
+            if self.balanceable:
+                try:
+                    self.set_row_index(field_name, i)
+                except:
+                    #: not of type balanceable
+                    self.balanceable = False
 
             _row.append(value)
 
@@ -100,6 +107,12 @@ class Table(Normalizable):
 
 
 class WqpTable(Normalizable):
+    """
+    The base class for all of the wqp schema to handle the
+    data translations
+    """
+
+    balanceable = None
 
     def __init__(self, normalizer):
         """
@@ -129,18 +142,20 @@ class WqpTable(Normalizable):
 
     def _etl_row(self, row, schema_map, model_type):
         _row = []
+        self.balanceable = True
         lat = lon = None
 
-        for i, key in enumerate(schema_map):
+        for key in schema_map.keys():
             #: the key index maps to the column index in the feature class
             field = schema_map[key]
             source_field_name = field.field_source
             destination_field_type = field.field_type
 
-            #: not all of the programs have the same schema
+            # not all of the programs have the same schema
             if source_field_name not in row:
                 _row.append(None)
-                self.update_normalize(field.field_name, None, i)
+                self.update_normalize(field.field_name, None, key)
+
                 continue
 
             try:
@@ -151,11 +166,19 @@ class WqpTable(Normalizable):
             value = services.Caster.cast(value, destination_field_type)
 
             if field.field_name == 'Lon_X':
+            if field.field_name == 'Lon_X':
                 lon = value
             elif field.field_name == 'Lat_Y':
                 lat = value
 
-            self.update_normalize(field.field_name, value, i)
+            self.update_normalize(field.field_name, value, key)
+
+            if self.balanceable:
+                try:
+                    self.set_row_index(field.field_name, key)
+                except:
+                    #: not of type balanceable
+                    self.balanceable = False
 
             _row.append(value)
 

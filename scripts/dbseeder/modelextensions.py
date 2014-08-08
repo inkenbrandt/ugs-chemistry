@@ -170,9 +170,17 @@ class Balanceable(object):
         return self.row[index]
 
     def set_row_index(self, field_name, index):
+        """
+        sets the index of the field name
+        this is necessary so we can find the fields we are
+        looking for later to get the concentrations
+        """
+
         if (field_name is None or
                 field_name.lower() not in self.field_index.keys()):
             return
+
+        print 'setting {} to {}'.format(field_name, index)
 
         self.field_index[field_name.lower()] = index
 
