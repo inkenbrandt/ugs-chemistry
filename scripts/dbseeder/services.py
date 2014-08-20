@@ -96,9 +96,14 @@ class Project(object):
     input_system = Proj(init='epsg:4326')
     ouput_system = Proj(init='epsg:26912')
 
+    min_x_wrong_sign = 100
+    max_x_wrong_sign = 120
+
     def to_utm(self, x, y):
+        if x > self.min_x_wrong_sign and x < self.max_x_wrong_sign:
+            x = x * -1
         return transform(
-            self.input_system,
+            self.input_system, 
             self.ouput_system,
             x,
             y)
