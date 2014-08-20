@@ -97,6 +97,12 @@ class Project(object):
     ouput_system = Proj(init='epsg:26912')
 
     def to_utm(self, x, y):
+        min_long_wrong_sign = 100
+        max_long_wrong_sign = 140
+        if x > min_long_wrong_sign and x < max_long_wrong_sign
+            x = x*-1
+        else:
+            x = x
         return transform(
             self.input_system,
             self.ouput_system,
