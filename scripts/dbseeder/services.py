@@ -97,11 +97,18 @@ class Project(object):
     ouput_system = Proj(init='epsg:26912')
 
     def to_utm(self, x, y):
-        return transform(
-            self.input_system,
-            self.ouput_system,
-            x,
-            y)
+        if x >100 and x<120:        
+            return transform(
+                self.input_system,
+                self.ouput_system,
+                x*-1,
+                y)    
+        else:
+            return transform(
+                self.input_system,
+                self.ouput_system,
+                x,
+                y)
 
 
 class Caster(object):
