@@ -99,10 +99,10 @@ class Project(object):
     def to_utm(self, x, y):
         min_x_wrong_sign = 100
         max_x_wrong_sign = 120
-        if x >min_x_wrong_sign and x< max_x_wrong_sign:        
-            x = x*-1
+        if x > min_x_wrong_sign and x < max_x_wrong_sign:
+            x = x * -1
         return transform(
-            self.input_system,
+            self.input_system, 
             self.ouput_system,
             x,
             y)
