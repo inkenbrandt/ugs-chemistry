@@ -100,9 +100,7 @@ class Project(object):
         min_x_wrong_sign = 100
         max_x_wrong_sign = 120
         if x >min_x_wrong_sign and x< max_x_wrong_sign:        
-            x = x*-1,
-        else:
-            x = x
+            x = x*-1
         return transform(
             self.input_system,
             self.ouput_system,
