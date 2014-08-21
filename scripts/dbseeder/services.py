@@ -97,6 +97,13 @@ class Project(object):
     ouput_system = Proj(init='epsg:26912')
 
     def to_utm(self, x, y):
+        # fix longitudes that do not have a negative sign
+        max_x_wrong_sign = 120
+        min_x_wrong_sign = 100
+        if x > min_x_wrong_sign and x < max_x_wrong_sign:
+            x = x*-1
+        else:
+            x = x
         return transform(
             self.input_system,
             self.ouput_system,
