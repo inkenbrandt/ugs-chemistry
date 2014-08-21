@@ -101,8 +101,6 @@ class Project(object):
         max_long_wrong_sign = 140
         if x > min_long_wrong_sign and x < max_long_wrong_sign
             x = x*-1
-        else:
-            x = x
         return transform(
             self.input_system,
             self.ouput_system,
