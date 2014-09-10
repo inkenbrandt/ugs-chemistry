@@ -1,32 +1,42 @@
 {
-  "folders": [
-    {
-      "follow_symlinks": true,
-      "file_exclude_patterns": [
-        "*.sublime-workspace",
-        "*.sublime-project",
-        "*.coverage"
-      ],
-      "folder_exclude_patterns": [
-        "*.egg",
-        "*.egg-info",
-        "__pycache__",
-        "Results",
-        "Stations"
-      ],
-      "path": "/"
-    }
-  ],
-  "build_systems": [
-    {
-      "name": "Python Tests",
-      "selector": "source.python",
-      "cmd": [
-        "python",
-        "setup.py",
-        "nosetests",
-      ],
-      "working_dir": "${project_path}"
-    }
-  ]
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"python",
+				"setup.py",
+				"nosetests"
+			],
+			"name": "Python Tests",
+			"selector": "source.python",
+			"working_dir": "${project_path}"
+		},
+		{
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "python -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.sublime-workspace",
+				"*.sublime-project",
+				"*.coverage"
+			],
+			"folder_exclude_patterns":
+			[
+				"*.egg",
+				"*.egg-info",
+				"__pycache__",
+				"Results",
+				"Stations"
+			],
+			"follow_symlinks": true,
+			"path": "/"
+		}
+	]
 }

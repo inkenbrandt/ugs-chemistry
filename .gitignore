@@ -23,3 +23,4 @@ node_modules/
 *.pyc
 src/esri/*
 profiles/esriUrls.txt
+scripts/.noseids
