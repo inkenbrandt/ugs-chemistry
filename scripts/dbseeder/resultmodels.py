@@ -27,7 +27,7 @@ class WqpResult(WqpTable, Balanceable):
         self.row = self._etl_row(row, schema_map, 'Result')
 
 
-class SdwisResult(Table):
+class SdwisResult(Table, Balanceable):
 
     fields = ['AnalysisDate',
               'LabName',
