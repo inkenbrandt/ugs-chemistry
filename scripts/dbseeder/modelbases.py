@@ -15,12 +15,11 @@ from modelextensions import Normalizable
 
 
 class Table(Normalizable):
+
     """
     The base class for all of the program models whose
     schema does not need to be translated.
     """
-
-    balanceable = None
 
     def __init__(self, normalizer):
         super(Table, self).__init__(normalizer)
@@ -107,12 +106,11 @@ class Table(Normalizable):
 
 
 class WqpTable(Normalizable):
+
     """
     The base class for all of the wqp schema to handle the
     data translations
     """
-
-    balanceable = None
 
     def __init__(self, normalizer):
         """
@@ -124,6 +122,7 @@ class WqpTable(Normalizable):
         """
 
         super(WqpTable, self).__init__(normalizer)
+        self.balanceable = None
 
     @staticmethod
     def build_schema_map(schema):

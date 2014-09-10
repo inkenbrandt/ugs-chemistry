@@ -25,12 +25,11 @@ class Balanceable(object):
     """
     common balanceable things for programs
     """
-    #: the concentrations grouped with their sampleid
-    samples = None
 
     def __init__(self):
         super(Balanceable, self).__init__()
 
+        #: the concentrations grouped with their sampleid
         self.samples = {}
         self.balancer = ChargeBalancer()
 
@@ -165,8 +164,9 @@ class Wqp(Program, Balanceable):
                 if etl.balanceable and etl.sample_id is not None:
                     self.track_concentration(etl)
 
-        with self.InsertCursor(location, etl.balance_fields) as cursor:
-            self.write_balance_rows(etl, location, cursor)
+        if etl.balanceable:
+            with self.InsertCursor(location, etl.balance_fields) as cursor:
+                self.write_balance_rows(etl, location, cursor)
 
     def _csvs_on_disk(self, parent_folder, model_type):
         """
@@ -262,9 +262,6 @@ class Wqp(Program, Balanceable):
 
 class Sdwis(Program):
 
-    #: testing variable to reduce query times
-    count = None
-
     _result_query = """SELECT
         UTV80.TSASAR.ANALYSIS_START_DT AS "AnalysisDate",
         UTV80.TSALAB.LAB_ID_NUMBER AS "LabName",
@@ -356,6 +353,9 @@ class Sdwis(Program):
 
     def __init__(self, location, InsertCursor):
         super(Sdwis, self).__init__(location, InsertCursor)
+
+        #: testing variable to reduce query times
+        self.count = None
 
         config = ConfigParser.RawConfigParser()
 

@@ -16,8 +16,6 @@ class Concentration(object):
     the model holding the charge balance input values
     """
 
-    chemical_amount = None
-
     def __init__(self):
         super(Concentration, self).__init__()
 
@@ -222,32 +220,22 @@ class Field(object):
     and transform it into the data for the addfield gp tool
     """
 
-    #: the field name to add to the feature class
-    field_name = None
-
-    #: the fields alias name
-    field_alias = None
-
-    #: the field type
-    field_type = None
-
-    #: the length of the field. Only useful for type String
-    field_length = None
-
-    #: the source of the field mapping
-    field_source = None
-
-    #: the field length default if none is set
-    length_default = 50
-
     def __init__(self, arg):
         """ args should be a set of field options
         (column, alias, type, ?length)"""
 
+        #: the field name to add to the feature class
         self.field_name = arg['destination']
+        #: the fields alias name
         self.field_alias = arg['alias']
+        #: the field type
         self.field_type = self._etl_type(arg['type'])
+        #: the source of the field mapping
         self.field_source = arg['source']
+         #: the field length default if none is set
+        self.length_default = 50
+        #: the length of the field. Only useful for type String
+        self.field_length = None
 
         if self.field_type == 'TEXT':
             try:

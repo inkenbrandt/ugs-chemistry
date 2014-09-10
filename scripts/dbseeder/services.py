@@ -103,7 +103,7 @@ class Project(object):
         if x > self.min_x_wrong_sign and x < self.max_x_wrong_sign:
             x = x * -1
         return transform(
-            self.input_system, 
+            self.input_system,
             self.ouput_system,
             x,
             y)
@@ -153,7 +153,6 @@ class Caster(object):
 class Normalizer(object):
 
     """class for handling the normalization of fields"""
-    paramgroup = None
 
     def __init__(self):
         super(Normalizer, self).__init__()

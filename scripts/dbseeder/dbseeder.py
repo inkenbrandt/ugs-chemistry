@@ -17,18 +17,15 @@ from services import ConsolePrompt
 
 
 class Seeder(object):
-    #: the parent location of the gdb
-    parent_folder = None
-    #: the name of the gdb to seed
-    gdb_name = None
-    #: the combination of the parent_folder and the gdb_name
-    location = None
-    #: the number of records to query for sdwis
-    count = None
 
     def __init__(self, parent_folder='./', gdb_name='WQP.gdb'):
+        #: the number of records to query for sdwis
+        self.count = None
+        #: the parent location of the gdb
         self.parent_folder = parent_folder
+        #: the name of the gdb to seed
         self.gdb_name = gdb_name
+        #: the combination of the parent_folder and the gdb_name
         self.location = os.path.join(self.parent_folder, self.gdb_name)
 
     def _create_gdb(self):

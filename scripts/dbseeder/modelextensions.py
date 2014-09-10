@@ -13,12 +13,11 @@ from models import Concentration
 
 
 class Normalizable(object):
-    normalize_fields = None
-    station_id_re = re.compile(re.escape('_WQX'), re.IGNORECASE)
 
     def __init__(self, normalizer):
         super(Normalizable, self).__init__()
 
+        self.station_id_re = re.compile(re.escape('_WQX'), re.IGNORECASE)
         self.normalize_fields = {
             'chemical': (None, None),
             'unit': (None, None),
@@ -96,34 +95,30 @@ class Balanceable(object):
 
     """holds the values of the fields required to to charge balances"""
 
-    #: model that holds charge information for the balancer
-    concentration = None
-
-    #: a reference to the normalized chemical row values
-    row = None
-
-    #: the index of the array where the fields are
-    field_index = None
-
-    #: the alias lookup for balance param values
-    param_alias = {'balance': 'Charge Balance',
-                   'anion': 'Anions Total',
-                   'cation': 'Cation Total'}
-
-    #: the fields to insert into
-    balance_fields = ['SampleId', 'Param', 'Unit']
-
     def __init__(self):
         super(Balanceable, self).__init__()
 
+        #: model that holds charge information for the balancer
         self.concentration = Concentration()
 
+        #: the index of the array where the fields are
         self.field_index = {
             'detectcond': None,
             'resultvalue': None,
             'param': None,
             'sampleid': None
         }
+
+        #: a reference to the normalized chemical row values
+        self.row = None
+
+        #: the alias lookup for balance param values
+        self.param_alias = {'balance': 'Charge Balance',
+                            'anion': 'Anions Total',
+                            'cation': 'Cation Total'}
+
+        #: the fields to insert into
+        self.balance_fields = ['SampleId', 'Param', 'Unit']
 
     @property
     def chemical(self):
