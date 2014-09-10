@@ -8,6 +8,7 @@ test_programs
 Tests for `programs` module.
 """
 import arcpy
+import csv
 import datetime
 import dbseeder.resultmodels as resultmodel
 import dbseeder.stationmodels as stationmodel
@@ -469,6 +470,24 @@ class TestSdwisProgram(unittest.TestCase):
 
         table = os.path.join(self.folder, 'Stations')
         self.assertEqual('1', arcpy.GetCount_management(table).getOutput(0))
+
+    def test_charge_balance(self):
+        table_location = os.path.join(self.parent_folder, 'data', 'SDWIS_Charge', 'Result.csv')
+        data = []
+
+        with open(table_location, 'rb') as csv_file:
+            cursor = csv.reader(csv_file, dialect=csv.excel)
+            for row in cursor:
+                data.append(row)
+
+        self.patient._insert_rows(data, 'Results')
+
+        table = os.path.join(self.folder, 'Results')
+
+        original_row_count = 17
+        balance_rows = 3
+
+        self.assertEqual(str(original_row_count + balance_rows), arcpy.GetCount_management(table).getOutput(0))
 
     def tearDown(self):
         self.patient = None

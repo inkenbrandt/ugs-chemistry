@@ -260,7 +260,7 @@ class Wqp(Program, Balanceable):
             self._insert_rows(csv, model_type)
 
 
-class Sdwis(Program):
+class Sdwis(Program, Balanceable):
 
     _result_query = """SELECT
         UTV80.TSASAR.ANALYSIS_START_DT AS "AnalysisDate",
@@ -411,6 +411,13 @@ class Sdwis(Program):
 
                 curser.insertRow(insert_row)
 
+                if etl.balanceable and etl.sample_id is not None:
+                    self.track_concentration(etl)
+
+        if etl.balanceable:
+            with self.InsertCursor(location, etl.balance_fields) as cursor:
+                self.write_balance_rows(etl, location, cursor)
+
     def seed(self, model_types):
         query_string = None
 
@@ -471,7 +478,8 @@ class Dogm(GdbProgram, Balanceable):
                 if etl.balanceable and etl.sample_id is not None:
                     self.track_concentration(etl)
 
-            self.write_balance_rows(etl, location)
+            if etl.balanceable:
+                self.write_balance_rows(etl, location)
 
 
 class Udwr(GdbProgram, Balanceable):
