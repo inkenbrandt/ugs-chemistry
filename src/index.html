@@ -13,14 +13,18 @@
 
     <!-- CSS -->
     <link rel='stylesheet' href='app/resources/App.css'>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 </head>
 <body class='claro'>
     <div data-dojo-type='app/App'></div>
 
-    <!-- JAVASCRIPT -->
-    <script data-dojo-config="isDebug: 1, tlmSiblingOfDojo: 1" src='http://js.arcgis.com/3.8' defer></script>
-    <script src='app/run.js' defer></script>
+    <!-- build:template
+    <script data-dojo-config="deps:['app/run']" src='dojo/dojo.js'></script>
+    /build -->
+
+    <!-- build:remove -->
+    <script data-dojo-config="isDebug: 1" src='dojo/dojo.js'></script>
+    <script src='app/run.js'></script>
+    <!-- /build -->
 
     <!-- GOOGLE ANALYTICS -->
     <script>

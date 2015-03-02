@@ -1,11 +1,21 @@
+/* global JasmineFaviconReporter, jasmineRequire */
 /*jshint unused:false*/
 var dojoConfig = {
-    isDebug: false,
-    isJasmineTestRunner: true, // prevents parser in main.js from running
-    has: {'dojo-undef-api': true}
+    // isDebug: false,
+    isJasmineTestRunner: true,
+    packages: [{
+        name: 'matchers',
+        location: 'matchers/src'
+    },{
+        name: 'stubmodule',
+        location: 'stubmodule/src',
+        main: 'stub-module'
+    }],
+    has: {
+        'dojo-undef-api': true
+    }
 };
 
-// override alert to console
-window.alert = function(msg) {
-    console.error('ALERT OVERRIDDEN TO LOG: ' + msg);
-};
+// for jasmine-favicon-reporter
+jasmine.getEnv().addReporter(new JasmineFaviconReporter());
+jasmine.getEnv().addReporter(new jasmineRequire.JSReporter2());

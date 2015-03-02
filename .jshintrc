@@ -13,6 +13,7 @@
         "afterEach", 
         "spyOn", 
         "jasmine", 
+        "process",
         "runs", 
         "waitsFor",
         "describe",

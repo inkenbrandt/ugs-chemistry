@@ -1,62 +1,48 @@
 define([
-    'dojo/text!app/templates/App.html',
+    'agrc/widgets/locate/MagicZoom',
+    'agrc/widgets/map/BaseMap',
+    'agrc/widgets/map/BaseMapSelector',
 
-    'dojo/_base/declare',
-    'dojo/_base/array',
-
-    'dojo/dom',
-    'dojo/dom-style',
-    'dojo/aspect',
-    'dojo/store/Memory',
-
-    'dijit/_WidgetBase',
-    'dijit/_TemplatedMixin',
-    'dijit/_WidgetsInTemplateMixin',
-    'dijit/registry',
+    'app/config',
 
     'dgrid/OnDemandGrid',
 
-    'agrc/widgets/map/BaseMap',
-    'agrc/widgets/map/BaseMapSelector',
-    'agrc/widgets/locate/MagicZoom',
+    'dijit/_TemplatedMixin',
+    'dijit/_WidgetBase',
+    'dijit/_WidgetsInTemplateMixin',
+    'dijit/registry',
 
-    'esri/layers/FeatureLayer',
-    'esri/InfoTemplate',
-    'esri/tasks/query',
-    'esri/tasks/RelationshipQuery',
-
-    'dojo/text!app/templates/Popup.html',
+    'dojo/_base/array',
+    'dojo/_base/declare',
+    'dojo/aspect',
+    'dojo/dom',
+    'dojo/dom-style',
+    'dojo/store/Memory',
+    'dojo/text!app/templates/App.html',
 
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane'
 ], function(
-    template,
+    MagicZoom,
+    BaseMap,
+    BaseMapSelector,
 
-    declare,
-    array,
-
-    dom,
-    domStyle,
-    aspect,
-    Memory,
-
-    _WidgetBase,
-    _TemplatedMixin,
-    _WidgetsInTemplateMixin,
-    registry,
+    config,
 
     Grid,
 
-    BaseMap,
-    BaseMapSelector,
-    MagicZoom,
+    _TemplatedMixin,
+    _WidgetBase,
+    _WidgetsInTemplateMixin,
+    registry,
 
-    FeatureLayer,
-    InfoTemplate,
-    Query,
-    RelationshipQuery,
-
-    popupTemplate
+    array,
+    declare,
+    aspect,
+    dom,
+    domStyle,
+    Memory,
+    template
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
@@ -87,23 +73,6 @@ define([
             this.version.innerHTML = AGRC.version;
 
             this.inherited(arguments);
-
-            var lyr = new FeatureLayer(AGRC.urls.mapService + '/1', {outFields: '*'});
-
-            var that = this;
-            lyr.on('load', function() {
-                var columns = array.map(lyr.fields, function (f) {
-                    return {
-                        label: f.alias,
-                        field: f.name
-                    };
-                });
-                that.grid = new (declare([Grid]))({
-                    bufferRows: Infinity,
-                    columns: columns,
-                    sort: [{attribute: 'ActivityStartDate', descending: true}]
-                }, that.gridDiv);
-            });
         },
         startup: function() {
             // summary:
@@ -114,61 +83,7 @@ define([
             // the correct size
             this.inherited(arguments);
 
-            var stationId;
-
             this.initMap();
-
-            stationId = new MagicZoom({
-                map: this.map,
-                mapServiceURL: AGRC.urls.mapService,
-                searchLayerIndex: 0,
-                searchField: AGRC.fields.MonitoringLocationIdentifier,
-                placeHolder: 'search by id...',
-                maxResultsToDisplay: 10
-            }, this.stationNameDiv);
-
-            var that = this;
-            this.own(aspect.after(stationId, 'onZoomed', function (graphic) {
-                var q = new Query();
-                q.where = AGRC.fields.MonitoringLocationIdentifier + " = '" + graphic.attributes[AGRC.fields.MonitoringLocationIdentifier] + "'";
-                that.lyr.queryFeatures(q, function (fSet) {
-                    var g = fSet.features[0];
-                    that.map.infoWindow.setFeatures([g]);
-                    that.map.infoWindow.show(g.geometry);
-                    that.showRelatedRows(g.attributes['OBJECTID']);
-                }, function (err) {
-                    console.log(err);
-                });
-            }, true));
-
-            this.rQuery = new RelationshipQuery();
-            this.rQuery.outFields = ['*'];
-            this.rQuery.relationshipId = 0;
-
-            this.lyr.on('click', function (g) {
-                that.showRelatedRows(g.graphic.attributes['OBJECTID']);
-            });
-
-            this.inherited(arguments);
-        },
-        showRelatedRows: function (oid) {
-            // summary:
-            //      populates the dgrid with results related to the station 
-            //  
-            // oid: String
-            //      Objectid of the related station
-            console.log('app/App:showRelatedRows', arguments);
-
-            var that = this;
-        
-            this.rQuery.objectIds = [oid];
-            this.lyr.queryRelatedFeatures(this.rQuery, function (rFeatures) {
-                var data = array.map(rFeatures[oid].features, function (r) {
-                    return r.attributes;
-                });
-                var store = new Memory({data: data});
-                that.grid.set('store', store);
-            });
         },
         initMap: function() {
             // summary:
@@ -179,9 +94,6 @@ define([
                 useDefaultBaseMap: false
             });
 
-
-            this.map.infoWindow.resize(450, 300);
-
             var selector;
 
             selector = new BaseMapSelector({
@@ -189,15 +101,6 @@ define([
                 id: 'claro',
                 position: 'TR'
             });
-
-            var template = new InfoTemplate('${MonitoringLocationIdentifier}', popupTemplate);
-            this.lyr = new FeatureLayer(AGRC.urls.mapService + '/0', {
-                opacity: 0.7,
-                infoTemplate: template,
-                outFields: '*'
-            });
-            this.map.addLayer(this.lyr);
-            this.map.addLoaderToLayer(this.lyr);
         }
     });
 });

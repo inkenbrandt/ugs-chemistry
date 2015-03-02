@@ -1,8 +1,8 @@
 {
-    "name": "app",
-    "version": "0.1",
+    "name": "ugs-chemistry.app",
+    "version": "0.1.0",
     "main": "main",
-    "description": "AGRC Boilerplate",
-    "homepage": "https://github.com/agrc/AGRCJavaScriptProjectBoilerPlate",
+    "description": "UGS Water Chemistry Application",
+    "homepage": "https://github.com/agrc/ugs-chemistry",
     "dojoBuild": "app.profile.js"
 }

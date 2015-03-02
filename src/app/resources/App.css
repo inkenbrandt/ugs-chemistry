@@ -6,8 +6,8 @@
 @import '../../agrc/resources/map/BaseMapSelector.css';
 @import '../../agrc/resources/locate/FindAddress.css';
 @import '../../agrc/resources/locate/MagicZoom.css';
-/*@import '../../bootstrap/css/bootstrap.css';*/
-@import '../../bootstrap/css/bootstrap-theme.css';
+@import '../../bootstrap/dist/css/bootstrap.css';
+@import '../../bootstrap/dist/css/bootstrap-theme.css';
 @import '../../dgrid/css/dgrid.css';
 
 body, html, .app {
