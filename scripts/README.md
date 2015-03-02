@@ -1,1 +1,1 @@
-Intended to hold any scripts associated with this app.
+Intended to hold the scripts that are specific to this app.

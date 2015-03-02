@@ -1,10 +1,11 @@
+*.pyc
 *.sublime-workspace
-dist/
+*.svn*
+.DS_Store
 .grunt/
 _SpecRunner.html
+dist/
 node_modules/
-.DS_Store
-*.svn*
-*.pyc
-src/esri/
+scripts/.noseids
 src/dojo/
+src/esri/
