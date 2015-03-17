@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="main" version="3.0" id="I64FYv95R7" font="Arial" defaultPage="#pg_Mh47k" type="default" theme="SimplicityGray">
+  <Page width="960" height="700" enabled="true" visible="true" hidden="false" id="#pg_Mh47k" clasz="com.flairbuilder.project::Page" name="Design #1" color="255" backgroundColor="16777215">
+    <Component width="737" height="464" x="218" y="48" enabled="true" visible="true" hidden="false" id="fbc5HtUR" clasz="com.flairbuilder.components::GoogleMap" borderColor="0" borderThickness="1" borderStyle="solid"/>
+    <Component width="208" height="155" x="8" y="538" enabled="true" visible="true" hidden="false" id="fbcOD3zX" clasz="com.flairbuilder.components.charts::Chart" bold="false" italic="false" underline="false" color="0" fontSize="10" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" style="columnChart">
+      <data encoded="true">2007,23%0D2008,41%0D2009,56%0D2010,72%0D2011,63%0D2012,81</data>
+    </Component>
+    <Component name="Tabs1" width="737" height="180" x="218" y="513" enabled="true" visible="true" hidden="false" id="fbcM81c8" clasz="com.flairbuilder.components::TabNavigator" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="15658734" borderColor="0" borderThickness="1" tabWidth="72" tabHeight="24" position="top-left" tabs="Results, Stations">
+      <tabs>
+        <tab>fbci3t7t</tab>
+        <tab>fbc5pS86</tab>
+        <tab></tab>
+      </tabs>
+    </Component>
+    <Component width="730" height="145" x="222" y="543" enabled="true" visible="true" hidden="false" containedBy="fbcM81c8" id="fbci3t7t" clasz="com.flairbuilder.components::DataGrid" fontSize="12" borderColor="0" borderThickness="1" backgroundColor="15987442" style="dataGridVLines" showBorder="true" showHeader="true" headerHeight="21" rowHeight="21" version="3.0" showScrollbar="false" colwidths="102,146,171,163,68,70">
+      <data encoded="true">Database%20Source,%20Monitoring%20Location%20Id,%20Monitoring%20Location%20Name,%20Monitoring%20Location%20Type,%20Well%20Depth,%20WR%20Well%20Id%0D</data>
+    </Component>
+    <Component width="727" height="145" x="223" y="544" enabled="true" visible="true" hidden="true" containedBy="fbcM81c8" id="fbc5pS86" clasz="com.flairbuilder.components::DataGrid" fontSize="12" borderColor="0" borderThickness="1" backgroundColor="15987442" style="dataGridVLines" showBorder="true" showHeader="true" headerHeight="21" rowHeight="21" version="3.0" showScrollbar="false" colwidths="66,179,79,60,118,215">
+      <data encoded="true">Parameter,%20Result%20Measure%20Value,%20Sample%20Date,%20Station%20Id,%20Result%20Measure%20Unit,%20Result%20Detection%20Condition</data>
+    </Component>
+    <Component width="400" height="40" x="61" y="4" enabled="true" visible="true" hidden="false" id="fbcP9j74" clasz="com.flairbuilder.components::Title" bold="false" italic="false" underline="false" color="0" fontSize="32" leading="0" textAlign="left" label="&lt;Need a name to go here>&#xD;"/>
+    <Component width="42" height="35" x="10" y="9" enabled="true" visible="true" hidden="false" id="fbc93ekr" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="UGS Logo"/>
+    <Component width="75" height="33" x="877" y="7" enabled="true" visible="true" hidden="false" id="fbc6vB84" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="SDWIS Logo"/>
+    <Component width="160" height="24" x="705" y="14" enabled="true" visible="false" hidden="false" id="fbc4948m" clasz="com.flairbuilder.components::LinkBar" bold="false" italic="false" underline="true" color="13209" fontSize="12" version="3.0">
+      <behaviors>
+        <condition item="$ANY$">
+          <behavior action="flair:ShowHideComponents" trigger="flair:itemClick">
+            <action id="flair:ShowHideComponents" targets="fbcYyn99" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+          <behavior action="flair:ShowHideComponents" trigger="flair:itemClick">
+            <action id="flair:ShowHideComponents" targets="fbc4948m" type="hide" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+        </condition>
+      </behaviors>
+      <data>Hello Scott Davis, logout</data>
+    </Component>
+    <Component width="46" height="18" x="826" y="17" enabled="true" visible="true" hidden="false" id="fbcYyn99" clasz="com.flairbuilder.components::Link" bold="false" italic="false" underline="true" color="13209" fontSize="12" leading="0" textAlign="left" label="login">
+      <behaviors>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbc4948m" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcYyn99" type="hide" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+      </behaviors>
+    </Component>
+    <Component width="208" height="485" x="8" y="48" enabled="true" visible="true" hidden="false" id="fbc5N141" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label=""/>
+    <Component width="208" height="139" x="8" y="48" enabled="true" visible="true" hidden="false" id="fbcCk883" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Location" title="Location" headerHeight="21" close="false" minimize="false" maximize="false" contains="fbcmD9T9,fbc5BEp7,fbccH7R7,fbcJx5Bn" showScrollbar="false"/>
+    <Component width="142" height="25" x="14" y="76" enabled="true" visible="true" hidden="false" containedBy="fbcCk883" id="fbcJx5Bn" clasz="com.flairbuilder.components::ButtonBar" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="0" borderThickness="1" borderStyle="solid" style="horizontalButtonBar" direction="horizontal" version="3.0">
+      <data>Draw Polygon</data>
+    </Component>
+    <Component width="107" height="25" x="14" y="101" enabled="true" visible="true" hidden="false" containedBy="fbcCk883" id="fbccH7R7" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">State</data>
+    </Component>
+    <Component width="107" height="25" x="14" y="126" enabled="true" visible="true" hidden="false" containedBy="fbcCk883" id="fbc5BEp7" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">County</data>
+    </Component>
+    <Component width="100" height="24" x="14" y="151" enabled="true" visible="true" hidden="false" containedBy="fbcCk883" id="fbcmD9T9" clasz="com.flairbuilder.components::TextInput" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="HUC"/>
+    <Component width="208" height="107" x="8" y="187" enabled="true" visible="true" hidden="false" id="fbcUcD97" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Site Parameters" title="Site Parameters" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbcv9Vld,fbc65n6I,fbccMd67" showScrollbar="false"/>
+    <Component width="107" height="25" x="14" y="212" enabled="true" visible="true" hidden="false" containedBy="fbcUcD97" id="fbccMd67" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">Site%20Type</data>
+    </Component>
+    <Component width="208" height="164" x="8" y="300" enabled="true" visible="true" hidden="false" id="fbcK5436" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Sample Parameters" title="Sample Parameters" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbc7Y68Z,fbcPBH97,fbcF9Dir,fbcF74yf,fbcn3Kz9,fbcbMVnK" showScrollbar="false"/>
+    <Component width="142" height="25" x="14" y="325" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbcbMVnK" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">Parameter%20Group</data>
+    </Component>
+    <Component width="100" height="24" x="14" y="237" enabled="true" visible="true" hidden="false" containedBy="fbcUcD97" id="fbc65n6I" clasz="com.flairbuilder.components::TextInput" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="Site ID"/>
+    <Component width="100" height="24" x="14" y="261" enabled="true" visible="true" hidden="false" containedBy="fbcUcD97" id="fbcv9Vld" clasz="com.flairbuilder.components::TextInput" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="Organization ID"/>
+    <Component width="100" height="24" x="14" y="350" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbcn3Kz9" clasz="com.flairbuilder.components::TextInput" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="Parameter Code"/>
+    <Component width="100" height="24" x="14" y="393" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbcF74yf" clasz="com.flairbuilder.components::DateField" format="MM/DD/YYYY"/>
+    <Component width="100" height="18" x="14" y="378" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbcF9Dir" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="From"/>
+    <Component width="100" height="24" x="14" y="432" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbcPBH97" clasz="com.flairbuilder.components::DateField" format="MM/DD/YYYY"/>
+    <Component width="100" height="18" x="14" y="417" enabled="true" visible="true" hidden="false" containedBy="fbcK5436" id="fbc7Y68Z" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="To&#xD;"/>
+    <Component width="100" height="24" x="14" y="474" enabled="true" visible="true" hidden="false" id="fbcdIT87" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">Data%20Source</data>
+    </Component>
+    <Component width="143" height="24" x="234" y="252" enabled="true" visible="true" hidden="false" id="fbcU449A" clasz="com.flairbuilder.components::Search" bold="false" italic="false" underline="false" color="0" fontSize="12" backgroundColor="16777215" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="10" label="zoom to location"/>
+    <Component width="196" height="24" x="14" y="504" enabled="true" visible="true" hidden="false" id="fbc43h0z" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Search" style="horizontalButton" direction="horizontal"/>
+    <CustomImages/>
+    <Annotations/>
+    <Layers/>
+  </Page>
+  <Page width="960" height="700" enabled="true" visible="true" hidden="false" id="#pg_78mx6" clasz="com.flairbuilder.project::Page" name="Design #2" color="255" backgroundColor="16777215">
+    <Component width="942" height="464" x="10" y="48" enabled="true" visible="true" hidden="false" id="fbcc72dM" clasz="com.flairbuilder.components::GoogleMap" borderColor="0" borderThickness="1" borderStyle="solid"/>
+    <Component width="208" height="155" x="732" y="90" enabled="true" visible="false" hidden="false" id="fbcfcfT9" clasz="com.flairbuilder.components.charts::Chart" bold="false" italic="false" underline="false" color="0" fontSize="10" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" style="columnChart">
+      <data encoded="true">2007,23%0D2008,41%0D2009,56%0D2010,72%0D2011,63%0D2012,81</data>
+    </Component>
+    <Component name="Tabs1" width="941" height="180" x="11" y="513" enabled="true" visible="true" hidden="false" id="fbcv06X1" clasz="com.flairbuilder.components::TabNavigator" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="15658734" borderColor="0" borderThickness="1" tabWidth="72" tabHeight="24" position="top-left" tabs="Results, Stations">
+      <tabs>
+        <tab>fbc275I5</tab>
+        <tab>fbcHj7r3</tab>
+        <tab></tab>
+      </tabs>
+    </Component>
+    <Component width="923" height="145" x="20" y="543" enabled="true" visible="true" hidden="false" containedBy="fbcv06X1" id="fbc275I5" clasz="com.flairbuilder.components::DataGrid" fontSize="12" borderColor="0" borderThickness="1" backgroundColor="15987442" style="dataGridVLines" showBorder="true" showHeader="true" headerHeight="21" rowHeight="21" version="3.0" showScrollbar="false" colwidths="160,229,268,256,106,-106">
+      <data encoded="true">Database%20Source,%20Monitoring%20Location%20Id,%20Monitoring%20Location%20Name,%20Monitoring%20Location%20Type,%20Well%20Depth,%20WR%20Well%20Id%0D</data>
+    </Component>
+    <Component width="931" height="145" x="16" y="544" enabled="true" visible="true" hidden="true" containedBy="fbcv06X1" id="fbcHj7r3" clasz="com.flairbuilder.components::DataGrid" fontSize="12" borderColor="0" borderThickness="1" backgroundColor="15987442" style="dataGridVLines" showBorder="true" showHeader="true" headerHeight="21" rowHeight="21" version="3.0" showScrollbar="false" colwidths="85,229,101,77,151,74">
+      <data encoded="true">Parameter,%20Result%20Measure%20Value,%20Sample%20Date,%20Station%20Id,%20Result%20Measure%20Unit,%20Result%20Detection%20Condition</data>
+    </Component>
+    <Component width="400" height="40" x="61" y="4" enabled="true" visible="true" hidden="false" id="fbc6dNvY" clasz="com.flairbuilder.components::Title" bold="false" italic="false" underline="false" color="0" fontSize="32" leading="0" textAlign="left" label="&lt;Need a name to go here>&#xD;"/>
+    <Component width="42" height="35" x="10" y="9" enabled="true" visible="true" hidden="false" id="fbcD9k35" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="UGS Logo"/>
+    <Component width="75" height="33" x="877" y="7" enabled="true" visible="true" hidden="false" id="fbc61H88" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="SDWIS Logo"/>
+    <Component width="160" height="24" x="705" y="14" enabled="true" visible="false" hidden="false" id="fbcn65ae" clasz="com.flairbuilder.components::LinkBar" bold="false" italic="false" underline="true" color="13209" fontSize="12" version="3.0">
+      <behaviors>
+        <condition item="$ANY$">
+          <behavior action="flair:ShowHideComponents" trigger="flair:itemClick">
+            <action id="flair:ShowHideComponents" targets="fbcAF6M9" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+          <behavior action="flair:ShowHideComponents" trigger="flair:itemClick">
+            <action id="flair:ShowHideComponents" targets="fbcn65ae" type="hide" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+        </condition>
+      </behaviors>
+      <data>Hello Scott Davis, logout</data>
+    </Component>
+    <Component width="46" height="18" x="826" y="17" enabled="true" visible="true" hidden="false" id="fbcAF6M9" clasz="com.flairbuilder.components::Link" bold="false" italic="false" underline="true" color="13209" fontSize="12" leading="0" textAlign="left" label="login">
+      <behaviors>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcn65ae" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcAF6M9" type="hide" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+      </behaviors>
+    </Component>
+    <Component width="246" height="115" x="82" y="294" enabled="true" visible="false" hidden="false" id="fbcf9N66" clasz="com.flairbuilder.components::FlairComponentsGroup">
+      <Component width="246" height="115" x="82" y="294" enabled="true" visible="true" hidden="false" id="fbc6SUC8" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="From-To" title="From-To" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbcV333l,fbc6r19Y,fbcMUtV9,fbc5oNz8" showScrollbar="false"/>
+      <Component width="100" height="24" x="87" y="337" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbc5oNz8" clasz="com.flairbuilder.components::DateField" format="MM/DD/YYYY"/>
+      <Component width="100" height="18" x="87" y="322" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbcMUtV9" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="From"/>
+      <Component width="100" height="24" x="87" y="376" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbc6r19Y" clasz="com.flairbuilder.components::DateField" format="MM/DD/YYYY"/>
+      <Component width="100" height="18" x="87" y="361" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbcV333l" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="To&#xD;"/>
+    </Component>
+    <Component width="176" height="24" x="488" y="59" enabled="true" visible="true" hidden="false" id="fbcxo30L" clasz="com.flairbuilder.components::Search" bold="false" italic="false" underline="false" color="0" fontSize="12" backgroundColor="16777215" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="10" label="search for location"/>
+    <Component width="346" height="33" x="82" y="54" enabled="true" visible="true" hidden="false" id="fbct9Jp5" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label=""/>
+    <Component width="149" height="24" x="155" y="59" enabled="true" visible="true" hidden="false" id="fbcC9kH6" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <behaviors>
+        <condition item="County">
+          <behavior action="flair:ShowHideComponents" trigger="flair:selectionChanged">
+            <action id="flair:ShowHideComponents" targets="fbc58Bs5" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+        </condition>
+        <condition item="Date Range">
+          <behavior action="flair:ShowHideComponents" trigger="flair:selectionChanged">
+            <action id="flair:ShowHideComponents" targets="fbcf9N66" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+        </condition>
+        <condition item="Draw">
+          <behavior action="flair:ShowHideComponents" trigger="flair:selectionChanged">
+            <action id="flair:ShowHideComponents" targets="fbc6Rm39" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          </behavior>
+        </condition>
+      </behaviors>
+      <data encoded="true">Select%20Filter%0DDraw%0DState%0DCounty%0DHUC%0DSite%20Type%0DSite%20ID%0DOrganization%20ID%0DParameter%20Group%0DParameter%20Code%0DDate%20Range</data>
+    </Component>
+    <Component width="100" height="18" x="87" y="62" enabled="true" visible="true" hidden="false" id="fbcz57K2" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="Add Filter"/>
+    <Component width="246" height="201" x="82" y="93" enabled="true" visible="false" hidden="false" id="fbc58Bs5" clasz="com.flairbuilder.components::FlairComponentsGroup">
+      <Component width="246" height="201" x="82" y="93" enabled="true" visible="true" hidden="false" id="fbcJA0ir" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="County" title="County" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbcLj7iy" showScrollbar="false"/>
+      <Component width="234" height="167" x="88" y="121" enabled="true" visible="true" hidden="false" containedBy="fbcJA0ir" id="fbcLj7iy" clasz="com.flairbuilder.components::TextArea" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="BEAVER  BOX  ELDER  CACHE  CARBON  DAGGETT  DAVIS  DUCHESNE  EMERY  GARFIELD  GRAND  IRON  JUAB  KANE  MILLARD  MORGAN  PIUTE  RICH  SALT  LAKE  SAN  JUAN  SANPETE  SEVIER  SUMMIT  TOOELE  UINTAH  UTAH  WASATCH  WASHINGTON  WAYNE  WEBER&#xD;" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0"/>
+    </Component>
+    <Component width="246" height="111" x="82" y="409" enabled="true" visible="false" hidden="false" id="fbc6Rm39" clasz="com.flairbuilder.components::FlairComponentsGroup">
+      <Component width="246" height="111" x="82" y="409" enabled="true" visible="true" hidden="false" id="fbccC495" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Draw" title="Draw" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbcoIz57,fbc8CM93" showScrollbar="false"/>
+      <Component width="142" height="25" x="87" y="439" enabled="true" visible="true" hidden="false" containedBy="fbccC495" id="fbc8CM93" clasz="com.flairbuilder.components::ButtonBar" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="0" borderThickness="1" borderStyle="solid" style="horizontalButtonBar" direction="horizontal" version="3.0">
+        <data>Draw Polygon</data>
+      </Component>
+      <Component width="100" height="24" x="87" y="479" enabled="true" visible="true" hidden="false" containedBy="fbccC495" id="fbcoIz57" clasz="com.flairbuilder.components::TextInput" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label="buffer"/>
+    </Component>
+    <Component width="68" height="24" x="872" y="59" enabled="true" visible="true" hidden="false" id="fbc2Vu83" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Charts" style="horizontalButton" direction="horizontal">
+      <behaviors>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcfcfT9" type="toggle" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+      </behaviors>
+    </Component>
+    <Component width="109" height="24" x="314" y="59" enabled="true" visible="true" hidden="false" id="fbcdUsN6" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Search" style="horizontalButton" direction="horizontal"/>
+    <CustomImages/>
+    <Annotations/>
+    <Layers/>
+  </Page>
+  <Variables/>
+  <CustomComponents embedded="false" list=""/>
+  <Structure name="main" siteMap="1" id="I64FYv95R7">
+    <Page name="Design #1" id="#pg_Mh47k" siteMap="1"/>
+    <Page name="Design #2" id="#pg_78mx6" siteMap="1"/>
+  </Structure>
+</Project>

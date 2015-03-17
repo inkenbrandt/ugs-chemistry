@@ -1,27 +1,4 @@
 {
-	"build_systems":
-	[
-		{
-			"name": "AGRC Build",
-			"osx":
-			{
-				"cmd":
-				[
-					"bash ./build.sh"
-				],
-				"shell": true
-			},
-			"windows":
-			{
-				"cmd":
-				[
-					"build.bat"
-				],
-				"path": "C:\\Program Files (x86)\\Java\\jre7\\bin\\;C:\\Program Files (x86)\\Git\\bin;"
-			},
-			"working_dir": "$project_path"
-		}
-	],
 	"folders":
 	[
 		{
@@ -31,15 +8,7 @@
 			],
 			"folder_exclude_patterns":
 			[
-				"dist/agrc",
-				"dist/app",
-				"dist/ijit",
-				"dist/dojo",
-				"dist/dojox",
-				"dist/util",
-				"dist/dijit",
-				"dist/bootstrap",
-				"dist/esri",
+				"dist",
 				"src/dojo",
 				"src/dojox",
 				"src/util",
