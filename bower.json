@@ -2,15 +2,15 @@
   "name": "ugs-chemistry",
   "version": "0.1.0",
   "dependencies": {
-    "agrc": "agrc-widgets#2.10.0",
-    "bootstrap": "~3.2",
+    "agrc": "agrc-widgets#2.11.0",
+    "bootstrap": "~3.3.4",
     "dijit": "~1.10",
     "dojo": "~1.10",
     "dojox": "~1.10",
     "ijit": "agrc-ijit#3.1.1",
     "jasmine-favicon-reporter": "*",
     "jasmine-jsreporter": "~0.1.2",
-    "stubmodule": "0.6.0",
+    "stubmodule": "~0.6.1",
     "util": "dojo-util#~1.10",
     "xstyle": "~0.3",
     "dgrid": "~0.4.0",
@@ -18,6 +18,7 @@
   },
   "resolutions": {
     "xstyle": "~0.3",
-    "dgrid": "~0.4.0"
+    "dgrid": "~0.4.0",
+    "bootstrap": "~3.3.4"
   }
 }

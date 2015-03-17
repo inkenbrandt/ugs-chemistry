@@ -98,7 +98,7 @@ define([
 
             selector = new BaseMapSelector({
                 map: this.map,
-                id: 'claro',
+                id: 'tundra',
                 position: 'TR'
             });
         }
