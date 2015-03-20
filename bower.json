@@ -12,13 +12,12 @@
     "jasmine-jsreporter": "~0.1.2",
     "stubmodule": "~0.6.1",
     "util": "dojo-util#~1.10",
-    "xstyle": "~0.3",
-    "dgrid": "~0.4.0",
+    "xstyle": "7acb8186ccee813802625ca600eda2e307f9542c",
+    "dgrid": "0.3.17",
     "put-selector": "~0.3.6"
   },
   "resolutions": {
-    "xstyle": "~0.3",
-    "dgrid": "~0.4.0",
+    "xstyle": "7acb8186ccee813802625ca600eda2e307f9542c",
     "bootstrap": "~3.3.4"
   }
 }

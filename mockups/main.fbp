@@ -74,7 +74,6 @@
     <Component width="100" height="24" x="14" y="474" enabled="true" visible="true" hidden="false" id="fbcdIT87" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
       <data encoded="true">Data%20Source</data>
     </Component>
-    <Component width="143" height="24" x="234" y="252" enabled="true" visible="true" hidden="false" id="fbcU449A" clasz="com.flairbuilder.components::Search" bold="false" italic="false" underline="false" color="0" fontSize="12" backgroundColor="16777215" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="10" label="zoom to location"/>
     <Component width="196" height="24" x="14" y="504" enabled="true" visible="true" hidden="false" id="fbc43h0z" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Search" style="horizontalButton" direction="horizontal"/>
     <CustomImages/>
     <Annotations/>
@@ -131,7 +130,6 @@
       <Component width="100" height="24" x="87" y="376" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbc6r19Y" clasz="com.flairbuilder.components::DateField" format="MM/DD/YYYY"/>
       <Component width="100" height="18" x="87" y="361" enabled="true" visible="true" hidden="false" containedBy="fbc6SUC8" id="fbcV333l" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="To&#xD;"/>
     </Component>
-    <Component width="176" height="24" x="488" y="59" enabled="true" visible="true" hidden="false" id="fbcxo30L" clasz="com.flairbuilder.components::Search" bold="false" italic="false" underline="false" color="0" fontSize="12" backgroundColor="16777215" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="10" label="search for location"/>
     <Component width="346" height="33" x="82" y="54" enabled="true" visible="true" hidden="false" id="fbct9Jp5" clasz="com.flairbuilder.components::Rectangle" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" cornerRadius="0" label=""/>
     <Component width="149" height="24" x="155" y="59" enabled="true" visible="true" hidden="false" id="fbcC9kH6" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
       <behaviors>
@@ -173,6 +171,21 @@
       </behaviors>
     </Component>
     <Component width="109" height="24" x="314" y="59" enabled="true" visible="true" hidden="false" id="fbcdUsN6" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Search" style="horizontalButton" direction="horizontal"/>
+    <Component width="100" height="18" x="159" y="515" enabled="true" visible="true" hidden="false" id="fbc4992E" clasz="com.flairbuilder.components::Link" bold="false" italic="false" underline="true" color="13209" fontSize="12" leading="0" textAlign="left" label="Download Data">
+      <behaviors>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcD9E90" type="toggle" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+      </behaviors>
+    </Component>
+    <Component width="219" height="113" x="332" y="255" enabled="true" visible="false" hidden="false" id="fbcD9E90" clasz="com.flairbuilder.components::FlairComponentsGroup">
+      <Component width="219" height="113" x="332" y="255" enabled="true" visible="true" hidden="false" id="fbc18oAO" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Download" title="Download" headerHeight="21" close="true" minimize="true" maximize="true" contains="fbc888C0,fbc8dN88,fbcr5E0X" showScrollbar="false"/>
+      <Component width="133" height="24" x="400" y="295" enabled="true" visible="true" hidden="false" containedBy="fbc18oAO" id="fbcr5E0X" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+        <data encoded="true">Shapefile%20&amp;%20CSV%0DKML%20&amp;%20CSV</data>
+      </Component>
+      <Component width="100" height="18" x="338" y="294" enabled="true" visible="true" hidden="false" containedBy="fbc18oAO" id="fbc8dN88" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="Format&#xD;"/>
+      <Component width="207" height="24" x="338" y="329" enabled="true" visible="true" hidden="false" containedBy="fbc18oAO" id="fbc888C0" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Download" style="horizontalButton" direction="horizontal"/>
+    </Component>
     <CustomImages/>
     <Annotations/>
     <Layers/>
