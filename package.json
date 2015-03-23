@@ -1,10 +1,10 @@
 {
-  "name": "Atlas",
-  "version": "2.3.1",
-  "homepage": "https://github.com/agrc/AGRCJavaScriptProjectBoilerPlate",
+  "name": "ugs-chemistry",
+  "version": "0.1.0",
+  "homepage": "https://github.com/agrc/ugs-chemistry",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agrc/AGRCJavaScriptProjectBoilerPlate.git"
+    "url": "https://github.com/agrc/ugs-chemistry.git"
   },
   "devDependencies": {
     "dojo": "^1.10",
