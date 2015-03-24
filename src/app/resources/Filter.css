@@ -10,3 +10,6 @@
 .filter .container-fluid {
     padding: 0;
 }
+.filter select {
+    margin-left: 10px;
+}

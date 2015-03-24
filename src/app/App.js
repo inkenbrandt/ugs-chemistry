@@ -1,51 +1,26 @@
 define([
-    'agrc/widgets/locate/MagicZoom',
-    'agrc/widgets/map/BaseMap',
-    'agrc/widgets/map/BaseMapSelector',
-
     'app/config',
     'app/Filter',
-
-    'dgrid/OnDemandGrid',
+    'app/mapController',
 
     'dijit/_TemplatedMixin',
     'dijit/_WidgetBase',
     'dijit/_WidgetsInTemplateMixin',
-    'dijit/registry',
 
-    'dojo/_base/array',
     'dojo/_base/declare',
-    'dojo/aspect',
-    'dojo/dom',
-    'dojo/dom-style',
-    'dojo/store/Memory',
     'dojo/text!app/templates/App.html',
 
-    'ijit/widgets/authentication/LoginRegister',
-
-    'dijit/layout/BorderContainer',
-    'dijit/layout/ContentPane'
+    'ijit/widgets/authentication/LoginRegister'
 ], function(
-    MagicZoom,
-    BaseMap,
-    BaseMapSelector,
-
     config,
     Filter,
-
-    Grid,
+    mapController,
 
     _TemplatedMixin,
     _WidgetBase,
     _WidgetsInTemplateMixin,
-    registry,
 
-    array,
     declare,
-    aspect,
-    dom,
-    domStyle,
-    Memory,
     template,
 
     LoginRegister
@@ -58,17 +33,12 @@ define([
         templateString: template,
         baseClass: 'app',
 
-        // map: agrc.widgets.map.Basemap
-        map: null,
-
         constructor: function() {
             // summary:
             //      first function to fire after page loads
             console.info('app.App::constructor', arguments);
 
             AGRC.app = this;
-
-            this.inherited(arguments);
         },
         postCreate: function() {
             // summary:
@@ -101,24 +71,7 @@ define([
             // the correct size
             this.inherited(arguments);
 
-            this.initMap();
-        },
-        initMap: function() {
-            // summary:
-            //      Sets up the map
-            console.info('app.App::initMap', arguments);
-
-            this.map = new BaseMap(this.mapDiv, {
-                useDefaultBaseMap: false
-            });
-
-            var selector;
-
-            selector = new BaseMapSelector({
-                map: this.map,
-                id: 'tundra',
-                position: 'TR'
-            });
+            mapController.initMap(this.mapDiv);
         }
     });
 });

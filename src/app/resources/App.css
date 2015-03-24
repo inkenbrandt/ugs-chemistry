@@ -53,10 +53,14 @@ body, html, .app {
 }
 .app .map-div .esriSimpleSliderTL {
     top: 75px;
+    background-color: rgba(231, 231, 231, .9);
 }
 .app .map-div .esriSimpleSliderTL, 
 .app .map-div .esriSimpleSliderVertical .esriSimpleSliderIncrementButton {
     border-color: #e7e7e7;
+}
+.app .map-div .esriSimpleSliderVertical .esriSimpleSliderIncrementButton {
+    border-bottom-color: #b6b6b6;
 }
 .app .map-div .selectorMain {
     top: 72px;

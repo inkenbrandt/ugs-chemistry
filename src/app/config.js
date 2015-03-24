@@ -4,6 +4,21 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
     // e.g. http://mapserv.utah.gov/ArcGIS/rest/info?f=json
     esriConfig.defaults.io.corsEnabledServers.push('mapserv.utah.gov');
 
+    var agsDomain;
+    if (has('agrc-build') === 'prod') {
+        // mapserv.utah.gov
+        // apiKey = 'AGRC-1B07B497348512';
+        agsDomain = 'mapserv.utah.gov';
+    } else if (has('agrc-build') === 'stage') {
+        // test.mapserv.utah.gov
+        // apiKey = 'AGRC-AC122FA9671436';
+        agsDomain = 'test.mapserv.utah.gov';
+    } else {
+        // localhost
+        // apiKey = 'AGRC-E5B94F99865799';
+        agsDomain = window.location.host;
+    }
+
     window.AGRC = {
         // errorLogger: ijit.modules.ErrorLogger
         errorLogger: null,
@@ -25,6 +40,7 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         apiKey: '', // acquire at developer.mapserv.utah.gov
 
         urls: {
+            mapService: window.location.protocol + '//' + agsDomain + '/arcgis/rest/services/UGSChemistry/MapServer'
         },
 
         fieldNames: {
