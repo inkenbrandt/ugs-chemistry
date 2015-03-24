@@ -4,6 +4,7 @@ define([
     'agrc/widgets/map/BaseMapSelector',
 
     'app/config',
+    'app/Filter',
 
     'dgrid/OnDemandGrid',
 
@@ -30,6 +31,7 @@ define([
     BaseMapSelector,
 
     config,
+    Filter,
 
     Grid,
 
@@ -76,12 +78,17 @@ define([
             // set version number
             this.version.innerHTML = AGRC.version;
 
-            new LoginRegister({
-                appName: config.appName,
-                logoutDiv: this.logoutDiv,
-                showOnLoad: false,
-                securedServicesBaseUrl: '??'
-            });
+            this.own(
+                new LoginRegister({
+                    appName: config.appName,
+                    logoutDiv: this.logoutDiv,
+                    showOnLoad: false,
+                    securedServicesBaseUrl: '??'
+                }),
+                new Filter({
+
+                }, this.filterDiv)
+            );
 
             this.inherited(arguments);
         },

@@ -83,12 +83,12 @@ module.exports = function(grunt) {
             'src/index.html',
             'src/ChangeLog.html'
         ],
-        gruntFile = 'GruntFile.js',
-        internFile = 'tests/intern.js',
+        //gruntFile = 'GruntFile.js',
+        //internFile = 'tests/intern.js',
         jshintFiles = [
-            jsFiles,
-            gruntFile,
-            internFile
+            jsFiles
+            //gruntFile
+            //internFile
         ],
         bumpFiles = [
             'package.json',
