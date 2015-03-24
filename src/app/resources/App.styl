@@ -5,72 +5,74 @@
 @import '../../bootstrap-css-only/css/bootstrap.css'
 @import '../../dgrid/css/dgrid.css'
 @import '../../ijit/resources/authentication/LoginRegister.css'
+@require 'vars.styl'
+
 body,
 html,
 .app
-  width: 100%
-  height: 100%
-  margin: 0
-  padding: 0
-  overflow: hidden
-  font-family: Arial, sans-serif
-  color: #444
+    width 100%
+    height 100%
+    margin 0
+    padding 0
+    overflow hidden
+    font-family Arial, sans-serif
+    color #444
 
-/* NAV BAR */
-.app .navbar
-  min-width: 500px
-  background-color: rgba(231, 231, 231, .9)
-  background-image: none
+    /* NAV BAR */
+    .navbar
+        min-width 500px
+        background-color rgba(231, 231, 231, .9)
+        background-image none
+        border-color $border-color
 
-.app .logo
-  padding: 5px 0 5px 10px
+    .logo
+        padding 5px 0 5px 10px
 
-.app .navbar-brand
-  font-size: 28px
-  padding-top: 18px
+    .navbar-brand
+        font-size 28px
+        padding-top 18px
 
-.app .version
-  font-size: 12px
-  text-decoration: none
-  letter-spacing: 0
-  display: inline
-  padding: 0
+    .version
+        font-size 12px
+        text-decoration none
+        letter-spacing 0
+        display inline
+        padding 0
 
-.app .version:hover
-  text-decoration: underline !important
+    .version:hover
+        text-decoration underline !important
 
-.app .logoutDiv a
-  margin: 0
+    .logoutDiv a
+        margin 0
 
-/* CENTER (MAP) */
-.app .map-div
-  position: fixed
-  top: 0
-  left: 0
-  right: 0
-  bottom: 0
+    /* CENTER (MAP) */
+    .map-div
+        position fixed
+        top 0
+        left 0
+        right 0
+        bottom 0
 
-.app .map-div .esriSimpleSliderTL
-  top: 75px
-  background-color: rgba(231, 231, 231, .9)
+        .esriSimpleSliderTL
+            top 75px
+            background-color rgba(231, 231, 231, .9)
 
-.app .map-div .esriSimpleSliderTL,
-.app .map-div .esriSimpleSliderVertical .esriSimpleSliderIncrementButton
-  border-color: #e7e7e7
+        .esriSimpleSliderTL,
+        .esriSimpleSliderVertical .esriSimpleSliderIncrementButton
+            border-color $border-color
 
-.app .map-div .esriSimpleSliderVertical .esriSimpleSliderIncrementButton
-  border-bottom-color: #b6b6b6
+        .esriSimpleSliderVertical .esriSimpleSliderIncrementButton
+            border-bottom-color $border-color
 
-.app .map-div .selectorMain
-  top: 72px
-  right: 10px
+        .selectorMain
+            top 72px
+            right 10px
 
-/* GRID */
-.app [data-dojo-attach-point='gridDiv']
-  height: 200px
+    /* GRID */
+    [data-dojo-attach-point='gridDiv']
+        height 200px
 
 /* GENERAL STUFF */
 /* remove orange outline in chrome */
 *:focus
-  outline: none
-
+    outline none
