@@ -22,12 +22,7 @@
             'xstyle',
             {
                 name: 'bootstrap',
-                location: './bootstrap',
-                main: 'dist/js/bootstrap'
-            },{
-                name: 'jquery',
-                location: './jquery/dist',
-                main: 'jquery'
+                location: './dojo-bootstrap'
             },{
                 name: 'ladda',
                 location: './ladda-bootstrap',
@@ -45,9 +40,18 @@
                 location: './stubmodule',
                 main: 'src/stub-module'
             }
-        ]
+        ],
+        map: {
+            ijit: {
+                jquery: 'dojo/query',
+                bootstrap: 'app/dojo-bootstrap-plugins'
+            },
+            ladda: {
+                spin: 'ladda/dist/spin'
+            }
+        }
     };
-    require(config, ['dojo/parser', 'jquery', 'dojo/domReady!'], function (parser) {
+    require(config, ['dojo/parser', 'dojo/domReady!'], function (parser) {
         parser.parse();
     });
 })();

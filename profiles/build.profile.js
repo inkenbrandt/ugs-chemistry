@@ -30,10 +30,13 @@ var profile = {
         }
     },
     packages: [{
-        name: 'proj4',
+        name: 'bootstrap-css-only',
+        location: './bootstrap-css-only'
+    },{
+        name: 'spin',
         resourceTags: {
-            copyOnly: function () {
-                return true;
+            copyOnly: function (filename, mid) {
+                return mid === 'spin/jquery.spin';
             }
         }
     }],

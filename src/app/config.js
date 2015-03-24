@@ -12,6 +12,10 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         //      global reference to App
         app: null,
 
+        // appName: String
+        //      for permissions proxy
+        appName: 'ugs-chemistry',
+
         // version.: String
         //      The version number.
         version: '0.1.0',

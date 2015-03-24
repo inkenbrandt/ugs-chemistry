@@ -20,6 +20,8 @@ define([
     'dojo/store/Memory',
     'dojo/text!app/templates/App.html',
 
+    'ijit/widgets/authentication/LoginRegister',
+
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane'
 ], function(
@@ -42,7 +44,9 @@ define([
     dom,
     domStyle,
     Memory,
-    template
+    template,
+
+    LoginRegister
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
@@ -71,6 +75,13 @@ define([
 
             // set version number
             this.version.innerHTML = AGRC.version;
+
+            new LoginRegister({
+                appName: config.appName,
+                logoutDiv: this.logoutDiv,
+                showOnLoad: false,
+                securedServicesBaseUrl: '??'
+            });
 
             this.inherited(arguments);
         },
