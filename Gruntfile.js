@@ -112,7 +112,7 @@ module.exports = function(grunt) {
             '!stubmodule/**',
             '!util/**'
         ],
-        deployDir = 'wwwroot/SGID',
+        deployDir = 'wwwroot/ugschemistry',
         secrets,
         sauceConfig = {
             urls: ['http://127.0.0.1:8000/_SpecRunner.html'],
@@ -350,6 +350,20 @@ module.exports = function(grunt) {
                 }
             }
         },
+        stylus: {
+            main: {
+                options: {
+                    compress: false
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['app/**/*.styl'],
+                    dest: 'src/',
+                    ext: '.css'
+                }]
+            }
+        },
         watch: {
             jshint: {
                 files: jshintFiles,
@@ -357,9 +371,12 @@ module.exports = function(grunt) {
             },
             src: {
                 files: jshintFiles.concat(otherFiles),
-                options: {
-                    livereload: true
-                }
+                options: { livereload: true }
+            },
+            stylus: {
+                files: 'src/app/**/*.styl',
+                tasks: ['stylus'],
+                options: { livereload: true }
             }
         }
     });
@@ -377,6 +394,7 @@ module.exports = function(grunt) {
         'newer:jshint:main',
         'if-missing:esri_slurp:dev',
         'connect',
+        'stylus',
         'watch'
     ]);
     grunt.registerTask('build-prod', [
