@@ -375,8 +375,7 @@ module.exports = function(grunt) {
             },
             stylus: {
                 files: 'src/app/**/*.styl',
-                tasks: ['stylus'],
-                options: { livereload: true }
+                tasks: ['newer:stylus']
             }
         }
     });
@@ -401,6 +400,7 @@ module.exports = function(grunt) {
         'clean:build',
         'if-missing:esri_slurp:dev',
         'newer:imagemin:main',
+        'stylus',
         'dojo:prod',
         'copy:main',
         'processhtml:main'
@@ -409,6 +409,7 @@ module.exports = function(grunt) {
         'clean:build',
         'if-missing:esri_slurp:dev',
         'newer:imagemin:main',
+        'stylus',
         'dojo:stage',
         'copy:main',
         'processhtml:main'
