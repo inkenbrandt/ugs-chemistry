@@ -9,6 +9,7 @@ dist/
 node_modules/
 secrets.json
 src/agrc/
+src/app/**/*.css
 src/bootstrap-css-only/
 src/bootstrap/
 src/components-jasmine/
