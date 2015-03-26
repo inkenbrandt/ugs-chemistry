@@ -4,9 +4,9 @@ define([
     'dijit/_WidgetsInTemplateMixin',
 
     'dojo/_base/declare',
-    'dojo/text!app/templates/Filter.html',
+    'dojo/text!app/templates/FilterContainer.html',
 
-    'xstyle/css!app/resources/Filter.css'
+    'xstyle/css!app/resources/FilterContainer.css'
 ], function(
     _TemplatedMixin,
     _WidgetBase,

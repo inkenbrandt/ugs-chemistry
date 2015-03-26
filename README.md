@@ -6,6 +6,9 @@ ugs-chemistry
 
 Water Chemistry data viewer built for UGS
 
+###URL's
+[test.mapserv.utah.gov/ugschemistry](http://test.mapserv.utah.gov/ugschemistry)
+
 ###Contacts
 **Paul Inkenbrandt**  
 paulinkenbrandt@utah.gov

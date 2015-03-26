@@ -1,6 +1,6 @@
 define([
     'app/config',
-    'app/Filter',
+    'app/FilterContainer',
     'app/mapController',
 
     'dijit/_TemplatedMixin',
@@ -13,7 +13,7 @@ define([
     'ijit/widgets/authentication/LoginRegister'
 ], function(
     config,
-    Filter,
+    FilterContainer,
     mapController,
 
     _TemplatedMixin,
@@ -55,7 +55,7 @@ define([
                     showOnLoad: false,
                     securedServicesBaseUrl: '??'
                 }),
-                new Filter({
+                new FilterContainer({
 
                 }, this.filterDiv)
             );
