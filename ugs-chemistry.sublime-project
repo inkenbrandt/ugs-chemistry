@@ -9,7 +9,7 @@
 			"folder_exclude_patterns":
 			[
 				"dist",
-				"src/dojo",
+				// "src/dojo",
 				"src/dojox",
 				"src/util",
 				"src/dijit",

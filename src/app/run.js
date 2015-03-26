@@ -15,15 +15,13 @@
             'dgrid',
             'dijit',
             'dojo',
+            'dojo-bootstrap',
             'dojox',
             'esri',
             'ijit',
             'put-selector',
             'xstyle',
             {
-                name: 'bootstrap',
-                location: './dojo-bootstrap'
-            },{
                 name: 'ladda',
                 location: './ladda-bootstrap',
                 main: 'dist/ladda'

@@ -11,14 +11,14 @@
     "jasmine-jsreporter": "~0.1.2",
     "stubmodule": "~0.6.1",
     "util": "dojo-util#~1.10",
-    "xstyle": "7acb8186ccee813802625ca600eda2e307f9542c",
+    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
     "dgrid": "0.3.17",
     "put-selector": "~0.3.6",
     "dojo-bootstrap": "~3.0.2",
     "bootstrap-css-only": "~3.3.4"
   },
   "resolutions": {
-    "xstyle": "7acb8186ccee813802625ca600eda2e307f9542c",
+    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
     "bootstrap": "~3.3.4"
   }
 }

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FilterContainer Tests</title>
+    <title>CountyFilter Tests</title>
 
     <!-- META TAGS -->
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../resources/App.css">
+    <link rel="stylesheet" href="../../../app/resources/App.css">
     <style type='text/css'>
         body {
             padding: 50px;
@@ -15,23 +15,30 @@
     </style>
 
     <!-- JAVASCRIPT -->
-    <script type='text/javascript' src="../../dojo/dojo.js"></script>
+    <script type='text/javascript' src="../../../dojo/dojo.js"></script>
     <script type="text/javascript">
-        var baseUrl = window.location.pathname.replace(/\/[^\/]+$/, '') + '/' + '../../';
+        var baseUrl = window.location.pathname.replace(/\/[^\/]+$/, '') + '/' + '../../../';
         var widgetUnderTest;
 
         require({
             baseUrl: baseUrl,
-            packages: ['app', 'esri', 'dojo', 'dijit', 'dojox', 'xstyle', 'dojo-bootstrap']
+            packages: ['app', 'esri', 'dojo', 'dojo-bootstrap', 'dijit', 'dojox', 'xstyle']
         }, [
-            'app/FilterContainer',
+            'app/filters/ListFilter',
 
             'dojo/domReady!'
         ], function(Module) {
             widgetUnderTest = new Module({
+                items: [
+                    ['Salt Lake', 'sl'],
+                    ['Davis', 'dc'],
+                    ['Utah', 'uc']
+                ],
+                title: 'County'
             }, 'node');
 
             widgetUnderTest.startup();
+            widgetUnderTest.open();
         });
 </script>
 </head>

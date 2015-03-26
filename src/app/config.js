@@ -44,7 +44,48 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         },
 
         fieldNames: {
-        }
+        },
+
+        counties: [
+            ['Beaver', 1],
+            ['Box Elder', 2],
+            ['Cache', 3],
+            ['Carbon', 4],
+            ['Daggett', 5],
+            ['Davis', 6],
+            ['Duchesne', 7],
+            ['Emery', 8],
+            ['Garfield', 9],
+            ['Grand', 10],
+            ['Iron', 11],
+            ['Juab', 12],
+            ['Kane', 13],
+            ['Millard', 14],
+            ['Morgan', 15],
+            ['Piute', 16],
+            ['Rich', 17],
+            ['Salt Lake', 18],
+            ['San Juan', 19],
+            ['Sanpete', 20],
+            ['Sevier', 21],
+            ['Summit', 22],
+            ['Tooele', 23],
+            ['Uintah', 24],
+            ['Utah', 25],
+            ['Wasatch', 26],
+            ['Washington', 27],
+            ['Wayne', 28],
+            ['Weber', 29],
+        ],
+        states: [
+            ['Utah', 49],
+            ['Idaho', 16],
+            ['Wyoming', 56],
+            ['Colorado', 8],
+            ['New Mexico', 35],
+            ['Arizona', 4],
+            ['Nevada', 32]
+        ]
     };
 
     if (has('agrc-build') === 'prod') {

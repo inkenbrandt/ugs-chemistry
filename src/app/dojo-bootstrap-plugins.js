@@ -1,7 +1,7 @@
 define([
     'dojo/query',
 
-    'bootstrap/Modal'
+    'dojo-bootstrap/Modal'
 ], function (
     query
 ) {

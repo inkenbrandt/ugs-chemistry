@@ -3,12 +3,15 @@
         <div class="container-fluid">
             <form class="navbar-form navbar-left">
                 <div class="form-group">
-                    <label for='${id}_filterSelect'>Add Filter</label>
-                    <select id='${id}_filterSelect' class='form-control'>
-                        <option>select filter</option>
+                    <label>Add Filter</label>
+                    <select data-dojo-attach-point='select'
+                        data-dojo-attach-event='change: addFilter'
+                        class='form-control'>
+                        <option value='none'>select a filter</option>
                     </select>
                 </div>
             </form>
         </div>
     </div>
+    <div data-dojo-attach-point="container"></div>
 </div>
