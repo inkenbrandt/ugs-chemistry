@@ -1,6 +1,7 @@
 define([
     'app/config',
     'app/filters/ListFilter',
+    'app/filters/ShapeFilter',
 
     'dijit/_TemplatedMixin',
     'dijit/_WidgetBase',
@@ -17,6 +18,7 @@ define([
 ], function(
     config,
     ListFilter,
+    ShapeFilter,
 
     _TemplatedMixin,
     _WidgetBase,
@@ -62,6 +64,10 @@ define([
                     parent: this.container,
                     fieldName: config.fieldNames.StateCode,
                     fieldType: ListFilter.TYPE_NUMBER
+                }),
+                new ShapeFilter({
+                    title: 'Polygon',
+                    parent: this.container
                 })
             ];
 
@@ -73,6 +79,7 @@ define([
                 }, that.select);
             };
             this.filters.forEach(function (f) {
+                f.startup();
                 that.own(f);
                 addOption(f.title, f.id);
 

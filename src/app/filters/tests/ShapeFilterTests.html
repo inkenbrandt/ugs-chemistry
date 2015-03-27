@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShapeFilter Tests</title>
+
+    <!-- META TAGS -->
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../resources/App.css">
+    <style type='text/css'>
+        body {
+            padding: 50px;
+        }
+    </style>
+
+    <!-- JAVASCRIPT -->
+    <script type='text/javascript' src="../../../dojo/dojo.js"></script>
+    <script type="text/javascript">
+        var baseUrl = window.location.pathname.replace(/\/[^\/]+$/, '') + '/' + '../../../';
+        var widgetUnderTest;
+
+        require({
+            baseUrl: baseUrl,
+            packages: ['app', 'agrc', 'esri', 'dojo', 'dijit', 'dojox', 'dojo-bootstrap', 'xstyle', {
+                name: 'spin',
+                location: './spinjs',
+                main: 'spin'
+            }]
+        }, [
+            'app/filters/ShapeFilter',
+            'app/mapController',
+
+            'esri/map',
+
+            'dojo/domReady!'
+        ], function(Module, mapController, Map) {
+            widgetUnderTest = new Module({
+                title: 'Polygon'
+            }, 'node');
+
+            widgetUnderTest.startup();
+            // widgetUnderTest.open();
+
+            mapController.map = new Map('mapDiv', {
+                basemap: 'dark-gray'
+            });
+        });
+</script>
+</head>
+<body class='claro'>
+    <div id="mapDiv"></div>
+    <div id="node"></div>
+</body>
+</html>

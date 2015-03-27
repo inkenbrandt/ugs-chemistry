@@ -8,6 +8,7 @@ define([
     'dojo/topic',
 
     'esri/Color',
+    'esri/graphic',
     'esri/layers/ArcGISDynamicMapServiceLayer',
     'esri/layers/FeatureLayer',
     'esri/tasks/query'
@@ -21,6 +22,7 @@ define([
     topic,
 
     Color,
+    Graphic,
     ArcGISDynamicMapServiceLayer,
     FeatureLayer,
     Query
@@ -44,7 +46,7 @@ define([
         initMap: function (mapDiv) {
             // summary:
             //      Sets up the map
-            console.info('app.App::initMap', arguments);
+            console.info('app/mapController:initMap', arguments);
 
             var that = this;
 
@@ -85,6 +87,13 @@ define([
             this.queryFLayer.on('query-ids-complete', lang.hitch(this, 'queryIdsComplete'));
 
             topic.subscribe(config.topics.selectFeatures, lang.hitch(this, 'selectFeatures'));
+            topic.subscribe(config.topics.addGraphic, function (geo) {
+                that.map.graphics.clear();
+                that.map.graphics.add(new Graphic(geo, config.drawingSymbol));
+            });
+            topic.subscribe(config.topics.removeGraphic, function () {
+                that.map.graphics.clear();
+            });
         },
         selectFeatures: function (defQuery, geometry) {
             // summary:

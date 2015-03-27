@@ -59,7 +59,7 @@ define([
         },
         remove: function () {
             // summary:
-            //      description
+            //      removes widget from visible filters
             console.log('app/_Filter:remove', arguments);
         
             this.clear();
@@ -68,10 +68,12 @@ define([
         },
         open: function () {
             // summary:
-            //      description
+            //      opens the body of the filter
             console.log('app/_Filter:open', arguments);
         
             query(this.body).collapse('show');
+
+            this.inherited(arguments);
         },
         getQuery: function () {
             // summary:

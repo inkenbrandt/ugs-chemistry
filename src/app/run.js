@@ -49,7 +49,10 @@
             }
         }
     };
-    require(config, ['dojo/parser', 'dojo/domReady!'], function (parser) {
+    require(config, ['dojo/has', 'dojo/parser', 'dojo/domReady!'], function (has, parser) {
+        has.add('web-workers', function () {
+            return window.Worker;
+        });
         parser.parse();
     });
 })();

@@ -1,5 +1,19 @@
 /* jshint maxlen:false */
-define(['dojo/has', 'esri/config'], function (has, esriConfig) {
+define([
+    'dojo/has',
+
+    'esri/Color',
+    'esri/config',
+    'esri/symbols/SimpleFillSymbol',
+    'esri/symbols/SimpleLineSymbol'
+], function (
+    has,
+
+    Color,
+    esriConfig,
+    SimpleFillSymbol,
+    SimpleLineSymbol
+) {
     // force api to use CORS on mapserv thus removing the test request on app load
     // e.g. http://mapserv.utah.gov/ArcGIS/rest/info?f=json
     esriConfig.defaults.io.corsEnabledServers.push('mapserv.utah.gov');
@@ -19,6 +33,8 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         agsDomain = window.location.host;
     }
 
+    var baseUrl = window.location.protocol + '//' + agsDomain + '/arcgis/rest/services';
+    var drawingColor = [51, 160, 44];
     window.AGRC = {
         // errorLogger: ijit.modules.ErrorLogger
         errorLogger: null,
@@ -40,11 +56,18 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         apiKey: '', // acquire at developer.mapserv.utah.gov
 
         urls: {
-            mapService: window.location.protocol + '//' + agsDomain + '/arcgis/rest/services/UGSChemistry/MapServer'
+            mapService: baseUrl + '/UGSChemistry/MapServer',
+            geometry: baseUrl + '/Geometry/GeometryServer'
         },
 
         minFeatureLayerScale: 500000,
         stationSymbolSize: 9,
+        drawingSymbol: new SimpleFillSymbol(
+            SimpleFillSymbol.STYLE_SOLID,
+            new SimpleLineSymbol()
+                .setColor(new Color(drawingColor)),
+            new Color(drawingColor.concat([0.25]))
+        ),
 
         fieldNames: {
             StateCode: 'StateCode',
@@ -57,7 +80,9 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
         },
 
         topics: {
-            selectFeatures: 'ugs-select-features'
+            selectFeatures: 'ugs-select-features',
+            addGraphic: 'ugs-add-graphic',
+            removeGraphic: 'ugs-remove-graphic'
         },
 
         counties: [

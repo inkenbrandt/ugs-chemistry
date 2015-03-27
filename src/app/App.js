@@ -55,9 +55,7 @@ define([
                     showOnLoad: false,
                     securedServicesBaseUrl: '??'
                 }),
-                new FilterContainer({
-
-                }, this.filterDiv)
+                new FilterContainer(null, this.filterDiv)
             );
 
             this.inherited(arguments);

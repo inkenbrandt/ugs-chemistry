@@ -52,7 +52,7 @@ define([
         constructor: function () {
             // summary:
             //      apply base class
-            console.log('app/ListFilter:constructor', arguments);
+            console.log('app/filters/ListFilter:constructor', arguments);
         
             this.baseClass += ' list-filter';
             this.selectedValues = [];
