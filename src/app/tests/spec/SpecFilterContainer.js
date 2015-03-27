@@ -1,15 +1,25 @@
 require([
+    'agrc-jasmine-matchers/topics',
+
+    'app/config',
     'app/FilterContainer',
+    'app/mapController',
 
     'dojo/_base/array'
 ], function (
+    topics,
+
+    config,
     FilterContainer,
+    mapController,
 
     array
 ) {
     describe('app/FilterContainer', function () {
         var testWidget;
         beforeEach(function () {
+            mapController.selectFeatures = function () {};
+            topics.listen(config.topics.selectFeatures);
             testWidget = new FilterContainer();
         });
         afterEach(function() {
@@ -50,6 +60,51 @@ require([
                 expect(array.every(testWidget.select.children, function (option) {
                     return option.value !== testWidget.filters[0].id;
                 })).toBe(true);
+            });
+        });
+        describe('onFilterChange', function () {
+            beforeEach(function () {
+                testWidget.filters = [{
+                    getQuery: function () {
+                        return 'one';
+                    }
+                }, {
+                    getQuery: function () {
+                        return 'two';
+                    }
+                }];
+            });
+            it('builds a def query from all of the existing filters', function () {
+                testWidget.onFilterChange();
+
+                expect(config.topics.selectFeatures)
+                    .toHaveBeenPublishedWith('one AND two', undefined);
+            });
+            it('adds the geometry', function () {
+                var geo = {};
+                testWidget.filters.push({
+                    getQuery: function () {
+                        return geo;
+                    }
+                });
+
+                testWidget.onFilterChange();
+
+                expect(config.topics.selectFeatures)
+                    .toHaveBeenPublishedWith('one AND two', geo);
+            });
+            it('can show only geometry', function () {
+                var geo = {};
+                testWidget.filters = [{
+                    getQuery: function () {
+                        return geo;
+                    }
+                }];
+
+                testWidget.onFilterChange();
+
+                expect(config.topics.selectFeatures)
+                    .toHaveBeenPublishedWith(undefined, geo);
             });
         });
     });

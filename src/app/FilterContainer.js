@@ -8,8 +8,10 @@ define([
 
     'dojo/_base/array',
     'dojo/_base/declare',
+    'dojo/_base/lang',
     'dojo/dom-construct',
     'dojo/text!app/templates/FilterContainer.html',
+    'dojo/topic',
 
     'xstyle/css!app/resources/FilterContainer.css'
 ], function(
@@ -22,12 +24,14 @@ define([
 
     array,
     declare,
+    lang,
     domConstruct,
-    template
+    template,
+    topic
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // description:
-        //      Control for managing the filter for the application. Contains a vareity of FilterType's.
+        //      Control for managing the filter for the application. Contains a variety of FilterType's.
 
         templateString: template,
         baseClass: 'filter-container',
@@ -41,21 +45,23 @@ define([
 
         postCreate: function() {
             // summary:
-            //      Overrides method of same name in dijit._Widget.
-            // tags:
-            //      private
+            //      init's all filters and add's them to the drop down
             console.log('app/FilterContainer:postCreate', arguments);
 
             this.filters = [
                 new ListFilter({
                     title: 'County',
                     items: config.counties,
-                    parent: this.container
+                    parent: this.container,
+                    fieldName: config.fieldNames.CountyCode,
+                    fieldType: ListFilter.TYPE_NUMBER
                 }),
                 new ListFilter({
                     title: 'State',
                     items: config.states,
-                    parent: this.container
+                    parent: this.container,
+                    fieldName: config.fieldNames.StateCode,
+                    fieldType: ListFilter.TYPE_NUMBER
                 })
             ];
 
@@ -69,17 +75,21 @@ define([
             this.filters.forEach(function (f) {
                 that.own(f);
                 addOption(f.title, f.id);
+
+                // add back to the drop down when it's removed from the container
                 f.on('removed', function(filter) {
                     addOption(filter.title, filter.id);
                     that.container.removeChild(filter.domNode);
                 });
+                f.on('changed', lang.hitch(that, 'onFilterChange'));
             });
 
             this.inherited(arguments);
         },
         addFilter: function () {
             // summary:
-            //      description
+            //      Show a filter in the filter container where the user can interact with it
+            //      Also, remove it from the drop down so that it can't be selected twice
             console.log('app/FilterContainer:addFilter', arguments);
         
             var id = this.select.value;
@@ -109,6 +119,25 @@ define([
             });
 
             return filter;
+        },
+        onFilterChange: function () {
+            // summary:
+            //      builds a def query and/or geometry and sends it to the map controller
+            console.log('app/FilterContainer:onFilterChange', arguments);
+        
+            var geo;
+            var wheres = [];
+            this.filters.forEach(function (f) {
+                var query = f.getQuery();
+                if (typeof query === 'string') {
+                    wheres.push(query);
+                } else {
+                    // must be a geometry
+                    geo = query;
+                }
+            });
+            var where = (wheres.length) ? wheres.join(' AND ') : undefined;
+            topic.publish(config.topics.selectFeatures, where, geo);
         }
     });
 });

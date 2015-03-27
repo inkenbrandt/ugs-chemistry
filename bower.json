@@ -15,10 +15,10 @@
     "dgrid": "0.3.17",
     "put-selector": "~0.3.6",
     "dojo-bootstrap": "~3.0.2",
-    "bootstrap-css-only": "~3.3.4"
+    "bootstrap-css-only": "~3.3.4",
+    "agrc-jasmine-matchers": "~0.1.0"
   },
   "resolutions": {
-    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
-    "bootstrap": "~3.3.4"
+    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d"
   }
 }

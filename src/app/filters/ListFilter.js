@@ -22,16 +22,17 @@ define([
     query,
     template
 ) {
-    return declare([_Filter], {
+    var c = declare([_Filter], {
         // description:
         //      A control for filtering by a defined set of choices.
         //      Allows selection of one or more choices.
 
+
         templateString: template,
 
-        // selectedItems: String[]
+        // selectedValues: String[]
         //      The currently selected items
-        selectedItems: null,
+        selectedValues: null,
 
 
         // properties passed in via the constructor
@@ -40,13 +41,21 @@ define([
         //      description, value pairs
         items: null,
 
+        // fieldName: String
+        //      The name of the field associated with this filter
+        fieldName: null,
+
+        // fieldType: String (text | number)
+        //      The type of the field so that we can build a proper query
+        fieldType: null,
+
         constructor: function () {
             // summary:
             //      apply base class
             console.log('app/ListFilter:constructor', arguments);
         
             this.baseClass += ' list-filter';
-            this.selectedItems = [];
+            this.selectedValues = [];
         },
         postCreate: function () {
             // summary:
@@ -77,23 +86,51 @@ define([
             });
 
             this.numSpan.innerHTML = 0;
-            this.selectedItems = [];
+            this.selectedValues = [];
+            this.emit('changed');
         },
-        itemClicked: function (id) {
+        itemClicked: function (value) {
             // summary:
             //      description
-            // id: String
-            //      id of the item that was clicked
+            // value: String
+            //      value of the item that was clicked
             console.log('app/filters/ListFilter:itemClicked', arguments);
         
-            var index = this.selectedItems.indexOf(id);
+            var index = this.selectedValues.indexOf(value);
             if (index === -1) {
-                this.selectedItems.push(id);
+                this.selectedValues.push(value);
             } else {
-                this.selectedItems.splice(index, 1);
+                this.selectedValues.splice(index, 1);
             }
 
-            this.numSpan.innerHTML = this.selectedItems.length;
+            this.numSpan.innerHTML = this.selectedValues.length;
+
+            this.emit('changed');
+        },
+        getQuery: function () {
+            // summary:
+            //      assembles all selected values into a def query
+            console.log('app/ListFilter:getQuery', arguments);
+        
+            if (this.selectedValues.length) {
+                var values;
+                if (this.fieldType === c.TYPE_TEXT) {
+                    values = this.selectedValues.map(function (v) {
+                        return "'" + v + "'";
+                    });
+                } else {
+                    values = this.selectedValues;
+                }
+                return this.fieldName + ' IN (' + values.join(', ') + ')';
+            } else {
+                return undefined;
+            }
         }
     });
+
+    // CONSTANTS
+    c.TYPE_TEXT = 'text';
+    c.TYPE_NUMBER = 'number';
+
+    return c;
 });

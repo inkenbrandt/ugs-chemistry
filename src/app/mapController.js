@@ -4,23 +4,49 @@ define([
 
     'app/config',
 
-    'esri/layers/ArcGISDynamicMapServiceLayer'
+    'dojo/_base/lang',
+    'dojo/topic',
+
+    'esri/Color',
+    'esri/layers/ArcGISDynamicMapServiceLayer',
+    'esri/layers/FeatureLayer',
+    'esri/tasks/query'
 ], function (
     BaseMap,
     BaseMapSelector,
 
     config,
 
-    ArcGISDynamicMapServiceLayer
+    lang,
+    topic,
+
+    Color,
+    ArcGISDynamicMapServiceLayer,
+    FeatureLayer,
+    Query
 ) {
     return {
         // map: BaseMap
         map: null,
 
+        // dLayer: ArcGISDynamicMapServiceLayer
+        //      layer that is displayed at smaller scales
+        dLayer: null,
+
+        // fLayer: FeatureLayer
+        //      layer that is displayed at larger scales
+        fLayer: null,
+
+        // fLayerSelection: FeatureLayer
+        //      layer that displays the selected stations at larger scales
+        fLayerSelection: null,
+
         initMap: function (mapDiv) {
             // summary:
             //      Sets up the map
             console.info('app.App::initMap', arguments);
+
+            var that = this;
 
             this.map = new BaseMap(mapDiv, {
                 useDefaultBaseMap: false
@@ -33,10 +59,81 @@ define([
                 position: 'TR'
             });
 
-            var lyr = new ArcGISDynamicMapServiceLayer(config.urls.mapService);
+            this.dLayer = new ArcGISDynamicMapServiceLayer(config.urls.mapService, {
+                maxScale: config.minFeatureLayerScale
+            });
+            this.dLayer.setLayerDefinitions(['1 = 2', '1 = 1']);
+            this.map.addLayer(this.dLayer);
+            this.map.addLoaderToLayer(this.dLayer);
 
-            this.map.addLayer(lyr);
-            this.map.addLoaderToLayer(lyr);
+            var addFeatureLayer = function (index, visible) {
+                var fLayer = new FeatureLayer(config.urls.mapService + '/' + index, {
+                    minScale: config.minFeatureLayerScale,
+                    visible: visible
+                });
+                fLayer.on('load', function () {
+                    fLayer.renderer.symbol.setSize(config.stationSymbolSize);
+                });
+                that.map.addLayer(fLayer);
+                that.map.addLoaderToLayer(fLayer);
+                return fLayer;
+            };
+            this.fLayer = addFeatureLayer(config.layerIndices.main, true);
+            this.fLayerSelection = addFeatureLayer(config.layerIndices.selection, false);
+
+            this.queryFLayer = new FeatureLayer(config.urls.mapService + '/' + config.layerIndices.main);
+            this.queryFLayer.on('query-ids-complete', lang.hitch(this, 'queryIdsComplete'));
+
+            topic.subscribe(config.topics.selectFeatures, lang.hitch(this, 'selectFeatures'));
+        },
+        selectFeatures: function (defQuery, geometry) {
+            // summary:
+            //      selects stations on the map
+            //      applies selection to dLayer & fLayer
+            // defQuery[optional]: String
+            //      select by definition query
+            // geometry[optional]: Polygon
+            //      select by geometry
+            console.log('app/mapController:selectFeatures', arguments);
+        
+            var query = new Query();
+            if (defQuery) {
+                query.where = defQuery;
+            }
+            if (geometry) {
+                query.geometry = geometry;
+            }
+            if (defQuery || geometry) {
+                this.queryFLayer.queryIds(query);
+            } else {
+                this.dLayer.setLayerDefinitions(['1 = 2', '1 = 1']);
+                this.fLayer.setDefinitionExpression('1 = 1');
+                this.fLayerSelection.setDefinitionExpression('1 = 2');
+            }
+        },
+        queryIdsComplete: function (response) {
+            // summary:
+            //      callback for fLayer.queryIds
+            // response: {objectIds: Number[]}
+            console.log('app/mapController:queryIdsComplete', arguments);
+        
+            var selectDef;
+            var mainDef;
+            if (response.objectIds) {
+                selectDef = 'OBJECTID IN (' + response.objectIds.join(', ') + ')';
+                mainDef = selectDef.replace('IN', 'NOT IN');
+            } else {
+                selectDef = '1 = 2';
+                mainDef = '1 = 1';
+            }
+            this.fLayerSelection.setDefinitionExpression(selectDef);
+            this.fLayerSelection.show();
+            this.fLayer.setDefinitionExpression(mainDef);
+
+            var defs = [];
+            defs[config.layerIndices.selection] = selectDef;
+            defs[config.layerIndices.main] = mainDef;
+            this.dLayer.setLayerDefinitions(defs);
         }
     };
 });

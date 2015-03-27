@@ -26,6 +26,10 @@ define([
 
         // Properties to be sent into constructor
 
+        // parent: DomNode
+        //      The containing dom node required for accordion functionality
+        parent: null,
+
         constructor: function () {
             // summary:
             //      apply some defaults
@@ -68,6 +72,10 @@ define([
             console.log('app/_Filter:open', arguments);
         
             query(this.body).collapse('show');
+        },
+        getQuery: function () {
+            // summary:
+            //      to be implemented by sub class
         }
     });
 });

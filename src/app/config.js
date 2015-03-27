@@ -43,7 +43,21 @@ define(['dojo/has', 'esri/config'], function (has, esriConfig) {
             mapService: window.location.protocol + '//' + agsDomain + '/arcgis/rest/services/UGSChemistry/MapServer'
         },
 
+        minFeatureLayerScale: 500000,
+        stationSymbolSize: 9,
+
         fieldNames: {
+            StateCode: 'StateCode',
+            CountyCode: 'CountyCode'
+        },
+
+        layerIndices: {
+            selection: 0,
+            main: 1
+        },
+
+        topics: {
+            selectFeatures: 'ugs-select-features'
         },
 
         counties: [
