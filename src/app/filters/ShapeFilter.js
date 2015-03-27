@@ -14,7 +14,7 @@ define([
 
     'esri/tasks/AreasAndLengthsParameters',
     'esri/tasks/GeometryService',
-    'esri/toolbars/Draw',
+    'esri/toolbars/draw',
 
     'xstyle/css!app/filters/resources/ShapeFilter.css'
 ], function(
