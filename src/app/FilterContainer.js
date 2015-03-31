@@ -16,7 +16,7 @@ define([
     'dojo/topic',
 
     'xstyle/css!app/resources/FilterContainer.css'
-], function(
+], function (
     config,
     DateFilter,
     ListFilter,
@@ -47,7 +47,7 @@ define([
 
         // Properties to be sent into constructor
 
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      init's all filters and add's them to the drop down
             console.log('app/FilterContainer:postCreate', arguments);
@@ -114,7 +114,7 @@ define([
                 addOption(f.title, f.id);
 
                 // add back to the drop down when it's removed from the container
-                f.on('removed', function(filter) {
+                f.on('removed', function (filter) {
                     addOption(filter.title, filter.id);
                     that.container.removeChild(filter.domNode);
                 });
@@ -128,7 +128,7 @@ define([
             //      Show a filter in the filter container where the user can interact with it
             //      Also, remove it from the drop down so that it can't be selected twice
             console.log('app/FilterContainer:addFilter', arguments);
-        
+
             var id = this.select.value;
             if (id !== 'none') {
                 var filter = this.getFilter(id);
@@ -148,7 +148,7 @@ define([
             //      with the matching id
             // id: String
             console.log('app/FilterContainer:getFilter', arguments);
-        
+
             var filter;
             this.filters.some(function (f) {
                 filter = f;
@@ -161,16 +161,18 @@ define([
             // summary:
             //      builds a def query and/or geometry and sends it to the map controller
             console.log('app/FilterContainer:onFilterChange', arguments);
-        
+
             var geo;
             var wheres = [];
             this.filters.forEach(function (f) {
                 var query = f.getQuery();
-                if (typeof query === 'string') {
-                    wheres.push(query);
-                } else {
-                    // must be a geometry
-                    geo = query;
+                if (query) {
+                    if (typeof query === 'string') {
+                        wheres.push(query);
+                    } else {
+                        // must be a geometry
+                        geo = query;
+                    }
                 }
             });
             var where = (wheres.length) ? wheres.join(' AND ') : undefined;

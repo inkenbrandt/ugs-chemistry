@@ -12,7 +12,7 @@ define([
 
     'dojo-bootstrap/Button',
     'xstyle/css!app/filters/resources/ListFilter.css'
-], function(
+], function (
     config,
     _Filter,
 
@@ -59,7 +59,7 @@ define([
             // summary:
             //      apply base class
             console.log('app/filters/ListFilter:constructor', arguments);
-        
+
             this.baseClass += ' list-filter';
             this.selectedValues = [];
         },
@@ -67,7 +67,7 @@ define([
             // summary:
             //      build bubbles
             console.log('app/filters/ListFilter:postCreate', arguments);
-        
+
             var that = this;
             this.items.forEach(function (item) {
                 domConstruct.create('button', {
@@ -85,7 +85,7 @@ define([
             // summary:
             //      unselects all buttons
             console.log('app/filters/ListFilter:clear', arguments);
-        
+
             query('.btn', this.buttonContainer).forEach(function (btn) {
                 domClass.remove(btn, 'active');
                 btn.setAttribute('aria-pressed', false);
@@ -101,7 +101,7 @@ define([
             // value: String
             //      value of the item that was clicked
             console.log('app/filters/ListFilter:itemClicked', arguments);
-        
+
             var index = this.selectedValues.indexOf(value);
             if (index === -1) {
                 this.selectedValues.push(value);
@@ -117,7 +117,7 @@ define([
             // summary:
             //      assembles all selected values into a def query
             console.log('app/ListFilter:getQuery', arguments);
-        
+
             if (this.selectedValues.length) {
                 var values;
                 if (this.fieldType === c.TYPE_TEXT) {

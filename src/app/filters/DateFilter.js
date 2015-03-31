@@ -17,7 +17,7 @@ define([
     'dojo/text!app/filters/templates/DateFilter.html',
 
     'xstyle/css!app/filters/resources/DateFilter.css'
-], function(
+], function (
     Formatting,
 
     config,
@@ -51,14 +51,14 @@ define([
             // summary:
             //      apply base css class
             console.log('app/filters/DateFilter:constructor', arguments);
-        
+
             this.baseClass += ' date-filter';
         },
         postCreate: function () {
             // summary:
             //      description
             console.log('app/filters/DateFilter:postCreate', arguments);
-        
+
             this.from = new Datepicker(this.fromDate, {});
             on(this.fromDate, 'changeDate', lang.hitch(this, 'onChange'));
             this.to = new Datepicker(this.toDate, {});
@@ -70,7 +70,7 @@ define([
             // summary:
             //      description
             console.log('app/filters/DateFilter:clear', arguments);
-        
+
             this.fromDate.value = '';
             this.toDate.value = '';
             domClass.add(this.numSpan, 'hidden');
@@ -81,7 +81,7 @@ define([
             // summary:
             //      on of the date pickers was changed
             console.log('app/filters/DateFilter:onChange', arguments);
-            
+
             if (this.isValid()) {
                 var num = Formatting.addCommas(date.difference(
                     this.from.date,
@@ -99,14 +99,14 @@ define([
             // summary:
             //      checks to make sure that there are valid dates
             console.log('app/filters/DateFilter:isValid', arguments);
-        
+
             return this.fromDate.value.trim() && this.toDate.value.trim();
         },
         getQuery: function () {
             // summary:
             //      builds the where clause using the dates
             console.log('app/filters/DateFilter:getQuery', arguments);
-        
+
             var formatDate = function (date) {
                 return locale.format(date, {
                     selector: 'date',

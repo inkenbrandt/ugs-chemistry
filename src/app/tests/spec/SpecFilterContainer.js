@@ -22,7 +22,7 @@ require([
             topics.listen(config.topics.selectFeatures);
             testWidget = new FilterContainer();
         });
-        afterEach(function() {
+        afterEach(function () {
             if (testWidget) {
                 if (testWidget.destroy) {
                     testWidget.destroy();
@@ -99,6 +99,21 @@ require([
                     getQuery: function () {
                         return geo;
                     }
+                }];
+
+                testWidget.onFilterChange();
+
+                expect(config.topics.selectFeatures)
+                    .toHaveBeenPublishedWith(undefined, geo);
+            });
+            it('doesn\'t overwrite geometry', function () {
+                var geo = {};
+                testWidget.filters = [{
+                    getQuery: function () {
+                        return geo;
+                    }
+                }, {
+                    getQuery: function () {}
                 }];
 
                 testWidget.onFilterChange();
