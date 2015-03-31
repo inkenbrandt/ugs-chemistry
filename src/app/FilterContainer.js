@@ -75,6 +75,29 @@ define([
                     title: 'Date Range',
                     parent: this.container,
                     fieldName: config.fieldNames.SampleDate
+                }),
+                new ListFilter({
+                    title: 'Site Type',
+                    items: config.siteTypes,
+                    parent: this.container,
+                    fieldName: config.fieldNames.StationType,
+                    fieldType: ListFilter.TYPE_TEXT
+                }),
+                new ListFilter({
+                    title: 'Parameter Group',
+                    items: config.parameterGroups,
+                    parent: this.container,
+                    fieldName: config.fieldNames.ParamGroup,
+                    fieldType: ListFilter.TYPE_TEXT,
+                    relatedTableQuery: true
+                }),
+                new ListFilter({
+                    title: 'Data Source',
+                    items: config.dataSources,
+                    parent: this.container,
+                    fieldName: config.fieldNames.DataSource,
+                    fieldType: ListFilter.TYPE_TEXT,
+                    relatedTableQuery: true
                 })
             ];
 

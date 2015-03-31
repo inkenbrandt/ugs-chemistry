@@ -1,6 +1,8 @@
 require([
+    'app/config',
     'app/filters/ListFilter'
 ], function(
+    config,
     ListFilter
 ) {
 
@@ -64,6 +66,14 @@ require([
                 testWidget.fieldType = ListFilter.TYPE_NUMBER;
 
                 expect(testWidget.getQuery()).toBe("FieldName IN (1, 2)");
+            });
+            it('prepend related table queries', function () {
+                testWidget.relatedTableQuery = true;
+
+                testWidget.itemClicked('1');
+                testWidget.itemClicked('2');
+
+                expect(testWidget.getQuery()).toBe(config.queryByResults + "FieldName IN ('1', '2'))");
             });
         });
     });

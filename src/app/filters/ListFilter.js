@@ -1,4 +1,5 @@
 define([
+    'app/config',
     'app/filters/_Filter',
 
     'dojo/_base/declare',
@@ -12,6 +13,7 @@ define([
     'dojo-bootstrap/Button',
     'xstyle/css!app/filters/resources/ListFilter.css'
 ], function(
+    config,
     _Filter,
 
     declare,
@@ -45,9 +47,13 @@ define([
         //      The name of the field associated with this filter
         fieldName: null,
 
-        // fieldType: String (text | number)
+        // fieldType: String (see TYPE* constants below)
         //      The type of the field so that we can build a proper query
         fieldType: null,
+
+        // relatedTableQuery: Boolean (default: false)
+        //      If true this is a query on the results table
+        relatedTableQuery: false,
 
         constructor: function () {
             // summary:
@@ -121,7 +127,8 @@ define([
                 } else {
                     values = this.selectedValues;
                 }
-                return this.fieldName + ' IN (' + values.join(', ') + ')';
+                var where = this.fieldName + ' IN (' + values.join(', ') + ')';
+                return (!this.relatedTableQuery) ? where : config.queryByResults + where + ')';
             } else {
                 return undefined;
             }
