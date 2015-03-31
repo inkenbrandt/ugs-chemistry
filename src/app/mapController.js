@@ -113,6 +113,7 @@ define([
                 query.geometry = geometry;
             }
             if (defQuery || geometry) {
+                this.map.showLoader();
                 this.queryFLayer.queryIds(query);
             } else {
                 this.dLayer.setLayerDefinitions(['1 = 2', '1 = 1']);
@@ -126,6 +127,7 @@ define([
             // response: {objectIds: Number[]}
             console.log('app/mapController:queryIdsComplete', arguments);
         
+            this.map.hideLoader();
             var selectDef;
             var mainDef;
             if (response.objectIds) {

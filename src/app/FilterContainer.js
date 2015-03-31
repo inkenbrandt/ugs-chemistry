@@ -1,5 +1,6 @@
 define([
     'app/config',
+    'app/filters/DateFilter',
     'app/filters/ListFilter',
     'app/filters/ShapeFilter',
 
@@ -17,6 +18,7 @@ define([
     'xstyle/css!app/resources/FilterContainer.css'
 ], function(
     config,
+    DateFilter,
     ListFilter,
     ShapeFilter,
 
@@ -68,6 +70,11 @@ define([
                 new ShapeFilter({
                     title: 'Polygon',
                     parent: this.container
+                }),
+                new DateFilter({
+                    title: 'Date Range',
+                    parent: this.container,
+                    fieldName: config.fieldNames.SampleDate
                 })
             ];
 

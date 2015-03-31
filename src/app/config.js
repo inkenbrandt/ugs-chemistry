@@ -5,7 +5,9 @@ define([
     'esri/Color',
     'esri/config',
     'esri/symbols/SimpleFillSymbol',
-    'esri/symbols/SimpleLineSymbol'
+    'esri/symbols/SimpleLineSymbol',
+
+    'dojo/domReady!'
 ], function (
     has,
 
@@ -35,6 +37,7 @@ define([
 
     var baseUrl = window.location.protocol + '//' + agsDomain + '/arcgis/rest/services';
     var drawingColor = [51, 160, 44];
+    var StationId = 'StationId';
     window.AGRC = {
         // errorLogger: ijit.modules.ErrorLogger
         errorLogger: null,
@@ -70,9 +73,16 @@ define([
         ),
 
         fieldNames: {
+            // Stations
             StateCode: 'StateCode',
-            CountyCode: 'CountyCode'
+            CountyCode: 'CountyCode',
+            SampleDate: 'SampleDate',
+
+            // Results
+            StationId: StationId
         },
+
+        queryByResults: StationId + " IN (SELECT " + StationId + " FROM Results WHERE ",
 
         layerIndices: {
             selection: 0,

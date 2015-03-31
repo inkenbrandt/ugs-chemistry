@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DateFilter Tests</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../../app/resources/App.css">
+    <style type='text/css'>
+        body {
+            padding: 50px;
+        }
+    </style>
+
+    <!-- JAVASCRIPT -->
+    <script type='text/javascript' src="../../../dojo/dojo.js"></script>
+    <script type="text/javascript">
+        var baseUrl = window.location.pathname.replace(/\/[^\/]+$/, '') + '/' + '../../../';
+        var widgetUnderTest;
+
+        require({
+            baseUrl: baseUrl,
+            packages: ['app', 'agrc', 'esri', 'dojo', 'dijit', 'dojox', 'dojo-bootstrap', 'xstyle']
+        }, [
+            'app/filters/DateFilter',
+
+            'dojo/domReady!'
+        ], function(Module) {
+            widgetUnderTest = new Module({
+                title: 'Date Range'
+            }, 'node');
+
+            widgetUnderTest.startup();
+            widgetUnderTest.open();
+        });
+</script>
+</head>
+<body class='claro'>
+    <div id="node"></div>
+</body>
+</html>
