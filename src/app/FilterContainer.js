@@ -91,7 +91,8 @@ define([
                     parent: this.container,
                     fieldName: config.fieldNames.ParamGroup,
                     fieldType: ListFilter.TYPE_TEXT,
-                    relatedTableQuery: true
+                    relatedTableQuery: true,
+                    anyAllToggle: true
                 }),
                 new ListFilter({
                     title: 'Data Source',
