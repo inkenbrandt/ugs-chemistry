@@ -79,6 +79,7 @@ define([
             SampleDate: 'SampleDate',
             StationType: 'StationType',
             HUC8: 'HUC8',
+            OrgId: 'OrgId',
 
             // Results
             StationId: StationId, // also used in Stations

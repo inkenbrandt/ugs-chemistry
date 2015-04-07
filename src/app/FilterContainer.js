@@ -116,6 +116,11 @@ define([
                     parent: this.container,
                     fieldName: config.fieldNames.Param,
                     relatedTableQuery: true
+                }),
+                new FreeTypeFilter({
+                    title: 'Organization ID',
+                    parent: this.container,
+                    fieldName: config.fieldNames.OrgId
                 })
             ];
 
