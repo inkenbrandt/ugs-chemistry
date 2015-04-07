@@ -28,6 +28,7 @@
     "grunt-saucelabs": "^8",
     "grunt-ssh": "^0",
     "jshint-stylish": "^1",
+    "load-grunt-tasks": "^3.1.0",
     "uglify-js": "^2"
   },
   "scripts": {
