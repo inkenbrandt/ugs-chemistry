@@ -40,7 +40,6 @@ define([
         //      Filter by from and to date.
 
         templateString: template,
-        baseClass: 'date-filter',
 
         // Properties to be sent into constructor
 

@@ -1,6 +1,7 @@
 define([
     'app/config',
     'app/filters/_Filter',
+    'app/filters/_RelatedTableQuery',
 
     'dojo/_base/declare',
     'dojo/_base/lang',
@@ -15,6 +16,7 @@ define([
 ], function (
     config,
     _Filter,
+    _RelatedTableQuery,
 
     declare,
     lang,
@@ -24,7 +26,7 @@ define([
     query,
     template
 ) {
-    var c = declare([_Filter], {
+    var c = declare([_Filter, _RelatedTableQuery], {
         // description:
         //      A control for filtering by a defined set of choices.
         //      Allows selection of one or more choices.
@@ -51,9 +53,9 @@ define([
         //      The type of the field so that we can build a proper query
         fieldType: null,
 
-        // relatedTableQuery: Boolean (default: false)
-        //      If true this is a query on the results table
-        relatedTableQuery: false,
+        // anyAllToggle: Boolean (default: false)
+        //      If true the any/all toggle buttons appear
+        anyAllToggle: false,
 
         constructor: function () {
             // summary:
@@ -78,6 +80,10 @@ define([
                     'onclick': lang.partial(lang.hitch(that, 'itemClicked'), item[1])
                 }, that.buttonContainer);
             });
+
+            if (this.anyAllToggle) {
+                domClass.remove(this.anyAllGroup, 'hidden');
+            }
 
             this.inherited(arguments);
         },
@@ -128,7 +134,7 @@ define([
                     values = this.selectedValues;
                 }
                 var where = this.fieldName + ' IN (' + values.join(', ') + ')';
-                return (!this.relatedTableQuery) ? where : config.queryByResults + where + ')';
+                return this.getRelatedTableQuery(where);
             } else {
                 return undefined;
             }

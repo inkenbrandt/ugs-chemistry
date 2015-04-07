@@ -78,11 +78,13 @@ define([
             CountyCode: 'CountyCode',
             SampleDate: 'SampleDate',
             StationType: 'StationType',
+            HUC8: 'HUC8',
 
             // Results
             StationId: StationId, // also used in Stations
             ParamGroup: 'ParamGroup',
-            DataSource: 'DataSource'
+            DataSource: 'DataSource',
+            Param: 'Param'
         },
 
         queryByResults: StationId + " IN (SELECT " + StationId + " FROM Results WHERE ",
@@ -127,7 +129,7 @@ define([
             ['Wasatch', 51],
             ['Washington', 53],
             ['Wayne', 55],
-            ['Weber', 57],
+            ['Weber', 57]
         ],
         states: [
             ['Utah', 49],
@@ -139,17 +141,17 @@ define([
             ['Nevada', 32]
         ],
         siteTypes: [
-            ['Atmosphere', 'Atmosphere'], 
-            ['Facility', 'Facility'], 
-            ['Lake, Reservoir,  Impoundment', 'Lake, Reservoir,  Impoundment'], 
-            ['Land', 'Land'], 
-            ['Other Groundwater', 'Other Groundwater'], 
-            ['Other', 'Other'], 
-            ['Spring', 'Spring'], 
-            ['Stream', 'Stream'], 
-            ['Surface Water', 'Surface Water'], 
-            ['Well', 'Well'], 
-            ['Wetland', 'Wetland'], 
+            ['Atmosphere', 'Atmosphere'],
+            ['Facility', 'Facility'],
+            ['Lake, Reservoir,  Impoundment', 'Lake, Reservoir,  Impoundment'],
+            ['Land', 'Land'],
+            ['Other Groundwater', 'Other Groundwater'],
+            ['Other', 'Other'],
+            ['Spring', 'Spring'],
+            ['Stream', 'Stream'],
+            ['Surface Water', 'Surface Water'],
+            ['Well', 'Well'],
+            ['Wetland', 'Wetland']
         ],
         parameterGroups: [
             ['Information', 'Information'],

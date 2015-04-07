@@ -1,0 +1,7 @@
+{
+	"preset": "crockford",
+    "disallowDanglingUnderscores": null,
+    "disallowMultipleVarDecl": true,
+    "requireMultipleVarDecl": null,
+    "requireLineFeedAtFileEnd": null
+}

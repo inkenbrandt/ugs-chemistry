@@ -1,6 +1,7 @@
 define([
     'app/config',
     'app/filters/DateFilter',
+    'app/filters/FreeTypeFilter',
     'app/filters/ListFilter',
     'app/filters/ShapeFilter',
 
@@ -19,6 +20,7 @@ define([
 ], function (
     config,
     DateFilter,
+    FreeTypeFilter,
     ListFilter,
     ShapeFilter,
 
@@ -97,6 +99,22 @@ define([
                     parent: this.container,
                     fieldName: config.fieldNames.DataSource,
                     fieldType: ListFilter.TYPE_TEXT,
+                    relatedTableQuery: true
+                }),
+                new FreeTypeFilter({
+                    title: 'Site ID',
+                    parent: this.container,
+                    fieldName: config.fieldNames.StationId
+                }),
+                new FreeTypeFilter({
+                    title: 'HUC',
+                    parent: this.container,
+                    fieldName: config.fieldNames.HUC8
+                }),
+                new FreeTypeFilter({
+                    title: 'Parameter',
+                    parent: this.container,
+                    fieldName: config.fieldNames.Param,
                     relatedTableQuery: true
                 })
             ];

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CountyFilter Tests</title>
+    <title>FreeTypeFilter Tests</title>
 
     <!-- META TAGS -->
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -11,6 +11,7 @@
     <style type='text/css'>
         body {
             padding: 50px;
+            width: 448px;
         }
     </style>
 
@@ -24,36 +25,20 @@
             baseUrl: baseUrl,
             packages: ['app', 'esri', 'dojo', 'dojo-bootstrap', 'dijit', 'dojox', 'xstyle']
         }, [
-            'app/config',
-            'app/filters/ListFilter',
+            'app/filters/FreeTypeFilter',
 
             'dojo/domReady!'
-        ], function (config, Module) {
+        ], function (Module) {
             widgetUnderTest = new Module({
-                items: [
-                    ['Salt Lake', 'sl'],
-                    ['Davis', 'dc'],
-                    ['Utah', 'uc']
-                ],
-                title: 'County'
+                title: 'HUC'
             }, 'node');
 
             widgetUnderTest.startup();
             widgetUnderTest.open();
-
-            widgetUnderTest2 = new Module({
-                items: config.parameterGroups,
-                title: 'Parameter Group',
-                anyAllToggle: true
-            }, 'node2');
-
-            widgetUnderTest2.startup();
-            widgetUnderTest2.open();
         });
 </script>
 </head>
-<body>
+<body class='claro'>
     <div id="node"></div>
-    <div id="node2"></div>
 </body>
 </html>
