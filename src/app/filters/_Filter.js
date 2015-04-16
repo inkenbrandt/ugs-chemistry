@@ -30,6 +30,10 @@ define([
         //      The containing dom node required for accordion functionality
         parent: null,
 
+        // name: String
+        //      The string that shows up in the title bar of the pane
+        name: null,
+
         constructor: function () {
             // summary:
             //      apply some defaults

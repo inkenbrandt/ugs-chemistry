@@ -14,7 +14,7 @@
     "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
     "dgrid": "0.3.17",
     "put-selector": "~0.3.6",
-    "dojo-bootstrap": "d665ddc05bf3b98a9948a62fa6763aaf29c85ccc",
+    "dojo-bootstrap": "2b015215ae5b48460adbffa2d00379dfe06bc7e5",
     "bootstrap-css-only": "~3.3.4",
     "agrc-jasmine-matchers": "~0.1.0"
   },

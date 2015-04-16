@@ -1,14 +1,14 @@
 require([
     'app/config',
     'app/filters/ListFilter'
-], function(
+], function (
     config,
     ListFilter
 ) {
 
-    describe('app/filters/ListFilter', function() {
+    describe('app/filters/ListFilter', function () {
         var testWidget;
-        beforeEach(function() {
+        beforeEach(function () {
             testWidget = new ListFilter({
                 items: [
                     ['desc1', 'value1'],
@@ -16,10 +16,11 @@ require([
                     ['desc3', 'value3']
                 ],
                 fieldName: 'FieldName',
-                fieldType: ListFilter.TYPE_TEXT
+                fieldType: ListFilter.TYPE_TEXT,
+                anyAllToggle: true
             });
         });
-        afterEach(function() {
+        afterEach(function () {
             if (testWidget) {
                 if (testWidget.destroy) {
                     testWidget.destroy();
@@ -28,7 +29,7 @@ require([
                 testWidget = null;
             }
         });
-        it('should create a ListFilter', function() {
+        it('should create a ListFilter', function () {
             expect(testWidget).toEqual(jasmine.any(ListFilter));
         });
         describe('postCreate', function () {
@@ -66,6 +67,21 @@ require([
                 testWidget.fieldType = ListFilter.TYPE_NUMBER;
 
                 expect(testWidget.getQuery()).toBe("FieldName IN (1, 2)");
+            });
+            it('handles "all" queries', function () {
+                testWidget.any = false;
+                testWidget.itemClicked('1');
+                testWidget.itemClicked('2');
+                var expected = "FieldName = '1' AND FieldName = '2'";
+
+                expect(testWidget.getQuery()).toBe(expected);
+
+                testWidget.relatedTableQuery = true;
+
+                expected = config.queryByResults + "FieldName = '1') AND " +
+                     config.queryByResults + "FieldName = '2')";
+
+                expect(testWidget.getQuery()).toBe(expected);
             });
             it('prepend related table queries', function () {
                 testWidget.relatedTableQuery = true;

@@ -12,6 +12,7 @@ define([
     'dojo/text!app/filters/templates/ListFilter.html',
 
     'dojo-bootstrap/Button',
+    'dojo-bootstrap/Tooltip',
     'xstyle/css!app/filters/resources/ListFilter.css'
 ], function (
     config,
@@ -37,6 +38,10 @@ define([
         // selectedValues: String[]
         //      The currently selected items
         selectedValues: null,
+
+        // any: Boolean
+        //      any or all
+        any: true,
 
 
         // properties passed in via the constructor
@@ -85,6 +90,15 @@ define([
                 domClass.remove(this.anyAllGroup, 'hidden');
             }
 
+            query('[data-toggle="tooltip"]', this.domNode).tooltip({
+                delay: {
+                    show: 750,
+                    hide: 100
+                },
+                container: 'body',
+                html: true,
+                placement: 'bottom'
+            });
             this.inherited(arguments);
         },
         clear: function () {
@@ -122,7 +136,7 @@ define([
         getQuery: function () {
             // summary:
             //      assembles all selected values into a def query
-            console.log('app/ListFilter:getQuery', arguments);
+            console.log('app/filters/ListFilter:getQuery', arguments);
 
             if (this.selectedValues.length) {
                 var values;
@@ -133,11 +147,34 @@ define([
                 } else {
                     values = this.selectedValues;
                 }
-                var where = this.fieldName + ' IN (' + values.join(', ') + ')';
-                return this.getRelatedTableQuery(where);
+                if (this.any) {
+                    var where = this.fieldName + ' IN (' + values.join(', ') + ')';
+                    return this.getRelatedTableQuery(where);
+                } else {
+                    var that = this;
+                    return values.reduce(function (previousReturn, currentValue) {
+                        var where = that.fieldName + ' = ' + currentValue;
+                        if (!previousReturn) {
+                            return that.getRelatedTableQuery(where);
+                        } else {
+                            return previousReturn + ' AND ' + that.getRelatedTableQuery(where);
+                        }
+                    }, false);
+                }
             } else {
                 return undefined;
             }
+        },
+        toggleAny: function () {
+            // summary:
+            //      description
+            console.log('app/filters/ListFilter:toggleAny', arguments);
+
+            var that = this;
+            setTimeout(function () {
+                that.any = domClass.contains(that.anyBtn, 'active');
+                that.emit('changed');
+            }, 0);
         }
     });
 

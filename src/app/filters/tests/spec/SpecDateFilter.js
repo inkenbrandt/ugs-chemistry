@@ -17,7 +17,7 @@ require([
         beforeEach(function() {
             widget = new WidgetUnderTest({
                 fieldName: 'FieldName',
-                title: 'hello'
+                name: 'hello'
             }, domConstruct.create('div', null, document.body));
             widget.startup();
         });

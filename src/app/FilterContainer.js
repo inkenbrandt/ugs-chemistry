@@ -56,37 +56,37 @@ define([
 
             this.filters = [
                 new ListFilter({
-                    title: 'County',
+                    name: 'County',
                     items: config.counties,
                     parent: this.container,
                     fieldName: config.fieldNames.CountyCode,
                     fieldType: ListFilter.TYPE_NUMBER
                 }),
                 new ListFilter({
-                    title: 'State',
+                    name: 'State',
                     items: config.states,
                     parent: this.container,
                     fieldName: config.fieldNames.StateCode,
                     fieldType: ListFilter.TYPE_NUMBER
                 }),
                 new ShapeFilter({
-                    title: 'Polygon',
+                    name: 'Polygon',
                     parent: this.container
                 }),
                 new DateFilter({
-                    title: 'Date Range',
+                    name: 'Date Range',
                     parent: this.container,
                     fieldName: config.fieldNames.SampleDate
                 }),
                 new ListFilter({
-                    title: 'Site Type',
+                    name: 'Site Type',
                     items: config.siteTypes,
                     parent: this.container,
                     fieldName: config.fieldNames.StationType,
                     fieldType: ListFilter.TYPE_TEXT
                 }),
                 new ListFilter({
-                    title: 'Parameter Group',
+                    name: 'Parameter Group',
                     items: config.parameterGroups,
                     parent: this.container,
                     fieldName: config.fieldNames.ParamGroup,
@@ -95,7 +95,7 @@ define([
                     anyAllToggle: true
                 }),
                 new ListFilter({
-                    title: 'Data Source',
+                    name: 'Data Source',
                     items: config.dataSources,
                     parent: this.container,
                     fieldName: config.fieldNames.DataSource,
@@ -103,43 +103,43 @@ define([
                     relatedTableQuery: true
                 }),
                 new FreeTypeFilter({
-                    title: 'Site ID',
+                    name: 'Site ID',
                     parent: this.container,
                     fieldName: config.fieldNames.StationId
                 }),
                 new FreeTypeFilter({
-                    title: 'HUC',
+                    name: 'HUC',
                     parent: this.container,
                     fieldName: config.fieldNames.HUC8
                 }),
                 new FreeTypeFilter({
-                    title: 'Parameter',
+                    name: 'Parameter',
                     parent: this.container,
                     fieldName: config.fieldNames.Param,
                     relatedTableQuery: true
                 }),
                 new FreeTypeFilter({
-                    title: 'Organization ID',
+                    name: 'Organization ID',
                     parent: this.container,
                     fieldName: config.fieldNames.OrgId
                 })
             ];
 
             var that = this;
-            var addOption = function (title, id) {
+            var addOption = function (name, id) {
                 domConstruct.create('option', {
-                    innerHTML: title,
+                    innerHTML: name,
                     value: id
                 }, that.select);
             };
             this.filters.forEach(function (f) {
                 f.startup();
                 that.own(f);
-                addOption(f.title, f.id);
+                addOption(f.name, f.id);
 
                 // add back to the drop down when it's removed from the container
                 f.on('removed', function (filter) {
-                    addOption(filter.title, filter.id);
+                    addOption(filter.name, filter.id);
                     that.container.removeChild(filter.domNode);
                 });
                 f.on('changed', lang.hitch(that, 'onFilterChange'));

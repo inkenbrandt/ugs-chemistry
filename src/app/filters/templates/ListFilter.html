@@ -1,6 +1,6 @@
 <div>
     <div class="panel-heading" data-dojo-attach-point='heading'>
-        ${title}
+        ${name}
         (<span data-dojo-attach-point='numSpan'>0</span>)
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"
             data-dojo-attach-point='closeBtn'
@@ -19,8 +19,14 @@
                 data-toggle="buttons-radio"
                 data-dojo-attach-point='anyAllGroup'>
                 <button class="btn btn-xs btn-default active"
-                    data-dojo-attach-point='anyBtn'>any</button>
-                <button class="btn btn-xs btn-default">all</button>
+                    data-dojo-attach-point='anyBtn'
+                    data-dojo-attach-event='click: toggleAny'
+                    data-toggle='tooltip'
+                    title='show stations with <u><b>any</b></u> of these values'>any</button>
+                <button class="btn btn-xs btn-default"
+                    data-dojo-attach-event='click: toggleAny'
+                    data-toggle='tooltip'
+                    title='show stations with <u><b>all</b></u> of these values'>all</button>
             </div>
         </div>
     </div>
