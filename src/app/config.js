@@ -92,7 +92,8 @@ define([
 
         layerIndices: {
             selection: 0,
-            main: 1
+            main: 1,
+            parameters: 3
         },
 
         topics: {

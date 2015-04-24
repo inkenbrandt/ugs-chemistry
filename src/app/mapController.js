@@ -5,13 +5,15 @@ define([
     'app/config',
 
     'dojo/_base/lang',
+    'dojo/Deferred',
     'dojo/topic',
 
     'esri/Color',
     'esri/graphic',
     'esri/layers/ArcGISDynamicMapServiceLayer',
     'esri/layers/FeatureLayer',
-    'esri/tasks/query'
+    'esri/tasks/query',
+    'esri/tasks/QueryTask'
 ], function (
     BaseMap,
     BaseMapSelector,
@@ -19,13 +21,15 @@ define([
     config,
 
     lang,
+    Deferred,
     topic,
 
     Color,
     Graphic,
     ArcGISDynamicMapServiceLayer,
     FeatureLayer,
-    Query
+    Query,
+    QueryTask
 ) {
     return {
         // map: BaseMap
@@ -145,6 +149,30 @@ define([
             defs[config.layerIndices.selection] = selectDef;
             defs[config.layerIndices.main] = mainDef;
             this.dLayer.setLayerDefinitions(defs);
+        },
+        getParameters: function () {
+            // summary:
+            //      query tasks for the parameter values
+            console.log('app/mapController:getParameters', arguments);
+        
+            var def = new Deferred();
+            var q = new Query();
+            q.returnGeometry = false;
+            q.outFields = [config.fieldNames.Param];
+            q.where = '1 = 1';
+
+            var qt = new QueryTask(config.urls.mapService + '/' + config.layerIndices.parameters);
+
+            qt.execute(q).then(function (fSet) {
+                var params = fSet.features.map(function (f) {
+                    return f.attributes[config.fieldNames.Param];
+                });
+                def.resolve(params);
+            }, function () {
+                def.reject();
+            });
+
+            return def;
         }
     };
 });

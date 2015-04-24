@@ -4,6 +4,7 @@ define([
     'app/filters/FreeTypeFilter',
     'app/filters/ListFilter',
     'app/filters/ShapeFilter',
+    'app/mapController',
 
     'dijit/_TemplatedMixin',
     'dijit/_WidgetBase',
@@ -23,6 +24,7 @@ define([
     FreeTypeFilter,
     ListFilter,
     ShapeFilter,
+    mapController,
 
     _TemplatedMixin,
     _WidgetBase,
@@ -116,7 +118,8 @@ define([
                     name: 'Parameter',
                     parent: this.container,
                     fieldName: config.fieldNames.Param,
-                    relatedTableQuery: true
+                    relatedTableQuery: true,
+                    options: mapController.getParameters()
                 }),
                 new FreeTypeFilter({
                     name: 'Organization ID',

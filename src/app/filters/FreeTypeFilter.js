@@ -3,14 +3,17 @@ define([
     'app/filters/_RelatedTableQuery',
 
     'dojo/_base/declare',
+    'dojo/query',
     'dojo/text!app/filters/templates/FreeTypeFilter.html',
 
+    'dojo-bootstrap/Typeahead',
     'xstyle/css!app/filters/resources/FreeTypeFilter.css'
 ], function (
     _Filter,
     _RelatedTableQuery,
 
     declare,
+    query,
     template
 ) {
     return declare([_Filter, _RelatedTableQuery], {
@@ -25,12 +28,34 @@ define([
         // fieldName: String
         fieldName: null,
 
+        // options: Promise (optional)
+        //      If defined then this is converted into a typeahead
+        //      on the callback of the Deferred
+        options: null,
+
         constructor: function () {
             // summary:
             //      apply base class
             console.log('app/filters/FreeTypeFilter:constructor', arguments);
 
             this.baseClass += ' free-type-filter';
+        },
+        postCreate: function () {
+            // summary:
+            //      description
+            console.log('app/filters/FreeTypeFilter:postCreate', arguments);
+        
+            var that = this;
+            
+            if (this.options) {
+                this.options.then(function (options) {
+                    query(that.txtBox).typeahead({
+                        source: options
+                    });
+                });
+            }
+            
+            this.inherited(arguments);
         },
         clear: function () {
             // summary:
