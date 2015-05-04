@@ -108,7 +108,7 @@ define([
             // geometry[optional]: Polygon
             //      select by geometry
             console.log('app/mapController:selectFeatures', arguments);
-        
+
             var query = new Query();
             if (defQuery) {
                 query.where = defQuery;
@@ -130,7 +130,7 @@ define([
             //      callback for fLayer.queryIds
             // response: {objectIds: Number[]}
             console.log('app/mapController:queryIdsComplete', arguments);
-        
+
             this.map.hideLoader();
             var selectDef;
             var mainDef;
@@ -154,7 +154,7 @@ define([
             // summary:
             //      query tasks for the parameter values
             console.log('app/mapController:getParameters', arguments);
-        
+
             var def = new Deferred();
             var q = new Query();
             q.returnGeometry = false;

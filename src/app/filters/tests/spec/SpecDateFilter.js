@@ -2,19 +2,19 @@ require([
     'app/filters/DateFilter',
 
     'dojo/dom-construct'
-], function(
+], function (
     WidgetUnderTest,
 
     domConstruct
 ) {
-    describe('app/filters/DateFilter', function() {
+    describe('app/filters/DateFilter', function () {
         var widget;
         var destroy = function (widget) {
             widget.destroyRecursive();
             widget = null;
         };
 
-        beforeEach(function() {
+        beforeEach(function () {
             widget = new WidgetUnderTest({
                 fieldName: 'FieldName',
                 name: 'hello'
@@ -22,14 +22,14 @@ require([
             widget.startup();
         });
 
-        afterEach(function() {
+        afterEach(function () {
             if (widget) {
                 destroy(widget);
             }
         });
 
-        describe('Sanity', function() {
-            it('should create a DateFilter', function() {
+        describe('Sanity', function () {
+            it('should create a DateFilter', function () {
                 expect(widget).toEqual(jasmine.any(WidgetUnderTest));
             });
         });

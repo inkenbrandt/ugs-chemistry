@@ -6,7 +6,7 @@ var dojoConfig = {
     packages: [{
         name: 'agrc-jasmine-matchers',
         location: 'agrc-jasmine-matchers/src'
-    },{
+    }, {
         name: 'stubmodule',
         location: 'stubmodule/src',
         main: 'stub-module'

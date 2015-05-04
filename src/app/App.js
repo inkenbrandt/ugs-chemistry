@@ -11,7 +11,7 @@ define([
     'dojo/text!app/templates/App.html',
 
     'ijit/widgets/authentication/LoginRegister'
-], function(
+], function (
     config,
     FilterContainer,
     mapController,
@@ -33,14 +33,14 @@ define([
         templateString: template,
         baseClass: 'app',
 
-        constructor: function() {
+        constructor: function () {
             // summary:
             //      first function to fire after page loads
             console.info('app.App::constructor', arguments);
 
             AGRC.app = this;
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      Fires when
             console.log('app.App::postCreate', arguments);
@@ -60,7 +60,7 @@ define([
 
             this.inherited(arguments);
         },
-        startup: function() {
+        startup: function () {
             // summary:
             //      Fires after postCreate when all of the child widgets are finished laying out.
             console.log('app.App::startup', arguments);

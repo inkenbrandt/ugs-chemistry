@@ -1,32 +1,29 @@
 {
     "predef": [
-        "alert",
-        "define",
-        "require",
-        "console",
-        "module",
         "AGRC",
-        "it", 
-        "xit",
-        "expect", 
-        "beforeEach", 
-        "afterEach", 
-        "spyOn", 
-        "jasmine", 
-        "process",
-        "runs", 
-        "waitsFor",
-        "describe",
-        "xdescribe",
-        "stubModule"
+        "JSON"
     ],
 
-    "evil": true,
-    "regexdash": true,
+    // globals
+    "devel": true,
+    "jasmine": true,
+    "dojo": true,
+    "node": true,
     "browser": true,
-    "wsh": true,
-    "sub": true,
+    "jquery": true,
+
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "es3": true,
+    "forin": true,
+    "freeze": true,
+    "latedef": true,
+    "maxcomplexity": 10,
+    "maxerr": 250,
+    "noarg": true,
+    "nonbsp": true,
     "undef": true,
-    "unused": true,
-    "eqnull": true
+    "unused": true
 }

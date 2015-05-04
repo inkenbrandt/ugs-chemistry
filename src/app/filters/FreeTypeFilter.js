@@ -44,9 +44,9 @@ define([
             // summary:
             //      description
             console.log('app/filters/FreeTypeFilter:postCreate', arguments);
-        
+
             var that = this;
-            
+
             if (this.options) {
                 this.options.then(function (options) {
                     query(that.txtBox).typeahead({
@@ -54,7 +54,7 @@ define([
                     });
                 });
             }
-            
+
             this.inherited(arguments);
         },
         clear: function () {

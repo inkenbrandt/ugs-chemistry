@@ -7,14 +7,14 @@ ugs-chemistry
 Water Chemistry data viewer built for UGS
 
 ###URL's
-[test.mapserv.utah.gov/ugschemistry](http://test.mapserv.utah.gov/ugschemistry)
+[test.mapserv.utah.gov/ugschemistry](http://test.mapserv.utah.gov/ugschemistry)  
+[current mockup](http://share.flairbuilder.com/?sid=I64FYv95R7)
 
 ###Contacts
 **Paul Inkenbrandt**  
 paulinkenbrandt@utah.gov
 
 ###Information from Paul
-
 [**SOW**](https://docs.google.com/a/utah.gov/document/d/1Vc6JsHJuqKI29NZRqGk_JSLdM3AWy2lI9_D1vqEp9iE/edit)  
 [**Parameters Requested**](https://docs.google.com/a/utah.gov/spreadsheets/d/1EY_30rSQxvH2JrVhjVSRzOdyh9nVryA5RbofVZhp0hs/edit?usp=sharing)
 

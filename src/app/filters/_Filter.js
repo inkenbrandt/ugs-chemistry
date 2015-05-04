@@ -9,7 +9,7 @@ define([
     'dojo/on',
 
     'dojo-bootstrap/Collapse'
-], function(
+], function (
     _TemplatedMixin,
     _WidgetBase,
     _WidgetsInTempalteMixin,
@@ -38,14 +38,14 @@ define([
             // summary:
             //      apply some defaults
             console.log('app/_Filter:constructor', arguments);
-        
+
             this.baseClass += ' panel panel-default';
         },
         postCreate: function () {
             // summary:
             //      description
             console.log('app/_Filter:postCreate', arguments);
-        
+
             query(this.body).collapse({
                 parent: this.parent,
                 toggle: false
@@ -65,7 +65,7 @@ define([
             // summary:
             //      removes widget from visible filters
             console.log('app/_Filter:remove', arguments);
-        
+
             this.clear();
 
             this.emit('removed', this);
@@ -74,7 +74,7 @@ define([
             // summary:
             //      opens the body of the filter
             console.log('app/_Filter:open', arguments);
-        
+
             query(this.body).collapse('show');
 
             this.inherited(arguments);

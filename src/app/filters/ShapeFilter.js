@@ -17,7 +17,7 @@ define([
     'esri/toolbars/draw',
 
     'xstyle/css!app/filters/resources/ShapeFilter.css'
-], function(
+], function (
     formatting,
 
     config,
@@ -111,7 +111,7 @@ define([
             params.polygons = [evt.geometry];
             this.geoService.areasAndLengths(params).then(function (evt) {
                 that.numSpan.innerHTML = formatting.addCommas(formatting.round(evt.areas[0], 0));
-            }); 
+            });
 
             topic.publish(config.topics.addGraphic, evt.geometry);
 
@@ -144,7 +144,7 @@ define([
             // summary:
             //      returns the last draw geometry or null
             console.log('app/filters/ShapeFilter:getQuery', arguments);
-        
+
             return this.currentGeometry;
         }
     });
