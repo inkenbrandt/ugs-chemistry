@@ -58,6 +58,8 @@ define([
         //      The api key used for services on api.mapserv.utah.gov
         apiKey: '', // acquire at developer.mapserv.utah.gov
 
+        gridDivHeight: 225,
+
         urls: {
             mapService: baseUrl + '/UGSChemistry/MapServer',
             geometry: baseUrl + '/Geometry/GeometryServer'
@@ -99,7 +101,8 @@ define([
         topics: {
             selectFeatures: 'ugs-select-features',
             addGraphic: 'ugs-add-graphic',
-            removeGraphic: 'ugs-remove-graphic'
+            removeGraphic: 'ugs-remove-graphic',
+            toggleGrid: 'ugs-toggle-grid'
         },
 
         counties: [
