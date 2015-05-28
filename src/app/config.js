@@ -82,11 +82,12 @@ define([
             StationType: 'StationType',
             HUC8: 'HUC8',
             OrgId: 'OrgId',
+            StationName: 'StationName',
 
             // Results
             StationId: StationId, // also used in Stations
             ParamGroup: 'ParamGroup',
-            DataSource: 'DataSource',
+            DataSource: 'DataSource', // also used in Stations
             Param: 'Param'
         },
 
@@ -102,7 +103,8 @@ define([
             selectFeatures: 'ugs-select-features',
             addGraphic: 'ugs-add-graphic',
             removeGraphic: 'ugs-remove-graphic',
-            toggleGrid: 'ugs-toggle-grid'
+            toggleGrid: 'ugs-toggle-grid',
+            queryIdsComplete: 'ugs-query-ids-complete'
         },
 
         counties: [

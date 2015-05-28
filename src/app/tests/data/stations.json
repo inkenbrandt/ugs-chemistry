@@ -1,0 +1,457 @@
+[{
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_BA_DEC_DSP",
+        "StationName": "Decathon Spring",
+        "StationType": "Spring",
+        "OBJECTID": 4211
+    },
+    "geometry": {
+        "x": 215287.07349999994,
+        "y": 4300495.6263999995
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_BLM_BIGSP",
+        "StationName": "BIG SPRINGS CK APPROX. 9 MI SE OF GREAT BASIN",
+        "StationType": "River/Stream",
+        "OBJECTID": 4281
+    },
+    "geometry": {
+        "x": 228876.41359999962,
+        "y": 4288785.9010000005
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_MO_BISP_01",
+        "StationName": "Big Springs",
+        "StationType": "Spring",
+        "OBJECTID": 4427
+    },
+    "geometry": {
+        "x": 227671.26510000043,
+        "y": 4288020.0480000004
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_MO_DECA_02",
+        "StationName": "Road crosses wash; below Forest Boundary",
+        "StationType": "River/Stream",
+        "OBJECTID": 4438
+    },
+    "geometry": {
+        "x": 219248.64499999955,
+        "y": 4289531.9271000009
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_MO_DECA_CB",
+        "StationName": "Cedar Cabin Spring, east of Decathon",
+        "StationType": "Spring",
+        "OBJECTID": 4439
+    },
+    "geometry": {
+        "x": 220128.98589999974,
+        "y": 4299289.6703999992
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0088",
+        "StationName": "LUAG511R",
+        "StationType": "Spring",
+        "OBJECTID": 4673
+    },
+    "geometry": {
+        "x": 212276.65720000025,
+        "y": 4295841.4113999996
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0089",
+        "StationName": "LUAG512R",
+        "StationType": "Spring",
+        "OBJECTID": 4674
+    },
+    "geometry": {
+        "x": 213192.13509999961,
+        "y": 4296853.1239
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0090",
+        "StationName": "LUAG513R",
+        "StationType": "Spring",
+        "OBJECTID": 4675
+    },
+    "geometry": {
+        "x": 214186.81520000007,
+        "y": 4298862.4261000007
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0101",
+        "StationName": "LUBG037S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4686
+    },
+    "geometry": {
+        "x": 211476.07320000045,
+        "y": 4293925.2692000009
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0102",
+        "StationName": "LUBG038S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4687
+    },
+    "geometry": {
+        "x": 209892.33210000023,
+        "y": 4290837.2401999999
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0103",
+        "StationName": "LUBG039S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4688
+    },
+    "geometry": {
+        "x": 211318.24189999979,
+        "y": 4289095.8487
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0104",
+        "StationName": "LUBG040S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4689
+    },
+    "geometry": {
+        "x": 213016.90610000025,
+        "y": 4287411.6314000003
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0105",
+        "StationName": "LUBG041S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4690
+    },
+    "geometry": {
+        "x": 214993.63580000028,
+        "y": 4286173.5978999995
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0106",
+        "StationName": "LUBG043S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4691
+    },
+    "geometry": {
+        "x": 217128.25989999995,
+        "y": 4285930.8037999999
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0107",
+        "StationName": "LUBG044S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4692
+    },
+    "geometry": {
+        "x": 215805.10639999993,
+        "y": 4289868.0149000008
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0108",
+        "StationName": "LUBG045S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4693
+    },
+    "geometry": {
+        "x": 217046.75499999989,
+        "y": 4292213.3949999996
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0109",
+        "StationName": "LUBG054S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4694
+    },
+    "geometry": {
+        "x": 208124.83820000011,
+        "y": 4288945.5360000003
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0110",
+        "StationName": "LUBG055S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4695
+    },
+    "geometry": {
+        "x": 207591.55310000014,
+        "y": 4291499.4988000002
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0111",
+        "StationName": "LUBG507R",
+        "StationType": "Spring",
+        "OBJECTID": 4696
+    },
+    "geometry": {
+        "x": 210239.99289999995,
+        "y": 4292491.8845000006
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0112",
+        "StationName": "LUBH040S1",
+        "StationType": "River/Stream",
+        "OBJECTID": 4697
+    },
+    "geometry": {
+        "x": 218739.8180999998,
+        "y": 4290608.4328000005
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0113",
+        "StationName": "LUBH504R",
+        "StationType": "Spring",
+        "OBJECTID": 4698
+    },
+    "geometry": {
+        "x": 227696.58229999989,
+        "y": 4287996.3889000006
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0114",
+        "StationName": "LUBH505R",
+        "StationType": "Spring",
+        "OBJECTID": 4699
+    },
+    "geometry": {
+        "x": 228633.07259999961,
+        "y": 4290175.9164000005
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_NURE_0115",
+        "StationName": "LUBH506R",
+        "StationType": "Spring",
+        "OBJECTID": 4700
+    },
+    "geometry": {
+        "x": 228970.7276999997,
+        "y": 4291397.9575999994
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "11NPSWRD-GRBA_USGS_BIGSP",
+        "StationName": "BIG SPRING",
+        "StationType": "Spring",
+        "OBJECTID": 4784
+    },
+    "geometry": {
+        "x": 227825.02130000014,
+        "y": 4287960.5135999992
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-383325114134901",
+        "StationName": "196  N08 E69 15BCDD1    HYDE WELL",
+        "StationType": "Well",
+        "OBJECTID": 22473
+    },
+    "geometry": {
+        "x": 218700.93819999974,
+        "y": 4272402.9957999997
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-383533114102901",
+        "StationName": "196  N08 E70 06ABAA1    USBLM - MONUMENT WELL",
+        "StationType": "Well",
+        "OBJECTID": 22476
+    },
+    "geometry": {
+        "x": 224428.00499999989,
+        "y": 4276102.6370999999
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-383744114160901",
+        "StationName": "196  N09 E69 19ADDA1    THE TROUGHS OUTLET 1",
+        "StationType": "Spring",
+        "OBJECTID": 22478
+    },
+    "geometry": {
+        "x": 215403.57670000009,
+        "y": 4280671.7350999992
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-383826114051201",
+        "StationName": "196  N09 E70 14DABD1    20A",
+        "StationType": "Well",
+        "OBJECTID": 22481
+    },
+    "geometry": {
+        "x": 231334.00270000007,
+        "y": 4281395.9938999992
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384112114091101",
+        "StationName": "195  N09HE70 32BBA 1    BIG SPRINGS SW",
+        "StationType": "Well",
+        "OBJECTID": 22486
+    },
+    "geometry": {
+        "x": 225728.95249999966,
+        "y": 4286721.0640999991
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384152114075001",
+        "StationName": "195  N10 E70 33ACBB1    Big Spring",
+        "StationType": "Spring",
+        "OBJECTID": 22487
+    },
+    "geometry": {
+        "x": 227668.85639999993,
+        "y": 4287889.5395
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384158114075201",
+        "StationName": "195  N10 E70 32A   1    Big Springs",
+        "StationType": "Spring",
+        "OBJECTID": 22488
+    },
+    "geometry": {
+        "x": 227626.85489999969,
+        "y": 4288076.1884000003
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384201114271301",
+        "StationName": "184  N10 E67 27BC  1",
+        "StationType": "Spring",
+        "OBJECTID": 22489
+    },
+    "geometry": {
+        "x": 199646.33899999969,
+        "y": 4289177.8838
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384226114050601",
+        "StationName": "195  N10 E70 25CBC 1    BARCASS 3A",
+        "StationType": "Well",
+        "OBJECTID": 22490
+    },
+    "geometry": {
+        "x": 231655.16949999984,
+        "y": 4288809.9087000005
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384227114082701",
+        "StationName": "195  N10 E70 28CBCB1    BIG SPRING NW",
+        "StationType": "Well",
+        "OBJECTID": 22491
+    },
+    "geometry": {
+        "x": 226874.32210000046,
+        "y": 4289011.7797999997
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384331114043401",
+        "StationName": "195  N10 E70 24BC  1    BARCASS 2A",
+        "StationType": "Well",
+        "OBJECTID": 22493
+    },
+    "geometry": {
+        "x": 232502.81699999981,
+        "y": 4290784.7158000004
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384640114280101",
+        "StationName": "184  N11 E67 32AADA1    SPET1W",
+        "StationType": "Well",
+        "OBJECTID": 22496
+    },
+    "geometry": {
+        "x": 198804.30379999988,
+        "y": 4297815.7941999994
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384702114034101",
+        "StationName": "195  N11 E70 36BDDD1    USGS-MX",
+        "StationType": "Well",
+        "OBJECTID": 22497
+    },
+    "geometry": {
+        "x": 233483.52419999987,
+        "y": 4297131.4258999992
+    }
+}, {
+    "attributes": {
+        "DataSource": "WQP",
+        "StationId": "USGS-384745114224401",
+        "StationName": "184  N11 E68 19DCDC1    USGS-MX (Spring Valley)",
+        "StationType": "Well",
+        "OBJECTID": 22498
+    },
+    "geometry": {
+        "x": 206450.47890000045,
+        "y": 4299471.5738999993
+    }
+}]

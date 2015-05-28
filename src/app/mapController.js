@@ -6,6 +6,7 @@ define([
 
     'dojo/_base/lang',
     'dojo/Deferred',
+    'dojo/on',
     'dojo/topic',
 
     'esri/Color',
@@ -22,6 +23,7 @@ define([
 
     lang,
     Deferred,
+    on,
     topic,
 
     Color,
@@ -120,9 +122,7 @@ define([
                 this.map.showLoader();
                 this.queryFLayer.queryIds(query);
             } else {
-                this.dLayer.setLayerDefinitions(['1 = 2', '1 = 1']);
-                this.fLayer.setDefinitionExpression('1 = 1');
-                this.fLayerSelection.setDefinitionExpression('1 = 2');
+                this.queryIdsComplete({});
             }
         },
         queryIdsComplete: function (response) {
@@ -141,6 +141,8 @@ define([
                 selectDef = '1 = 2';
                 mainDef = '1 = 1';
             }
+            // if I use selectFeatures then it doesn't make requests by grid and it
+            // hits the 1000 feature return limit much sooner
             this.fLayerSelection.setDefinitionExpression(selectDef);
             this.fLayerSelection.show();
             this.fLayer.setDefinitionExpression(mainDef);
@@ -149,6 +151,8 @@ define([
             defs[config.layerIndices.selection] = selectDef;
             defs[config.layerIndices.main] = mainDef;
             this.dLayer.setLayerDefinitions(defs);
+
+            topic.publish(config.topics.queryIdsComplete, selectDef);
         },
         getParameters: function () {
             // summary:

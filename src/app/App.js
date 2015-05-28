@@ -1,6 +1,7 @@
 define([
     'app/config',
     'app/FilterContainer',
+    'app/Grid',
     'app/mapController',
 
     'dijit/_TemplatedMixin',
@@ -18,6 +19,7 @@ define([
 ], function (
     config,
     FilterContainer,
+    Grid,
     mapController,
 
     _TemplatedMixin,
@@ -63,7 +65,8 @@ define([
                     showOnLoad: false,
                     securedServicesBaseUrl: '??'
                 }),
-                new FilterContainer(null, this.filterDiv)
+                new FilterContainer(null, this.filterDiv),
+                new Grid(null, this.gridDiv)
             );
             mapController.initMap(this.mapDiv);
 
@@ -84,7 +87,7 @@ define([
             };
             var openAnimation = coreFx.combine([
                 baseFx.animateProperty({
-                    node: this.gridDiv,
+                    node: this.gridContainer,
                     properties: {
                         height: config.gridDivHeight,
                         borderWidth: 1
@@ -100,7 +103,7 @@ define([
             ]);
             var closeAnimation = coreFx.combine([
                 baseFx.animateProperty({
-                    node: this.gridDiv,
+                    node: this.gridContainer,
                     properties: {
                         height: 0,
                         borderWidth: 0
