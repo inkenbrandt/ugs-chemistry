@@ -66,11 +66,11 @@ module.exports = function (grunt) {
         tunnelTimeout: 120,
         build: process.env.TRAVIS_JOB_ID,
         browsers: browsers,
-        testname: 'atlas',
+        testname: 'ugs-chemistry',
         maxRetries: 10,
         maxPollRetries: 10,
         'public': 'public',
-        throttled: 3,
+        throttled: 5,
         sauceConfig: {
             'max-duration': 10800
         },

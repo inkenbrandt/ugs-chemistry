@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project name="main" version="3.0" id="I64FYv95R7" font="Arial" defaultPage="#pg_Mh47k" type="default" theme="SimplicityGray">
+<Project name="main" version="3.0" id="I64FYv95R7" font="Arial" defaultPage="#pg_78mx6" type="default" theme="SimplicityGray">
   <Page width="960" height="700" enabled="true" visible="true" hidden="false" id="#pg_Mh47k" clasz="com.flairbuilder.project::Page" name="Design #1" color="255" backgroundColor="16777215">
     <Component width="737" height="464" x="218" y="48" enabled="true" visible="true" hidden="false" id="fbc5HtUR" clasz="com.flairbuilder.components::GoogleMap" borderColor="0" borderThickness="1" borderStyle="solid"/>
     <Component width="208" height="155" x="8" y="538" enabled="true" visible="true" hidden="false" id="fbcOD3zX" clasz="com.flairbuilder.components.charts::Chart" bold="false" italic="false" underline="false" color="0" fontSize="10" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" style="columnChart">
@@ -81,7 +81,8 @@
   </Page>
   <Page width="960" height="700" enabled="true" visible="true" hidden="false" id="#pg_78mx6" clasz="com.flairbuilder.project::Page" name="Design #2" color="255" backgroundColor="16777215">
     <Component width="942" height="464" x="10" y="48" enabled="true" visible="true" hidden="false" id="fbcc72dM" clasz="com.flairbuilder.components::GoogleMap" borderColor="0" borderThickness="1" borderStyle="solid"/>
-    <Component width="208" height="155" x="732" y="90" enabled="true" visible="false" hidden="false" id="fbcfcfT9" clasz="com.flairbuilder.components.charts::Chart" bold="false" italic="false" underline="false" color="0" fontSize="10" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" style="columnChart">
+    <Component width="426" height="393" x="510" y="90" enabled="true" visible="false" hidden="false" id="fbc4lkIT" clasz="com.flairbuilder.components::TitleWindow" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="13816016" borderColor="6710886" borderThickness="1" borderStyle="solid" label="Charts" title="Charts" headerHeight="21" close="true" minimize="false" maximize="false" contains="fbc65O39,fbc63z43,fbc5rK74,fbckBY7b,fbc1B3L4,fbcM6702,fbcfL6n5,fbcR3877,fbcfcfT9" showScrollbar="false"/>
+    <Component width="402" height="286" x="522" y="167" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbcfcfT9" clasz="com.flairbuilder.components.charts::Chart" bold="false" italic="false" underline="false" color="0" fontSize="10" textAlign="center" backgroundColor="16777215" backgroundAlpha="1" borderColor="0" borderThickness="1" borderStyle="solid" style="columnChart">
       <data encoded="true">2007,23%0D2008,41%0D2009,56%0D2010,72%0D2011,63%0D2012,81</data>
     </Component>
     <Component name="Tabs1" width="941" height="180" x="11" y="513" enabled="true" visible="true" hidden="false" id="fbcv06X1" clasz="com.flairbuilder.components::TabNavigator" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="left" backgroundColor="15658734" borderColor="0" borderThickness="1" tabWidth="72" tabHeight="24" position="top-left" tabs="Results, Stations">
@@ -166,7 +167,7 @@
     <Component width="68" height="24" x="872" y="59" enabled="true" visible="true" hidden="false" id="fbc2Vu83" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Charts" style="horizontalButton" direction="horizontal">
       <behaviors>
         <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
-          <action id="flair:ShowHideComponents" targets="fbcfcfT9" type="toggle" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+          <action id="flair:ShowHideComponents" targets="fbc4lkIT,fbc1B3L4,fbc5rK74,fbckBY7b" type="toggle" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
         </behavior>
       </behaviors>
     </Component>
@@ -186,6 +187,31 @@
       <Component width="100" height="18" x="338" y="294" enabled="true" visible="true" hidden="false" containedBy="fbc18oAO" id="fbc8dN88" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="Format&#xD;"/>
       <Component width="207" height="24" x="338" y="329" enabled="true" visible="true" hidden="false" containedBy="fbc18oAO" id="fbc888C0" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Download" style="horizontalButton" direction="horizontal"/>
     </Component>
+    <Component width="153" height="24" x="522" y="138" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbcR3877" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">select%20a%20parameter%0DCalcium</data>
+    </Component>
+    <Component width="104" height="24" x="797" y="138" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbcfL6n5" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Update Chart" style="horizontalButton" direction="horizontal"/>
+    <Component width="113" height="24" x="682" y="138" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbcM6702" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">select%20type%0Dhistogram%0Dtime-series%20scatter%20plot</data>
+    </Component>
+    <Component width="153" height="24" x="529" y="270" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbc1B3L4" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">select%20a%20parameter%0DCalcium</data>
+    </Component>
+    <Component width="104" height="24" x="820" y="270" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbckBY7b" clasz="com.flairbuilder.components::Button" bold="false" italic="false" underline="false" color="0" fontSize="12" textAlign="center" backgroundColor="15658734" borderColor="10066329" borderThickness="1" borderStyle="solid" cornerRadius="5" label="Generate Chart" style="horizontalButton" direction="horizontal">
+      <behaviors>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbcfcfT9,fbcR3877,fbcM6702,fbcfL6n5" type="show" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+        <behavior action="flair:ShowHideComponents" trigger="flair:mouseClick">
+          <action id="flair:ShowHideComponents" targets="fbc1B3L4,fbc5rK74,fbckBY7b" type="hide" hideSimilar="false" pushOrPull="false" showAsPopUp="false"/>
+        </behavior>
+      </behaviors>
+    </Component>
+    <Component width="113" height="24" x="697" y="270" enabled="true" visible="false" hidden="false" containedBy="fbc4lkIT" id="fbc5rK74" clasz="com.flairbuilder.components::ComboBox" bold="false" italic="false" underline="false" color="0" fontSize="12" borderColor="0">
+      <data encoded="true">select%20type%0Dhistogram%0Dtime-series%20scatter%20plot</data>
+    </Component>
+    <Component width="324" height="18" x="522" y="117" enabled="true" visible="true" hidden="false" containedBy="fbc4lkIT" id="fbc63z43" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="Heads up: This chart does not reflect the newly filtered data."/>
+    <Component width="205" height="18" x="522" y="459" enabled="true" visible="true" hidden="false" containedBy="fbc4lkIT" id="fbc65O39" clasz="com.flairbuilder.components::Label" bold="false" italic="false" underline="false" color="0" fontSize="12" leading="0" textAlign="left" label="Showing 150 results from 50 stations."/>
     <CustomImages/>
     <Annotations/>
     <Layers/>
