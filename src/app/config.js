@@ -78,17 +78,22 @@ define([
             // Stations
             StateCode: 'StateCode',
             CountyCode: 'CountyCode',
-            SampleDate: 'SampleDate',
             StationType: 'StationType',
             HUC8: 'HUC8',
             OrgId: 'OrgId',
             StationName: 'StationName',
+            Depth: 'Depth',
+            WIN: 'WIN',
 
             // Results
             StationId: StationId, // also used in Stations
             ParamGroup: 'ParamGroup',
             DataSource: 'DataSource', // also used in Stations
-            Param: 'Param'
+            Param: 'Param',
+            ResultValue: 'ResultValue',
+            SampleDate: 'SampleDate',
+            Unit: 'Unit',
+            DetectCond: 'DetectCond'
         },
 
         queryByResults: StationId + " IN (SELECT " + StationId + " FROM Results WHERE ",
@@ -96,6 +101,7 @@ define([
         layerIndices: {
             selection: 0,
             main: 1,
+            results: 2,
             parameters: 3
         },
 
