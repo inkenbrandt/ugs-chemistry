@@ -1,6 +1,6 @@
 {
   "name": "ugs-chemistry",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "dependencies": {
     "agrc": "agrc-widgets#2.11.3",
     "dijit": "~1.10",
