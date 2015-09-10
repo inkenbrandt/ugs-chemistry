@@ -135,7 +135,7 @@ define([
             var selectDef;
             var mainDef;
             if (response.objectIds) {
-                selectDef = 'OBJECTID IN (' + response.objectIds.join(', ') + ')';
+                selectDef = config.fieldNames.Id + ' IN (' + response.objectIds.join(', ') + ')';
                 mainDef = selectDef.replace('IN', 'NOT IN');
             } else {
                 selectDef = '1 = 2';

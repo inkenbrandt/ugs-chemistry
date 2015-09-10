@@ -165,7 +165,7 @@ define([
             var fn = config.fieldNames;
             var resultColumns = [
                 {
-                    field: 'OBJECTID'
+                    field: fn.Id
                 }, {
                     field: fn.Param,
                     label: 'Parameter'
@@ -192,7 +192,7 @@ define([
             this.resultQuery = new Query();
             this.resultQuery.returnGeometry = false;
             this.resultQuery.outFields = [
-                'OBJECTID',
+                fn.Id,
                 fn.Param,
                 fn.ResultValue,
                 fn.Unit,
@@ -215,7 +215,7 @@ define([
             var fn = config.fieldNames;
             var stationColumns = [
                 {
-                    field: 'OBJECTID'
+                    field: fn.Id
                 }, {
                     field: fn.DataSource,
                     label: 'Database Source'
@@ -242,7 +242,7 @@ define([
             this.stationQuery = new Query();
             this.stationQuery.returnGeometry = false;
             this.stationQuery.outFields = [
-                'OBJECTID',
+                fn.Id,
                 fn.DataSource,
                 fn.StationId,
                 fn.StationName,
@@ -266,7 +266,7 @@ define([
 
             var grid = new (declare([Grid, ColumnResizer]))({
                 columns: columns,
-                store: new Memory({idProperty: 'OBJECTID'})
+                store: new Memory({idProperty: config.fieldNames.Id})
             }, div);
             grid.startup();
             return grid;
