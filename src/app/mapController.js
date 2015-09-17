@@ -73,7 +73,7 @@ define([
                 minScale: config.minFeatureLayerScale
             });
             this.fLayer.on('load', function () {
-                this.fLayer.renderer.symbol.setSize(config.stationSymbolSize);
+                that.fLayer.renderer.symbol.setSize(config.stationSymbolSize);
             });
             this.map.addLayer(this.fLayer);
             this.map.addLoaderToLayer(this.fLayer);
@@ -100,18 +100,23 @@ define([
             //      select by geometry
             console.log('app/mapController:selectFeatures', arguments);
 
-            var query = new Query();
-            if (defQuery) {
-                query.where = defQuery;
-            }
-            if (geometry) {
-                query.geometry = geometry;
-            }
             if (defQuery || geometry) {
                 this.map.showLoader();
-                this.queryFLayer.queryIds(query);
+                if (geometry) {
+                    // only query for ids if there is a geometry
+                    var query = new Query();
+                    if (defQuery) {
+                        query.where = defQuery;
+                    }
+                    if (geometry) {
+                        query.geometry = geometry;
+                    }
+                    this.queryFLayer.queryIds(query);
+                } else {
+                    this.updateLayerDefs(defQuery);
+                }
             } else {
-                this.queryIdsComplete({});
+                this.updateLayerDefs('1 = 1');
             }
         },
         queryIdsComplete: function (response) {
@@ -125,8 +130,12 @@ define([
             if (response.objectIds) {
                 def = config.fieldNames.Id + ' IN (' + response.objectIds.join(', ') + ')';
             } else {
-                def = '1 = 1';
+                def = '1 = 2';
             }
+
+            this.updateLayerDefs(def);
+        },
+        updateLayerDefs: function (def) {
             // if I use selectFeatures then it doesn't make requests by grid and it
             // hits the 1000 feature return limit much sooner
             this.fLayer.setDefinitionExpression(def);

@@ -5,15 +5,14 @@ define([
     'app/filters/_Filter',
     'app/mapController',
 
-    'dojo/_base/declare',
-    'dojo/_base/lang',
     'dojo/has!web-workers?esri/geometry/geometryEngineAsync:esri/geometry/geometryEngine',
     'dojo/query',
     'dojo/text!app/filters/templates/ShapeFilter.html',
     'dojo/topic',
+    'dojo/when',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
 
-    'esri/tasks/AreasAndLengthsParameters',
-    'esri/tasks/GeometryService',
     'esri/toolbars/draw',
 
     'xstyle/css!app/filters/resources/ShapeFilter.css'
@@ -24,15 +23,14 @@ define([
     _Filter,
     mapController,
 
-    declare,
-    lang,
     geometryEngine,
     query,
     template,
     topic,
+    when,
+    declare,
+    lang,
 
-    AreasAndLengthsParameters,
-    GeometryService,
     Draw
 ) {
     return declare([_Filter], {
@@ -88,7 +86,6 @@ define([
                     showTooltips: true
                 });
                 this.draw.on('draw-complete', lang.hitch(this, 'onDrawComplete'));
-                this.geoService = new GeometryService(config.urls.geometry);
             }
 
             this.draw.activate(Draw.POLYGON);
@@ -106,11 +103,9 @@ define([
 
             this.currentGeometry = evt.geometry;
 
-            var params = new AreasAndLengthsParameters();
-            params.areaUnit = GeometryService.UNIT_SQUARE_MILES;
-            params.polygons = [evt.geometry];
-            this.geoService.areasAndLengths(params).then(function (evt) {
-                that.numSpan.innerHTML = formatting.addCommas(formatting.round(evt.areas[0], 0));
+            // 109413 = square miles
+            when(geometryEngine.planarArea(evt.geometry, 109413), function (sqMiles) {
+                that.numSpan.innerHTML = formatting.addCommas(formatting.round(sqMiles, 0));
             });
 
             topic.publish(config.topics.addGraphic, evt.geometry);

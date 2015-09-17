@@ -65,27 +65,34 @@ define([
                     fieldType: ListFilter.TYPE_NUMBER
                 }),
                 new ListFilter({
-                    name: 'State',
-                    items: config.states,
+                    name: 'Data Source',
+                    items: config.dataSources,
                     parent: this.container,
-                    fieldName: config.fieldNames.StateCode,
-                    fieldType: ListFilter.TYPE_NUMBER
-                }),
-                new ShapeFilter({
-                    name: 'Polygon',
-                    parent: this.container
+                    fieldName: config.fieldNames.DataSource,
+                    fieldType: ListFilter.TYPE_TEXT,
+                    relatedTableQuery: true
                 }),
                 new DateFilter({
                     name: 'Date Range',
                     parent: this.container,
                     fieldName: config.fieldNames.SampleDate
                 }),
-                new ListFilter({
-                    name: 'Site Type',
-                    items: config.siteTypes,
+                new FreeTypeFilter({
+                    name: 'HUC',
                     parent: this.container,
-                    fieldName: config.fieldNames.StationType,
-                    fieldType: ListFilter.TYPE_TEXT
+                    fieldName: config.fieldNames.HUC8
+                }),
+                new FreeTypeFilter({
+                    name: 'Organization ID',
+                    parent: this.container,
+                    fieldName: config.fieldNames.OrgId
+                }),
+                new FreeTypeFilter({
+                    name: 'Parameter',
+                    parent: this.container,
+                    fieldName: config.fieldNames.Param,
+                    relatedTableQuery: true,
+                    options: mapController.getParameters()
                 }),
                 new ListFilter({
                     name: 'Parameter Group',
@@ -96,35 +103,28 @@ define([
                     relatedTableQuery: true,
                     anyAllToggle: true
                 }),
-                new ListFilter({
-                    name: 'Data Source',
-                    items: config.dataSources,
-                    parent: this.container,
-                    fieldName: config.fieldNames.DataSource,
-                    fieldType: ListFilter.TYPE_TEXT,
-                    relatedTableQuery: true
+                new ShapeFilter({
+                    name: 'Polygon',
+                    parent: this.container
                 }),
                 new FreeTypeFilter({
                     name: 'Site ID',
                     parent: this.container,
                     fieldName: config.fieldNames.StationId
                 }),
-                new FreeTypeFilter({
-                    name: 'HUC',
+                new ListFilter({
+                    name: 'Site Type',
+                    items: config.siteTypes,
                     parent: this.container,
-                    fieldName: config.fieldNames.HUC8
+                    fieldName: config.fieldNames.StationType,
+                    fieldType: ListFilter.TYPE_TEXT
                 }),
-                new FreeTypeFilter({
-                    name: 'Parameter',
+                new ListFilter({
+                    name: 'State',
+                    items: config.states,
                     parent: this.container,
-                    fieldName: config.fieldNames.Param,
-                    relatedTableQuery: true,
-                    options: mapController.getParameters()
-                }),
-                new FreeTypeFilter({
-                    name: 'Organization ID',
-                    parent: this.container,
-                    fieldName: config.fieldNames.OrgId
+                    fieldName: config.fieldNames.StateCode,
+                    fieldType: ListFilter.TYPE_NUMBER
                 })
             ];
 
