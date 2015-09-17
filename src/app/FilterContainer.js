@@ -10,12 +10,13 @@ define([
     'dijit/_WidgetBase',
     'dijit/_WidgetsInTemplateMixin',
 
-    'dojo/_base/array',
-    'dojo/_base/declare',
-    'dojo/_base/lang',
+    'dojo/dom-class',
     'dojo/dom-construct',
     'dojo/text!app/templates/FilterContainer.html',
     'dojo/topic',
+    'dojo/_base/array',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
 
     'xstyle/css!app/resources/FilterContainer.css'
 ], function (
@@ -30,12 +31,13 @@ define([
     _WidgetBase,
     _WidgetsInTemplateMixin,
 
-    array,
-    declare,
-    lang,
+    domClass,
     domConstruct,
     template,
-    topic
+    topic,
+    array,
+    declare,
+    lang
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // description:
@@ -142,13 +144,28 @@ define([
 
                 // add back to the drop down when it's removed from the container
                 f.on('removed', function (filter) {
-                    addOption(filter.name, filter.id);
+                    that.updateOptionVisibility(filter.id, true);
                     that.container.removeChild(filter.domNode);
                 });
                 f.on('changed', lang.hitch(that, 'onFilterChange'));
             });
 
             this.inherited(arguments);
+        },
+        updateOptionVisibility: function (id, visible) {
+            // summary:
+            //      adds or removes the hidden class for the option
+            // id: String
+            //      corresponds with the value of the option
+            // visible: Boolean
+            console.log('app.FilterContainer:updateOptionVisibility', arguments);
+
+            array.some(this.select.children, function (option) {
+                if (option.value === id) {
+                    domClass.toggle(option, 'hidden', !visible);
+                    return true;
+                }
+            });
         },
         addFilter: function () {
             // summary:
@@ -161,12 +178,8 @@ define([
                 var filter = this.getFilter(id);
                 domConstruct.place(filter.domNode, this.container);
                 filter.open();
-                array.some(this.select.children, function (option) {
-                    if (option.value === id) {
-                        domConstruct.destroy(option);
-                        return true;
-                    }
-                });
+                this.updateOptionVisibility(id, false);
+                this.select.value = 'none';
             }
         },
         getFilter: function (id) {

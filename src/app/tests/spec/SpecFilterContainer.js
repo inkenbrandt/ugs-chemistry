@@ -5,6 +5,7 @@ require([
     'app/FilterContainer',
     'app/mapController',
 
+    'dojo/dom-class',
     'dojo/_base/array'
 ], function (
     topics,
@@ -13,6 +14,7 @@ require([
     FilterContainer,
     mapController,
 
+    domClass,
     array
 ) {
     describe('app/FilterContainer', function () {
@@ -58,7 +60,11 @@ require([
                 testWidget.addFilter();
 
                 expect(array.every(testWidget.select.children, function (option) {
-                    return option.value !== testWidget.filters[0].id;
+                    if (option.value === testWidget.filters[0].id) {
+                        return domClass.contains(option, 'hidden');
+                    } else {
+                        return true;
+                    }
                 })).toBe(true);
             });
         });
