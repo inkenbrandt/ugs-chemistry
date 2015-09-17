@@ -95,22 +95,15 @@ define([
             // response: Object
             console.log('app/Grid:onQueryTaskComplete', arguments);
 
-            var showGrid;
-
             this.hideErrMsg();
 
             if (response.featureSet.features.length) {
-                showGrid = true;
                 var data = response.featureSet.features.map(function (g) {
                     return g.attributes;
                 });
                 grid.store.setData(data);
                 grid.refresh();
-            } else {
-                showGrid = false;
             }
-
-            topic.publish(config.topics.toggleGrid, showGrid);
         },
         onQueryTaskError: function () {
             // summary:

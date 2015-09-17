@@ -45,10 +45,6 @@ define([
         //      layer that is displayed at larger scales
         fLayer: null,
 
-        // fLayerSelection: FeatureLayer
-        //      layer that displays the selected stations at larger scales
-        fLayerSelection: null,
-
         initMap: function (mapDiv) {
             // summary:
             //      Sets up the map
@@ -70,24 +66,17 @@ define([
             this.dLayer = new ArcGISDynamicMapServiceLayer(config.urls.mapService, {
                 maxScale: config.minFeatureLayerScale
             });
-            this.dLayer.setLayerDefinitions(['1 = 2', '1 = 1']);
             this.map.addLayer(this.dLayer);
             this.map.addLoaderToLayer(this.dLayer);
 
-            var addFeatureLayer = function (index, visible) {
-                var fLayer = new FeatureLayer(config.urls.mapService + '/' + index, {
-                    minScale: config.minFeatureLayerScale,
-                    visible: visible
-                });
-                fLayer.on('load', function () {
-                    fLayer.renderer.symbol.setSize(config.stationSymbolSize);
-                });
-                that.map.addLayer(fLayer);
-                that.map.addLoaderToLayer(fLayer);
-                return fLayer;
-            };
-            this.fLayer = addFeatureLayer(config.layerIndices.main, true);
-            this.fLayerSelection = addFeatureLayer(config.layerIndices.selection, false);
+            this.fLayer = new FeatureLayer(config.urls.mapService + '/' + config.layerIndices.main, {
+                minScale: config.minFeatureLayerScale
+            });
+            this.fLayer.on('load', function () {
+                this.fLayer.renderer.symbol.setSize(config.stationSymbolSize);
+            });
+            this.map.addLayer(this.fLayer);
+            this.map.addLoaderToLayer(this.fLayer);
 
             this.queryFLayer = new FeatureLayer(config.urls.mapService + '/' + config.layerIndices.main);
             this.queryFLayer.on('query-ids-complete', lang.hitch(this, 'queryIdsComplete'));
@@ -132,27 +121,21 @@ define([
             console.log('app/mapController:queryIdsComplete', arguments);
 
             this.map.hideLoader();
-            var selectDef;
-            var mainDef;
+            var def;
             if (response.objectIds) {
-                selectDef = config.fieldNames.Id + ' IN (' + response.objectIds.join(', ') + ')';
-                mainDef = selectDef.replace('IN', 'NOT IN');
+                def = config.fieldNames.Id + ' IN (' + response.objectIds.join(', ') + ')';
             } else {
-                selectDef = '1 = 2';
-                mainDef = '1 = 1';
+                def = '1 = 1';
             }
             // if I use selectFeatures then it doesn't make requests by grid and it
             // hits the 1000 feature return limit much sooner
-            this.fLayerSelection.setDefinitionExpression(selectDef);
-            this.fLayerSelection.show();
-            this.fLayer.setDefinitionExpression(mainDef);
+            this.fLayer.setDefinitionExpression(def);
 
             var defs = [];
-            defs[config.layerIndices.selection] = selectDef;
-            defs[config.layerIndices.main] = mainDef;
+            defs[config.layerIndices.main] = def;
             this.dLayer.setLayerDefinitions(defs);
 
-            topic.publish(config.topics.queryIdsComplete, selectDef);
+            topic.publish(config.topics.queryIdsComplete, def);
         },
         getParameters: function () {
             // summary:

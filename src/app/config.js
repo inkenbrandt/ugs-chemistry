@@ -58,8 +58,6 @@ define([
         //      The api key used for services on api.mapserv.utah.gov
         apiKey: '', // acquire at developer.mapserv.utah.gov
 
-        gridDivHeight: 225,
-
         urls: {
             mapService: baseUrl + '/UGSChemistry/MapServer',
             geometry: baseUrl + '/Geometry/GeometryServer'
@@ -100,17 +98,15 @@ define([
         queryByResults: StationId + " IN (SELECT " + StationId + " FROM Results WHERE ",
 
         layerIndices: {
-            selection: 0,
-            main: 1,
-            results: 2,
-            parameters: 3
+            main: 0,
+            results: 1,
+            parameters: 2
         },
 
         topics: {
             selectFeatures: 'ugs-select-features',
             addGraphic: 'ugs-add-graphic',
             removeGraphic: 'ugs-remove-graphic',
-            toggleGrid: 'ugs-toggle-grid',
             queryIdsComplete: 'ugs-query-ids-complete'
         },
 

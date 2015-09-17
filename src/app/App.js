@@ -71,63 +71,6 @@ define([
             mapController.initMap(this.mapDiv);
 
             this.inherited(arguments);
-        },
-        startup: function () {
-            // summary:
-            //      Fires after postCreate when all of the child widgets are finished laying out.
-            console.log('app.App::startup', arguments);
-
-            // grid animations
-            var open;
-            var onEnd = function (opened) {
-                open = opened;
-                setTimeout(function () {
-                    mapController.map.resize();
-                }, 50);
-            };
-            var openAnimation = coreFx.combine([
-                baseFx.animateProperty({
-                    node: this.gridContainer,
-                    properties: {
-                        height: config.gridDivHeight,
-                        borderWidth: 1
-                    },
-                    onEnd: lang.partial(onEnd, true)
-                }),
-                baseFx.animateProperty({
-                    node: this.mapDiv,
-                    properties: {
-                        bottom: config.gridDivHeight
-                    }
-                })
-            ]);
-            var closeAnimation = coreFx.combine([
-                baseFx.animateProperty({
-                    node: this.gridContainer,
-                    properties: {
-                        height: 0,
-                        borderWidth: 0
-                    },
-                    onEnd: lang.partial(onEnd, false)
-                }),
-                baseFx.animateProperty({
-                    node: this.mapDiv,
-                    properties: {
-                        bottom: 0
-                    }
-                })
-            ]);
-
-            var toggle = function (animation) {
-                if (animation === openAnimation && open) {
-                    return true;
-                }
-
-                animation.play();
-            };
-            topic.subscribe(config.topics.toggleGrid, function (show) {
-                toggle((show) ? openAnimation : closeAnimation);
-            });
         }
     });
 });
