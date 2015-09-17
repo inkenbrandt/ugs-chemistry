@@ -43,7 +43,7 @@ require([
                 var result = widget.getQuery();
 
                 expect(result).toBe("StationId IN (SELECT StationId FROM Results WHERE " +
-                    "FieldName >= date '2015-03-30' AND FieldName <= date '2015-03-27')");
+                    "FieldName >= '03/30/2015' AND FieldName <= '03/27/2015')");
             });
             it('returns undefined if there are not valid dates', function () {
                 expect(widget.getQuery()).toBeUndefined();

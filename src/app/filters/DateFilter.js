@@ -109,11 +109,11 @@ define([
             var formatDate = function (date) {
                 return locale.format(date, {
                     selector: 'date',
-                    datePattern: 'yyyy-MM-dd'
+                    datePattern: 'MM/dd/yyyy'
                 });
             };
             if (this.isValid()) {
-                var where = "${fieldName} >= date '${from}' AND ${fieldName} <= date '${to}')";
+                var where = "${fieldName} >= '${from}' AND ${fieldName} <= '${to}')";
                 return config.queryByResults + dojoString.substitute(where, {
                     fieldName: this.fieldName,
                     from: formatDate(this.from.date),
