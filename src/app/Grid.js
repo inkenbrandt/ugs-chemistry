@@ -8,13 +8,14 @@ define([
     'dijit/_WidgetBase',
     'dijit/_WidgetsInTemplateMixin',
 
-    'dojo/_base/declare',
-    'dojo/_base/lang',
-    'dojo/_base/query',
+    'dojo/date/locale',
     'dojo/dom-class',
     'dojo/store/Memory',
     'dojo/text!app/templates/Grid.html',
     'dojo/topic',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/query',
 
     'esri/tasks/query',
     'esri/tasks/QueryTask',
@@ -33,13 +34,14 @@ define([
     _WidgetBase,
     _WidgetsInTemplateMixin,
 
-    declare,
-    lang,
-    query,
+    locale,
     domClass,
     Memory,
     template,
     topic,
+    declare,
+    lang,
+    query,
 
     Query,
     QueryTask,
@@ -120,7 +122,6 @@ define([
             console.log('app/Grid:populateGrid', arguments);
 
             if (defQuery === '1 = 2') {
-                topic.publish(config.topics.toggleGrid, false);
                 this.lastDefQuery = '1 = 2';
             } else {
                 if (domClass.contains(this.stationsTab, 'active')) {
@@ -133,7 +134,14 @@ define([
                     if (!this.resultGrid) {
                         this.initResultGrid();
                     }
-                    this.resultQuery.where = 'StationId IN (SELECT StationId FROM Stations WHERE ' + defQuery + ')';
+                    // if the def query is a query on the results table then strip out the stations part of it
+                    var match = defQuery.match(/FROM Results WHERE (.*)\)/);
+                    if (match) {
+                        this.resultQuery.where = match[1];
+                    } else {
+                        // this is a query on just the stations table which requires wrapping it in the query below
+                        this.resultQuery.where = 'StationId IN (SELECT StationId FROM Stations WHERE ' + defQuery + ')';
+                    }
                     this.resultQueryTask.execute(this.resultQuery);
                 }
                 this.lastDefQuery = defQuery;
@@ -170,7 +178,13 @@ define([
                     label: 'Meaure Unit'
                 }, {
                     field: fn.SampleDate,
-                    label: 'Sample Date'
+                    label: 'Sample Date',
+                    formatter: function (value) {
+                        return locale.format(new Date(value), {
+                            selector: 'date',
+                            datePattern: 'MM/dd/yyyy'
+                        });
+                    }
                 }, {
                     field: fn.StationId,
                     label: 'Station Id'
