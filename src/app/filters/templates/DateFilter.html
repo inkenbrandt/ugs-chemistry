@@ -14,13 +14,19 @@
             <div class="form-group">
                 <label>From</label>
                 <input type="text" class='form-control'
-                    data-dojo-attach-point='fromDate'>
+                    data-dojo-attach-point='fromDate'
+                    data-dojo-type='dijit/form/DateTextBox'
+                    data-dojo-attach-event='change: onChange'
+                    value=''/>
             </div>
 
             <div class="form-group">
                 <label>To</label>
                 <input type='text' class='form-control'
-                    data-dojo-attach-point='toDate'>
+                    data-dojo-attach-point='toDate'
+                    data-dojo-type='dijit/form/DateTextBox'
+                    data-dojo-attach-event='change: onChange'
+                    value=''/>
             </div>
             <button type='button' class='btn btn-xs btn-link pull-right'
                 data-dojo-attach-event='click: clear'>clear</button>
