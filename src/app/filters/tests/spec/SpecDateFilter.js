@@ -35,10 +35,8 @@ require([
         });
         describe('getQuery', function () {
             it('builds a where clause', function () {
-                widget.fromDate.value = '03/30/2015';
-                widget.from.update();
-                widget.toDate.value = '03/27/2015';
-                widget.to.update();
+                widget.fromDate.set('value', '2015-03-30');
+                widget.toDate.set('value', '2015-03-27');
 
                 var result = widget.getQuery();
 

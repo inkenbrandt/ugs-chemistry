@@ -4,10 +4,6 @@ define([
     'app/config',
     'app/filters/_Filter',
 
-    'dojo-bootstrap/Datepicker',
-
-    'dojo/_base/declare',
-    'dojo/_base/lang',
     'dojo/date',
     'dojo/date/locale',
     'dojo/dom-class',
@@ -15,7 +11,9 @@ define([
     'dojo/query',
     'dojo/string',
     'dojo/text!app/filters/templates/DateFilter.html',
+    'dojo/_base/declare',
 
+    'dijit/form/DateTextBox',
     'xstyle/css!app/filters/resources/DateFilter.css'
 ], function (
     Formatting,
@@ -23,17 +21,14 @@ define([
     config,
     _Filter,
 
-    Datepicker,
-
-    declare,
-    lang,
     date,
     locale,
     domClass,
     on,
     query,
     dojoString,
-    template
+    template,
+    declare
 ) {
     return declare([_Filter], {
         // description:
@@ -58,11 +53,6 @@ define([
             //      description
             console.log('app/filters/DateFilter:postCreate', arguments);
 
-            this.from = new Datepicker(this.fromDate, {});
-            on(this.fromDate, 'changeDate', lang.hitch(this, 'onChange'));
-            this.to = new Datepicker(this.toDate, {});
-            on(this.toDate, 'changeDate', lang.hitch(this, 'onChange'));
-
             this.inherited(arguments);
         },
         clear: function () {
@@ -83,8 +73,8 @@ define([
 
             if (this.isValid()) {
                 var num = Formatting.addCommas(date.difference(
-                    this.from.date,
-                    this.to.date
+                    this.fromDate.value,
+                    this.toDate.value
                 ));
                 this.numSpan.innerHTML = '(' + num + ' days)';
                 domClass.remove(this.numSpan, 'hidden');
@@ -99,7 +89,8 @@ define([
             //      checks to make sure that there are valid dates
             console.log('app/filters/DateFilter:isValid', arguments);
 
-            return this.fromDate.value.trim() && this.toDate.value.trim();
+            return !isNaN(this.fromDate.value.getTime()) &&
+                !isNaN(this.toDate.value.getTime());
         },
         getQuery: function () {
             // summary:
@@ -116,8 +107,8 @@ define([
                 var where = "${fieldName} >= '${from}' AND ${fieldName} <= '${to}')";
                 return config.queryByResults + dojoString.substitute(where, {
                     fieldName: this.fieldName,
-                    from: formatDate(this.from.date),
-                    to: formatDate(this.to.date)
+                    from: formatDate(this.fromDate.value),
+                    to: formatDate(this.toDate.value)
                 });
             } else {
                 return undefined;
