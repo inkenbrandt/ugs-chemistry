@@ -3,22 +3,25 @@
   "version": "0.4.2",
   "dependencies": {
     "agrc": "agrc-widgets#2.11.3",
+    "agrc-jasmine-matchers": "~0.1.0",
+    "bootstrap-css-only": "~3.3.4",
+    "dgrid": "~0.4.0",
+    "dgrid03": "dgrid#~0.3.0",
     "dijit": "~1.10",
     "dojo": "~1.10",
+    "dojo-bootstrap": "37e0a4dc53aa1f70d1b2cb6a199b100644cfe9c2",
+    "dojo-esri-arcgis-server-store": "https://github.com/thollingsheadesri/dojo-esri-arcgis-server-store.git#~1.0.0",
     "dojox": "~1.10",
     "ijit": "agrc-ijit#3.1.1",
     "jasmine-favicon-reporter": "*",
     "jasmine-jsreporter": "~0.1.2",
+    "put-selector": "~0.3.6",
     "stubmodule": "~0.6.1",
     "util": "dojo-util#~1.10",
-    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
-    "dgrid": "0.3.17",
-    "put-selector": "~0.3.6",
-    "dojo-bootstrap": "37e0a4dc53aa1f70d1b2cb6a199b100644cfe9c2",
-    "bootstrap-css-only": "~3.3.4",
-    "agrc-jasmine-matchers": "~0.1.0"
+    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d"
   },
   "resolutions": {
-    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d"
+    "xstyle": "09b4d603f63df3e7aa5acc04784e36710a75671d",
+    "dgrid": "~0.4.0"
   }
 }

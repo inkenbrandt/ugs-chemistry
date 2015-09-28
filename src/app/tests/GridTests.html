@@ -22,22 +22,21 @@
 
         require({
             baseUrl: baseUrl,
-            packages: ['app', 'esri', 'dojo', 'dijit', 'dojox', 'dgrid', 'xstyle', 'dojo-bootstrap', 'put-selector']
+            packages: ['app', 'esri', 'dojo', 'dijit', 'dstore', 'dojox', 'dgrid', 'xstyle', 'dojo-bootstrap', 'put-selector', 'ijit']
         }, [
             'app/config',
             'app/Grid',
 
             'dojo/topic',
-            'dojo/text!app/tests/data/stations.json',
 
             'dojo/domReady!'
-        ], function (config, Module, topic, stationsTxt) {
+        ], function (config, Module, topic) {
             widgetUnderTest = new Module({
             }, 'node');
 
             widgetUnderTest.startup();
 
-            topic.publish(config.topics.onFeaturesSelected, JSON.parse(stationsTxt));
+            topic.publish(config.topics.queryIdsComplete, "CountyCode IN (49011, 49035)");
         });
     </script>
 </head>

@@ -1,9 +1,9 @@
+.DS_Store
+.grunt/
 *.odc
 *.pyc
 *.sde
 *.sublime-workspace
-.DS_Store
-.grunt/
 deploy
 dist/
 node_modules/
@@ -15,8 +15,10 @@ src/bootstrap-css-only/
 src/bootstrap/
 src/components-jasmine/
 src/dgrid/
+src/dgrid03/
 src/dijit/
 src/dojo-bootstrap/
+src/dojo-esri-arcgis-server-store/
 src/dojo/
 src/dojox/
 src/dstore/

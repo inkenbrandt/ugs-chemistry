@@ -13,10 +13,12 @@
             'agrc',
             'app',
             'dgrid',
+            'dgrid03',
             'dijit',
             'dojo',
             'dojo-bootstrap',
             'dojox',
+            'dstore',
             'esri',
             'ijit',
             'put-selector',
@@ -46,6 +48,9 @@
             },
             ladda: {
                 spin: 'ladda/dist/spin'
+            },
+            esri: {
+                dgrid: 'dgrid03'
             }
         }
     };

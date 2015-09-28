@@ -1,4 +1,5 @@
 define([
+    'app/AGSStore',
     'app/config',
 
     'dgrid/extensions/ColumnResizer',
@@ -17,14 +18,12 @@ define([
     'dojo/_base/lang',
     'dojo/_base/query',
 
-    'esri/tasks/query',
-    'esri/tasks/QueryTask',
-
     'ijit/modules/_ErrorMessageMixin',
 
     'dojo-bootstrap/Tab',
     'xstyle/css!app/resources/Grid.css'
 ], function (
+    AGSStore,
     config,
 
     ColumnResizer,
@@ -43,127 +42,117 @@ define([
     lang,
     query,
 
-    Query,
-    QueryTask,
-
     _ErrorMessageMixin
 ) {
+    var fn = config.fieldNames;
+
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _ErrorMessageMixin], {
         // description:
-        //      A container to hold result grids and download link.
+        //      A container to hold grids and download link.
 
         templateString: template,
         baseClass: 'grid',
         widgetsInTemplate: true,
 
-        // stationGrid: Grid
-        stationGrid: null,
+        // stationsGrid: Grid
+        stationsGrid: null,
 
-        // resultGrid: Grid
-        resultGrid: null,
+        // resultsGrid: Grid
+        resultsGrid: null,
 
-        // stationQuery: Query
-        stationQuery: null,
-
-        // stationQueryTask: QueryTask
-        stationQueryTask: null,
-
-        // resultQuery: Query
-        resultQuery: null,
-
-        // resultQueryTask: QueryTask
-        resultQueryTask: null,
 
         // Properties to be sent into constructor
 
         postCreate: function () {
             // summary:
-            //      Overrides method of same name in dijit._Widget.
-            // tags:
-            //      private
+            //      set up listeners
             console.log('app.Grid::postCreate', arguments);
 
             this.own(
                 topic.subscribe(config.topics.queryIdsComplete, lang.hitch(this, 'populateGrid')),
-                query('a[data-toggle="tab"]').on('shown.bs.tab', lang.hitch(this, 'onTabSwitched'))
+                query('a[data-toggle="tab"]').on('shown.bs.tab',
+                    lang.partial(lang.hitch(this, 'populateGrid'), this.lastDefQuery))
             );
 
             this.inherited(arguments);
         },
-        onQueryTaskComplete: function (grid, response) {
+        onError: function () {
             // summary:
-            //      description
-            // grid: Grid
-            // response: Object
-            console.log('app/Grid:onQueryTaskComplete', arguments);
-
-            this.hideErrMsg();
-
-            if (response.featureSet.features.length) {
-                var data = response.featureSet.features.map(function (g) {
-                    return g.attributes;
-                });
-                grid.store.setData(data);
-                grid.refresh();
-            }
-        },
-        onQueryTaskError: function () {
-            // summary:
-            //      description
-            console.log('app/Grid:onQueryTaskError', arguments);
+            //      show an error message
+            console.log('app/Grid:onError', arguments);
 
             this.showErrMsg('There was an error populating the grid!');
         },
-        populateGrid: function (defQuery, preservePreviousData) {
+        populateGrid: function (defQuery) {
             // summary:
-            //      description
-            // param: type or return: type
-            // preservePreviousData: Boolean
+            //      Populate the grid with a newly created store based upon defQuery
+            // defQuery: String
             console.log('app/Grid:populateGrid', arguments);
 
-            if (defQuery === '1 = 2') {
-                this.lastDefQuery = '1 = 2';
+            var store;
+
+            if (domClass.contains(this.stationsTab, 'active')) {
+                if (!this.stationsGrid) {
+                    this.initStationsGrid();
+                }
+                if (!this.stationsGrid.collection ||
+                    (this.stationsGrid.collection && this.stationsGrid.collection.where !== defQuery)) {
+                    store = new AGSStore({
+                        target: config.urls.mapService + '/' + config.layerIndices.main,
+                        idProperty: 'Id',
+                        outFields: [
+                            fn.Id,
+                            fn.DataSource,
+                            fn.StationId,
+                            fn.StationName,
+                            fn.StationType,
+                            fn.Depth,
+                            fn.WIN
+                        ],
+                        where: defQuery
+                    });
+                    this.stationsGrid.set('collection', store);
+                }
             } else {
-                if (domClass.contains(this.stationsTab, 'active')) {
-                    if (!this.stationGrid) {
-                        this.initStationGrid();
-                    }
-                    this.stationQuery.where = defQuery;
-                    this.stationQueryTask.execute(this.stationQuery);
+                if (!this.resultsGrid) {
+                    this.initResultsGrid();
+                }
+                // if the def query is a query on the results table then strip out the stations part of it
+                var match = defQuery.match(/FROM Results WHERE (.*)\)/);
+                if (match) {
+                    defQuery = match[1];
                 } else {
-                    if (!this.resultGrid) {
-                        this.initResultGrid();
-                    }
-                    // if the def query is a query on the results table then strip out the stations part of it
-                    var match = defQuery.match(/FROM Results WHERE (.*)\)/);
-                    if (match) {
-                        this.resultQuery.where = match[1];
-                    } else {
-                        // this is a query on just the stations table which requires wrapping it in the query below
-                        this.resultQuery.where = 'StationId IN (SELECT StationId FROM Stations WHERE ' + defQuery + ')';
-                    }
-                    this.resultQueryTask.execute(this.resultQuery);
+                    // this is a query on just the stations table which requires wrapping it in the query below
+                    defQuery = 'StationId IN (SELECT StationId FROM Stations WHERE ' + defQuery + ')';
                 }
-                this.lastDefQuery = defQuery;
+                if (!this.resultsGrid.collection ||
+                    (this.resultsGrid.collection && this.resultsGrid.collection.where !== defQuery)) {
+                    store = new AGSStore({
+                        target: config.urls.mapService + '/' + config.layerIndices.results,
+                        idProperty: 'Id',
+                        outFields: [
+                            fn.Id,
+                            fn.Param,
+                            fn.ResultValue,
+                            fn.Unit,
+                            fn.SampleDate,
+                            fn.StationId,
+                            fn.DetectCond
+                        ],
+                        where: defQuery
+                    });
+                    this.resultsGrid.set('collection', store);
+                }
             }
+            this.lastDefQuery = defQuery;
 
-            if (!preservePreviousData) {
-                if (this.stationGrid) {
-                    this.stationGrid.store.setData([]);
-                    this.stationGrid.refresh();
-                }
-                if (this.resultGrid) {
-                    this.resultGrid.store.setData([]);
-                    this.resultGrid.refresh();
-                }
-            }
+            return defQuery; // for testing only
         },
-        initResultGrid: function () {
+        initResultsGrid: function () {
             // summary:
-            //
-            console.log('app/Grid:initResultGrid', arguments);
+            //      initialize the results dgrid
+            console.log('app/Grid:initResultsGrid', arguments);
 
-            var fn = config.fieldNames;
             var resultColumns = [
                 {
                     field: fn.Id
@@ -194,32 +183,14 @@ define([
                 }
             ];
 
-            this.resultGrid = this.buildGrid(this.resultGridDiv, resultColumns);
-
-            this.resultQuery = new Query();
-            this.resultQuery.returnGeometry = false;
-            this.resultQuery.outFields = [
-                fn.Id,
-                fn.Param,
-                fn.ResultValue,
-                fn.Unit,
-                fn.SampleDate,
-                fn.StationId,
-                fn.DetectCond
-            ];
-            this.resultQueryTask = new QueryTask(config.urls.mapService + '/' + config.layerIndices.results);
-            this.own(
-                this.resultQueryTask.on('complete',
-                    lang.hitch(this, lang.partial(this.onQueryTaskComplete, this.resultGrid))),
-                this.resultQueryTask.on('error', lang.hitch(this, 'onQueryTaskError'))
-            );
+            this.resultsGrid = this.buildGrid(this.resultsGridDiv, resultColumns);
+            this.resultsGrid.on('dgrid-error', lang.hitch(this, 'onError'));
         },
-        initStationGrid: function () {
+        initStationsGrid: function () {
             // summary:
-            //      description
-            console.log('app/Grid:initStationGrid', arguments);
+            //      initialize the stations dgrid
+            console.log('app/Grid:initStationsGrid', arguments);
 
-            var fn = config.fieldNames;
             var stationColumns = [
                 {
                     field: fn.Id
@@ -244,49 +215,25 @@ define([
                 }
             ];
 
-            this.stationGrid = this.buildGrid(this.stationGridDiv, stationColumns);
-
-            this.stationQuery = new Query();
-            this.stationQuery.returnGeometry = false;
-            this.stationQuery.outFields = [
-                fn.Id,
-                fn.DataSource,
-                fn.StationId,
-                fn.StationName,
-                fn.StationType,
-                fn.Depth,
-                fn.WIN
-            ];
-            this.stationQueryTask = new QueryTask(config.urls.mapService + '/' + config.layerIndices.main);
-            this.own(
-                this.stationQueryTask.on('complete',
-                    lang.hitch(this, lang.partial(this.onQueryTaskComplete, this.stationGrid))),
-                this.stationQueryTask.on('error', lang.hitch(this, 'onQueryTaskError'))
-            );
+            this.stationsGrid = this.buildGrid(this.stationsGridDiv, stationColumns);
+            this.stationsGrid.on('dgrid-error', lang.hitch(this, 'onError'));
         },
         buildGrid: function (div, columns) {
             // summary:
-            //      description
+            //      build a new dgrid
             // div: Dom Node
             // columns: Object[]
             console.log('app/Grid:buildGrid', arguments);
 
             var grid = new (declare([Grid, ColumnResizer]))({
                 columns: columns,
-                store: new Memory({idProperty: config.fieldNames.Id})
+                noDataMessage: 'No data found.',
+                loadingMessage: 'Loading data...',
+                minRowsPerPage: 100,
+                maxRowsPerPage: 500
             }, div);
             grid.startup();
             return grid;
-        },
-        onTabSwitched: function () {
-            // summary:
-            //      description
-            console.log('app/Grid:onTabSwitched', arguments);
-
-            if (!this.stationGrid || !this.resultGrid ||
-                this.stationGrid.store.data.length === 0 || this.resultGrid.store.data.length === 0) {
-                this.populateGrid(this.lastDefQuery, true);
-            }
         }
     });
 });
