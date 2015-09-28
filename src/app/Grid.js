@@ -68,10 +68,12 @@ define([
             //      set up listeners
             console.log('app.Grid::postCreate', arguments);
 
+            var that = this;
             this.own(
                 topic.subscribe(config.topics.queryIdsComplete, lang.hitch(this, 'populateGrid')),
-                query('a[data-toggle="tab"]').on('shown.bs.tab',
-                    lang.partial(lang.hitch(this, 'populateGrid'), this.lastDefQuery))
+                query('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+                    that.populateGrid(that.lastDefQuery);
+                })
             );
 
             this.inherited(arguments);
