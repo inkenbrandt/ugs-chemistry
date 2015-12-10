@@ -6,7 +6,7 @@ ugs-chemistry
 
 Water Chemistry data viewer built for UGS
 
-###URL's
+###URLs
 [test.mapserv.utah.gov/ugschemistry](http://test.mapserv.utah.gov/ugschemistry)
 [current mockup](http://share.flairbuilder.com/?sid=I64FYv95R7)
 
